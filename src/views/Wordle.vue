@@ -1,28 +1,35 @@
 <template>
-  <div class="wordle-page">    
-    <!-- Game Grid -->
-    <div class="game-grid">
-      <div 
-        v-for="(row, rowIndex) in gameGrid" 
-        :key="rowIndex" 
-        class="grid-row"
-      >
+  <div class="wordle-page">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loading">
+      <p>Loading today's word...</p>
+    </div>
+    
+    <!-- Game Content -->
+    <div v-else>
+      <!-- Game Grid -->
+      <div class="game-grid">
         <div 
-          v-for="(cell, cellIndex) in row" 
-          :key="cellIndex" 
-          class="grid-cell"
-          :class="{
-            'filled': cell.letter,
-            'correct': cell.status === 'correct',
-            'present': cell.status === 'present',
-            'absent': cell.status === 'absent',
-            'reveal': cell.revealing,
-            'bounce': cell.bouncing
-          }"
+          v-for="(row, rowIndex) in gameGrid" 
+          :key="rowIndex" 
+          class="grid-row"
         >
-          {{ cell.letter }}
+          <div 
+            v-for="(cell, cellIndex) in row" 
+            :key="cellIndex" 
+            class="grid-cell"
+            :class="{
+              'filled': cell.letter,
+              'correct': cell.status === 'correct',
+              'present': cell.status === 'present',
+              'absent': cell.status === 'absent',
+              'reveal': cell.revealing,
+              'bounce': cell.bouncing
+            }"
+          >
+            {{ cell.letter }}
+          </div>
         </div>
-      </div>
     </div>
 
     <!-- Keyboard -->
@@ -81,17 +88,22 @@
       :visible="showToast"
       @close="showToast = false"
     />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import ToastNotification from '@/components/Squads/ToastNotification.vue'
+import axios from 'axios'
+import authHeader from '@/services/auth-header'
 
-// Game configuration
-const TARGET_WORD = 'JEEEC'
+// Game configuration - will be updated from API
+const TARGET_WORD = ref('')
 const MAX_ATTEMPTS = 6
 const WORD_LENGTH = 5
+const isLoading = ref(true)
+const hasPlayedToday = ref(false)
 
 // Game state
 const currentRow = ref(0)
@@ -104,17 +116,23 @@ const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-// Initialize game grid (6 rows x 5 columns)
-const gameGrid = ref(
-  Array(6).fill().map(() => 
-    Array(5).fill().map(() => ({
+// Initialize game grid (6 rows x dynamic columns based on word length)
+const gameGrid = ref([])
+
+// Initialize grid with default size, will be updated when word is loaded
+const initializeGrid = (attempts = 6, wordLength = 5) => {
+  gameGrid.value = Array(attempts).fill().map(() => 
+    Array(wordLength).fill().map(() => ({
       letter: '',
       status: '', // 'correct', 'present', 'absent'
       revealing: false,
       bouncing: false
     }))
   )
-)
+}
+
+// Initialize with default 5x6 grid
+initializeGrid()
 
 // Keyboard layout
 const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
@@ -131,6 +149,33 @@ const showNotification = (message, type = 'success') => {
   showToast.value = true
 }
 
+// Fetch word of the day from API
+const fetchWordOfDay = async () => {
+  try {
+    isLoading.value = true
+    const response = await axios.get(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-word-of-day`,
+      { headers: authHeader() }
+    )
+    
+    const data = response.data
+    TARGET_WORD.value = data.word
+    hasPlayedToday.value = data.has_played
+
+    isLoading.value = false
+    
+    if (hasPlayedToday.value) {
+      showNotification('You have already played today! Come back tomorrow.', 'points')
+      gameStatus.value = 'finished'
+    }
+    
+  } catch (error) {
+    console.error('Error fetching word of day:', error)
+    showNotification('Failed to load today\'s word. Please try again.', 'error')
+    isLoading.value = false
+  }
+}
+
 // Get current word being typed
 const getCurrentWord = () => {
   return gameGrid.value[currentRow.value]
@@ -140,7 +185,7 @@ const getCurrentWord = () => {
 
 // Handle letter input
 const addLetter = (letter) => {
-  if (isRevealing.value || gameStatus.value !== 'playing') return
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
   
   if (currentCol.value < WORD_LENGTH && currentRow.value < MAX_ATTEMPTS) {
     const cell = gameGrid.value[currentRow.value][currentCol.value]
@@ -158,7 +203,7 @@ const addLetter = (letter) => {
 
 // Handle backspace
 const removeLetter = () => {
-  if (isRevealing.value || gameStatus.value !== 'playing') return
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
   
   if (currentCol.value > 0) {
     currentCol.value--
@@ -168,17 +213,17 @@ const removeLetter = () => {
 
 // Check word and provide feedback
 const checkWord = () => {
-  if (isRevealing.value || gameStatus.value !== 'playing') return
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
   
   const currentWord = getCurrentWord()
-  
+
   if (currentWord.length !== WORD_LENGTH) {
     // Word is not complete
     return
   }
   
   const row = gameGrid.value[currentRow.value]
-  const targetLetters = TARGET_WORD.split('')
+  const targetLetters = TARGET_WORD.value.split('')
   const guessLetters = currentWord.split('')
   
   // First pass: mark correct letters
@@ -233,7 +278,7 @@ const checkWord = () => {
   setTimeout(() => {
     isRevealing.value = false // Allow input again
     
-    if (currentWord === TARGET_WORD) {
+    if (currentWord === TARGET_WORD.value) {
       gameStatus.value = 'won'
       showNotification('Congratulations! You won!', 'success')
       return
@@ -246,7 +291,7 @@ const checkWord = () => {
     // Check lose condition
     if (currentRow.value >= MAX_ATTEMPTS) {
       gameStatus.value = 'lost'
-      showNotification(`Game Over! The word was: ${TARGET_WORD}`, 'error')
+      showNotification(`Game Over! The word was: ${TARGET_WORD.value}`, 'error')
     }
   }, WORD_LENGTH * 400 + 100) // Wait for all animations to complete
 }
@@ -298,11 +343,9 @@ const handlePhysicalKeyPress = (event) => {
   }
 }
 
-// Add keyboard event listener
-import { onMounted, onUnmounted } from 'vue'
-
 onMounted(() => {
   window.addEventListener('keydown', handlePhysicalKeyPress)
+  fetchWordOfDay() // Load word when component mounts
 })
 
 onUnmounted(() => {
@@ -315,11 +358,21 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
-  padding: clamp(0.5rem, 2vw, 1rem);
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  gap: clamp(1rem, 3vh, 2rem);
+  justify-content: center;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: 1.2rem;
+  color: #fff;
 }
 
 .header {
@@ -335,12 +388,6 @@ onUnmounted(() => {
   font-size: 1.5rem;
 }
 
-.je {
-  background-color: #007acc;
-  color: white;
-  padding: 0.2rem 0.4rem;
-}
-
 h1 {
   font-size: 2rem;
   font-weight: bold;
@@ -351,8 +398,9 @@ h1 {
 .game-grid {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.2rem, 1vw, 0.4rem);
-  margin-bottom: clamp(1rem, 3vh, 2rem);
+  gap: clamp(0.2rem, 0.8vh, 0.4rem);
+  margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+  flex-shrink: 0;
 }
 
 .grid-row {
@@ -362,13 +410,13 @@ h1 {
 }
 
 .grid-cell {
-  width: clamp(45px, 12vw, 65px);
-  height: clamp(45px, 12vw, 65px);
+  width: clamp(40px, 10vw, 62px);
+  height: clamp(40px, 10vw, 62px);
   border: 2px solid #007acc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(0.9rem, 4vw, 1.2rem);
+  font-size: clamp(0.9rem, 3.5vw, 1.2rem);
   font-weight: bold;
   background-color: #404040;
   color: white;
@@ -406,10 +454,11 @@ h1 {
 .keyboard {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.3rem, 1vh, 0.6rem);
+  gap: clamp(0.25rem, 0.8vh, 0.5rem);
   width: 100%;
   max-width: min(500px, 95vw);
   padding: 0 clamp(0.5rem, 2vw, 1rem);
+  flex-shrink: 0;
 }
 
 .keyboard-row {
@@ -419,13 +468,13 @@ h1 {
 }
 
 .key {
-  min-width: clamp(28px, 8vw, 45px);
-  height: clamp(40px, 10vh, 58px);
+  min-width: clamp(26px, 7vw, 43px);
+  height: clamp(38px, 8vh, 54px);
   border: none;
   border-radius: 4px;
   background-color: #d81b60;
   color: white;
-  font-size: clamp(0.7rem, 3vw, 1rem);
+  font-size: clamp(0.65rem, 2.8vw, 0.95rem);
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -433,7 +482,7 @@ h1 {
   justify-content: center;
   transition: background-color 0.5s;
   flex: 1;
-  max-width: 45px;
+  max-width: 43px;
 }
 
 .key:hover {
@@ -523,16 +572,6 @@ h1 {
 
   .special-key {
     min-width: clamp(55px, 11vw, 68px);
-  }
-}
-
-@media (min-width: 769px) {
-  .wordle-page {
-    padding: clamp(1rem, 3vw, 2rem);
-  }
-
-  .keyboard {
-    max-width: 100%;
   }
 }
 
