@@ -97,18 +97,16 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import ToastNotification from '@/components/Squads/ToastNotification.vue'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
+import { useWordleStore } from '@/stores/WordleStore'
+
+const store = useWordleStore()
 
 // Game configuration - will be updated from API
 const TARGET_WORD = ref('')
 const MAX_ATTEMPTS = 6
 const WORD_LENGTH = 5
 const isLoading = ref(true)
-const hasPlayedToday = ref(false)
 
-// Game state
-const currentRow = ref(0)
-const currentCol = ref(0)
-const gameStatus = ref('playing') // 'playing', 'won', 'lost'
 const isRevealing = ref(false) // Prevents input during reveal animation
 
 // Toast notification state
@@ -116,31 +114,22 @@ const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-// Initialize game grid (6 rows x dynamic columns based on word length)
-const gameGrid = ref([])
-
-// Initialize grid with default size, will be updated when word is loaded
-const initializeGrid = (attempts = 6, wordLength = 5) => {
-  gameGrid.value = Array(attempts).fill().map(() => 
-    Array(wordLength).fill().map(() => ({
-      letter: '',
-      status: '', // 'correct', 'present', 'absent'
-      revealing: false,
-      bouncing: false
-    }))
-  )
-}
-
-// Initialize with default 5x6 grid
-initializeGrid()
+const gameGrid = computed(() => store.gameGrid)
+const currentRow = computed({
+  get: () => store.currentRow,
+  set: (val) => { store.currentRow = val }
+})
+const currentCol = computed({
+  get: () => store.currentCol,
+  set: (val) => { store.currentCol = val }
+})
+const keyStates = computed(() => store.keyStates)
+const gameStatus = computed(() => store.gameStatus)
 
 // Keyboard layout
 const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
 const secondRow = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
 const thirdRow = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-
-// Track keyboard key states
-const keyStates = ref({})
 
 // Show toast notification
 const showNotification = (message, type = 'success') => {
@@ -149,29 +138,46 @@ const showNotification = (message, type = 'success') => {
   showToast.value = true
 }
 
-// Fetch word of the day from API
 const fetchWordOfDay = async () => {
   try {
     isLoading.value = true
+    console.log('Fetching word of day...')
     const response = await axios.get(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-word-of-day`,
       { headers: authHeader() }
     )
-    
-    const data = response.data
-    TARGET_WORD.value = data.word
-    hasPlayedToday.value = data.has_played
+
+    console.log('Word received:', response.data.word)
+    TARGET_WORD.value = response.data.word
+
+    // Attempt to restore state
+    const restored = store.loadState()
+    console.log('State restored:', restored, 'Target word match:', store.targetWord === TARGET_WORD.value)
+
+    if (restored && store.targetWord === TARGET_WORD.value) {
+      console.log('Game status:', store.gameStatus)
+
+      if (store.gameStatus !== 'playing') {
+        showNotification('You have already played today! Come back tomorrow.', 'points')
+      }
+      
+      isLoading.value = false
+      console.log('Loading set to false (restored)')
+      return
+    }
+
+    // New day -> Initialize new game
+    console.log('Initializing new game...')
+    store.targetWord = TARGET_WORD.value
+    store.dateStamp = new Date().toISOString().slice(0, 10)
+    store.initGrid(MAX_ATTEMPTS, WORD_LENGTH)
+    store.saveState()
 
     isLoading.value = false
-    
-    if (hasPlayedToday.value) {
-      showNotification('You have already played today! Come back tomorrow.', 'points')
-      gameStatus.value = 'finished'
-    }
-    
-  } catch (error) {
-    console.error('Error fetching word of day:', error)
-    showNotification('Failed to load today\'s word. Please try again.', 'error')
+    console.log('Loading set to false (new game)')
+  } catch (err) {
+    console.error('Error fetching word:', err)
+    showNotification('Failed to load today\'s word.', 'error')
     isLoading.value = false
   }
 }
@@ -198,6 +204,7 @@ const addLetter = (letter) => {
     }, 200)
     
     currentCol.value++
+    store.saveState()
   }
 }
 
@@ -209,6 +216,8 @@ const removeLetter = () => {
     currentCol.value--
     gameGrid.value[currentRow.value][currentCol.value].letter = ''
   }
+
+  store.saveState()
 }
 
 // Check word and provide feedback
@@ -279,8 +288,9 @@ const checkWord = () => {
     isRevealing.value = false // Allow input again
     
     if (currentWord === TARGET_WORD.value) {
-      gameStatus.value = 'won'
+      store.gameStatus = 'won'
       showNotification('Congratulations! You won!', 'success')
+      store.saveState()
       return
     }
     
@@ -290,21 +300,26 @@ const checkWord = () => {
     
     // Check lose condition
     if (currentRow.value >= MAX_ATTEMPTS) {
-      gameStatus.value = 'lost'
+      store.gameStatus = 'lost'
       showNotification(`Game Over! The word was: ${TARGET_WORD.value}`, 'error')
     }
+    
+    // Save state AFTER updating row/col
+    store.saveState()
   }, WORD_LENGTH * 400 + 100) // Wait for all animations to complete
 }
 
+
 // Update keyboard key states
 const updateKeyState = (letter, status) => {
-  const currentState = keyStates.value[letter]
+  const currentState = store.keyStates[letter] // ← Changed to store.keyStates
   
   // Priority: correct > present > absent
   if (currentState === 'correct') return
   if (currentState === 'present' && status === 'absent') return
   
-  keyStates.value[letter] = status
+  store.keyStates[letter] = status // ← Changed to store.keyStates
+  store.saveState()
 }
 
 // Get keyboard key class
@@ -400,6 +415,7 @@ h1 {
   flex-direction: column;
   gap: clamp(0.2rem, 0.8vh, 0.4rem);
   margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+  margin-top: clamp(0.2rem, 1vh, 0.75rem);
   flex-shrink: 0;
 }
 
