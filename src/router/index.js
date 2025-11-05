@@ -67,6 +67,11 @@ const routes = [
     component: () => import('@/views/Shop.vue'),
   },
   {
+    path: '/connections',
+    name: 'Connections',
+    component: () => import('@/views/ConnectionsView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/home',
   },
