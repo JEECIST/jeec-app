@@ -1,56 +1,160 @@
 <template>
   <Transition name="slide" appear>
-    <div @click="isOpen = false" class="popup" v-if="isOpen">
-      <button class="close-button">&times;</button>
-      <h2>You still haven't added your CV!</h2>
-      <p>Upload now to get 300 points and get you closer to the JEECPOT</p>
+    <div v-if="isOpen" class="popup" @click="close">
+      <button class="close-button" @click.stop="close">&times;</button>
+
+      <div class="carousel" @click.stop>
+        <div class="slides" :style="{ transform: `translateX(-${current * 100}%)` }">
+          <div v-for="(s, i) in slides" :key="i" class="slide" :class="s.kind">
+            <h2 v-html="s.title"></h2>
+            <p v-html="s.text"></p>
+            <button class="cta" v-if="s.cta" @click="s.onClick()">{{ s.cta }}</button>
+          </div>
+        </div>
+
+        <div v-if="slides.length > 1" class="nav">
+          <button class="arrow left"  @click="prev" aria-label="Previous">&#10094;</button>
+          <button class="arrow right" @click="next" aria-label="Next">&#10095;</button>
+        </div>
+
+        <div v-if="slides.length > 1" class="dots">
+          <button
+            v-for="(s, i) in slides"
+            :key="`dot-${i}`"
+            :class="['dot', { active: i === current }]"
+            @click="go(i)"
+            :aria-label="`Go to slide ${i + 1}`"
+          />
+        </div>
+      </div>
     </div>
   </Transition>
 </template>
+
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import UserService from '@/services/user.service'
-
+import axios from 'axios'
+import authHeader from '@/services/auth-header'
+import { useRouter } from 'vue-router' 
+const router = useRouter()
 const isOpen = ref(false)
+const current = ref(0)
+const slides = ref([])
+let autoSlideTimer = null 
 
-onMounted(() => {
-  UserService.getUserStudent().then(
-    (response) => {
-      if (!response.data.data.uploaded_cv) {
-        //Bueda estupido o .data.data mas so assim funciona com o endpoint
-        isOpen.value = true
-      }
-    },
-    (error) => {
-      console.log(error)
-    },
-  )
+const close = () => {
+  isOpen.value = false
+  stopAutoSlide()
+}
+const next = () => (current.value = (current.value + 1) % slides.value.length)
+const prev = () => (current.value = (current.value - 1 + slides.value.length) % slides.value.length)
+const go = (i) => (current.value = i)
+
+const startAutoSlide = () => {
+  stopAutoSlide()
+  if (slides.value.length > 1) {
+    autoSlideTimer = setInterval(() => {
+      next()
+    }, 6000) //6 segundos
+  }
+}
+const stopAutoSlide = () => {
+  if (autoSlideTimer) {
+    clearInterval(autoSlideTimer)
+    autoSlideTimer = null
+  }
+}
+
+onBeforeUnmount(() => stopAutoSlide())
+
+watch(isOpen, (open) => {
+  if (open) startAutoSlide()
+  else stopAutoSlide()
+})
+
+onMounted(async () => {
+  try {
+    const res = await UserService.getUserStudent()
+    const s = res.data?.data ?? {}
+
+    const needsCv = s.uploaded_cv === false || s.uploaded_cv === undefined
+
+    let isSubscribed = s.is_subscribed
+    if (typeof isSubscribed === 'undefined') {
+      const base = import.meta.env.VITE_APP_JEEC_BRAIN_URL
+      const url = new URL('/push/is_subscribed', base).toString()
+      try {
+        const { data } = await axios.get(url, { headers: authHeader() })
+        isSubscribed = !!data?.subscribed
+      } catch {console.log("failed")}
+    }
+    const needsSub = isSubscribed === false || typeof isSubscribed === 'undefined'
+
+    slides.value = []
+    if (needsCv) {
+      slides.value.push({
+        kind: 'cv',
+        title: "You still haven't added your CV!",
+        text: "Upload now to get <b>300 points</b> and get you closer to the JEECPOT.",
+        cta: "Upload CV",
+        onClick: () => {
+          const el = document.getElementById('cvInput')
+          if (el) el.click()
+          isOpen.value = false
+          stopAutoSlide()
+          router.push('/profile') 
+        }
+      })
+    }
+
+    if (needsSub) {
+      slides.value.push({
+        kind: 'sub',
+        title: "Turn on the notifications!",
+        text: "Subscribe and get <b>X points</b> and don't miss any surprises.",
+        cta: "Turn on Notifications",
+        onClick: async () => {
+          try {
+            // logica para subscrever nas notificacoes 
+          } finally {
+            isOpen.value = false
+            stopAutoSlide()
+          }
+        }
+      })
+    }
+
+    if (slides.value.length > 0) {
+      isOpen.value = true
+      current.value = 0
+      startAutoSlide()
+    }
+  } catch (e) {
+    console.log(e)
+  }
 })
 </script>
+
 <style scoped>
 .popup {
   position: fixed;
   top: 70px;
   left: 50%;
-  translate: -50% 0;
+  transform: translateX(-50%);
   width: 100%;
   max-width: 900px;
-  background: rgb(255, 0, 0);
+  background: #1e1e2f;
   z-index: 100;
   border-radius: 25px;
-  border: 4px solid rgb(176, 0, 0);
+  border: 2px solid #199cff;
   text-align: center;
-  text-decoration: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  translate: translateY(0);
-  padding: 0.5rem 2ch;
-  cursor: pointer;
-}
-
-.popup h2 {
-  padding: 0.5rem;
+  padding: 0.75rem 2ch 1rem;
+  cursor: default;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+  color: #fff;
 }
 
 .close-button {
@@ -59,13 +163,97 @@ onMounted(() => {
   font-size: 2rem;
   line-height: 0.5;
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.35rem;
+  right: 0.6rem;
   cursor: pointer;
 }
 
-.close-button:hover {
-  scale: 1.1;
+.carousel {
+  overflow: hidden;
+  position: relative;
+}
+
+.slides {
+  display: flex;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.slide {
+  min-width: 100%;
+  padding: 1.5rem .5rem 1rem;
+  border-top: 3px solid #199cff;
+}
+
+.slide h2 {
+  margin: .25rem 0 .5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.slide p {
+  margin: 0 0 .9rem;
+  opacity: .9;
+}
+
+.cta {
+  background: #199cff;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: .55rem .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 3rem ;
+}
+
+.slide.cv .cta {
+  background: #ff6a6a;
+}
+
+.slide.sub .cta {
+  background: #199cff;
+}
+
+.nav .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(25, 156, 255, .12);
+  border: 1px solid rgba(25, 156, 255, .35);
+  color: #fff;
+  border-radius: 12px;
+  padding: .35rem .6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav .left {
+  left: .5rem;
+}
+
+.nav .right {
+  right: .5rem;
+}
+
+.dots {
+  margin-top: .5rem;
+  display: flex;
+  justify-content: center;
+  gap: .5rem;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ffffff55;
+  border: none;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #fff;
 }
 
 .slide-enter-active {
