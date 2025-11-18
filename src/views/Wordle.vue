@@ -148,7 +148,7 @@ const fetchWordOfDay = async () => {
     )
 
     console.log('Word received:', response.data.word)
-    TARGET_WORD.value = response.data.word
+    TARGET_WORD.value = response.data.word // Set target word
 
     // Attempt to restore state
     const restored = store.loadState()
