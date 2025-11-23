@@ -43,6 +43,10 @@
             <router-link to="/map">map</router-link>
             <div class="link-underline"></div>
           </li>
+          <li>
+            <router-link to="/wordle">wordle</router-link>
+            <div class="link-underline"></div>
+          </li>
         </ul>
         <div class="help-info">
           <router-link to="/help">

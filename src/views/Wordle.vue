@@ -4,6 +4,12 @@
     <div v-if="isLoading" class="loading">
       <p>Loading today's word...</p>
     </div>
+
+    <!-- Already Played Message -->
+    <div v-else-if="hasPlayedToday" class="already-played">
+      <h2>Come back tomorrow!</h2>
+      <p>You've already played today's Wordle.</p>
+    </div>
     
     <!-- Game Content -->
     <div v-else>
@@ -101,13 +107,15 @@ import { useWordleStore } from '@/stores/WordleStore'
 
 const store = useWordleStore()
 
-// Game configuration - will be updated from API
+// Game configuration
 const TARGET_WORD = ref('')
+const WORD_ID = ref(null) // Store word ID for API call
 const MAX_ATTEMPTS = 6
 const WORD_LENGTH = 5
 const isLoading = ref(true)
+const hasPlayedToday = ref(false) // Track if user already played
 
-const isRevealing = ref(false) // Prevents input during reveal animation
+const isRevealing = ref(false)
 
 // Toast notification state
 const showToast = ref(false)
@@ -147,8 +155,17 @@ const fetchWordOfDay = async () => {
       { headers: authHeader() }
     )
 
+    // Check if user already played
+    if (response.data.has_played) {
+      hasPlayedToday.value = true
+      showNotification('You have already played today! Come back tomorrow.', 'info')
+      isLoading.value = false
+      return
+    }
+
     console.log('Word received:', response.data.word)
-    TARGET_WORD.value = response.data.word // Set target word
+    TARGET_WORD.value = response.data.word
+    WORD_ID.value = response.data.word_id // Store word ID
 
     // Attempt to restore state
     const restored = store.loadState()
@@ -158,11 +175,11 @@ const fetchWordOfDay = async () => {
       console.log('Game status:', store.gameStatus)
 
       if (store.gameStatus !== 'playing') {
-        showNotification('You have already played today! Come back tomorrow.', 'points')
+        hasPlayedToday.value = true
+        showNotification('You have already played today! Come back tomorrow.', 'info')
       }
       
       isLoading.value = false
-      console.log('Loading set to false (restored)')
       return
     }
 
@@ -174,11 +191,46 @@ const fetchWordOfDay = async () => {
     store.saveState()
 
     isLoading.value = false
-    console.log('Loading set to false (new game)')
   } catch (err) {
     console.error('Error fetching word:', err)
-    showNotification('Failed to load today\'s word.', 'error')
+    if (err.response?.data?.has_played) {
+      hasPlayedToday.value = true
+      showNotification('You have already played today! Come back tomorrow.', 'info')
+    } else {
+      showNotification('Failed to load today\'s word.', 'error')
+    }
     isLoading.value = false
+  }
+}
+
+// Submit game result to backend
+const submitGameResult = async (won) => {
+  if (!WORD_ID.value) {
+    console.error('No word ID available')
+    return
+  }
+
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-finish`,
+      {
+        word_id: WORD_ID.value,
+        won: won
+      },
+      { headers: authHeader() }
+    )
+
+    if (response.data.points_awarded > 0) {
+      showNotification(`You earned ${response.data.points_awarded} points!`, 'success')
+    }
+  } catch (error) {
+    console.error('Error submitting game result:', error)
+    if (error.response?.status === 409) {
+      // Already submitted
+      console.log('Game already submitted')
+    } else {
+      showNotification('Failed to save game result', 'error')
+    }
   }
 }
 
@@ -191,14 +243,13 @@ const getCurrentWord = () => {
 
 // Handle letter input
 const addLetter = (letter) => {
-  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
   
   if (currentCol.value < WORD_LENGTH && currentRow.value < MAX_ATTEMPTS) {
     const cell = gameGrid.value[currentRow.value][currentCol.value]
     cell.letter = letter
     cell.bouncing = true
     
-    // Remove bounce class after animation completes
     setTimeout(() => {
       cell.bouncing = false
     }, 200)
@@ -210,7 +261,7 @@ const addLetter = (letter) => {
 
 // Handle backspace
 const removeLetter = () => {
-  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
   
   if (currentCol.value > 0) {
     currentCol.value--
@@ -221,13 +272,12 @@ const removeLetter = () => {
 }
 
 // Check word and provide feedback
-const checkWord = () => {
-  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value) return
+const checkWord = async () => {
+  if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
   
   const currentWord = getCurrentWord()
 
   if (currentWord.length !== WORD_LENGTH) {
-    // Word is not complete
     return
   }
   
@@ -276,21 +326,24 @@ const checkWord = () => {
       row[i].status = statuses[i]
       updateKeyState(keyUpdates[i].letter, keyUpdates[i].status)
       
-      // Remove revealing class after animation completes
       setTimeout(() => {
         row[i].revealing = false
       }, 600)
-    }, i * 400) // Stagger each cell by 400ms
+    }, i * 400)
   }
   
   // Check win/lose conditions after all animations complete
-  setTimeout(() => {
-    isRevealing.value = false // Allow input again
+  setTimeout(async () => {
+    isRevealing.value = false
     
     if (currentWord === TARGET_WORD.value) {
       store.gameStatus = 'won'
+      hasPlayedToday.value = true
       showNotification('Congratulations! You won!', 'success')
       store.saveState()
+      
+      // Submit win to backend
+      await submitGameResult(true)
       return
     }
     
@@ -301,24 +354,25 @@ const checkWord = () => {
     // Check lose condition
     if (currentRow.value >= MAX_ATTEMPTS) {
       store.gameStatus = 'lost'
+      hasPlayedToday.value = true
       showNotification(`Game Over! The word was: ${TARGET_WORD.value}`, 'error')
+      
+      // Submit loss to backend
+      await submitGameResult(false)
     }
     
-    // Save state AFTER updating row/col
     store.saveState()
-  }, WORD_LENGTH * 400 + 100) // Wait for all animations to complete
+  }, WORD_LENGTH * 400 + 100)
 }
-
 
 // Update keyboard key states
 const updateKeyState = (letter, status) => {
-  const currentState = store.keyStates[letter] // ← Changed to store.keyStates
+  const currentState = store.keyStates[letter]
   
-  // Priority: correct > present > absent
   if (currentState === 'correct') return
   if (currentState === 'present' && status === 'absent') return
   
-  store.keyStates[letter] = status // ← Changed to store.keyStates
+  store.keyStates[letter] = status
   store.saveState()
 }
 
@@ -334,7 +388,7 @@ const getKeyClass = (key) => {
 
 // Handle key press
 const handleKeyPress = (key) => {
-  if (gameStatus.value !== 'playing' || isRevealing.value) return
+  if (gameStatus.value !== 'playing' || isRevealing.value || hasPlayedToday.value) return
   
   if (key === 'ENTER') {
     checkWord()
@@ -360,7 +414,7 @@ const handlePhysicalKeyPress = (event) => {
 
 onMounted(() => {
   window.addEventListener('keydown', handlePhysicalKeyPress)
-  fetchWordOfDay() // Load word when component mounts
+  fetchWordOfDay()
 })
 
 onUnmounted(() => {
@@ -379,6 +433,27 @@ onUnmounted(() => {
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   justify-content: center;
+}
+
+.already-played {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+}
+
+.already-played h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.already-played p {
+  font-size: 1.2rem;
+  color: #c9b458;
 }
 
 .loading {
