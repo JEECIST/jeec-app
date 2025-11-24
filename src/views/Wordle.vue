@@ -165,7 +165,6 @@ const fetchWordOfDay = async () => {
 
     console.log('Word received:', response.data.word)
     TARGET_WORD.value = response.data.word
-    WORD_ID.value = response.data.word_id // Store word ID
 
     // Attempt to restore state
     const restored = store.loadState()
@@ -176,7 +175,6 @@ const fetchWordOfDay = async () => {
 
       if (store.gameStatus !== 'playing') {
         hasPlayedToday.value = true
-        showNotification('You have already played today! Come back tomorrow.', 'info')
       }
       
       isLoading.value = false
@@ -205,28 +203,22 @@ const fetchWordOfDay = async () => {
 
 // Submit game result to backend
 const submitGameResult = async (won) => {
-  if (!WORD_ID.value) {
-    console.error('No word ID available')
-    return
-  }
-
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-finish`,
       {
-        word_id: WORD_ID.value,
-        won: won
+        won: won  // Only send won status
       },
       { headers: authHeader() }
     )
 
     if (response.data.points_awarded > 0) {
-      showNotification(`You earned ${response.data.points_awarded} points!`, 'success')
+      showNotification(`Congrats! 
+      \n You earned ${response.data.points_awarded} points!`, 'success')
     }
   } catch (error) {
     console.error('Error submitting game result:', error)
     if (error.response?.status === 409) {
-      // Already submitted
       console.log('Game already submitted')
     } else {
       showNotification('Failed to save game result', 'error')
@@ -338,7 +330,7 @@ const checkWord = async () => {
     
     if (currentWord === TARGET_WORD.value) {
       store.gameStatus = 'won'
-      hasPlayedToday.value = true
+      // hasPlayedToday.value = true
       showNotification('Congratulations! You won!', 'success')
       store.saveState()
       
@@ -354,7 +346,7 @@ const checkWord = async () => {
     // Check lose condition
     if (currentRow.value >= MAX_ATTEMPTS) {
       store.gameStatus = 'lost'
-      hasPlayedToday.value = true
+      // hasPlayedToday.value = true
       showNotification(`Game Over! The word was: ${TARGET_WORD.value}`, 'error')
       
       // Submit loss to backend
@@ -453,7 +445,7 @@ onUnmounted(() => {
 
 .already-played p {
   font-size: 1.2rem;
-  color: #c9b458;
+  color: #007acc;
 }
 
 .loading {
