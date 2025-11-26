@@ -70,9 +70,9 @@ const routes = [
     path: '/wordle',
     name: 'Wordle',
     component: () => import('@/views/Wordle.vue'),
-    meta: {
-      userPopup: false,
-    },
+    // meta: {
+    //   userPopup: false,
+    // },
   }, 
   {
       path: '/:pathMatch(.*)*',

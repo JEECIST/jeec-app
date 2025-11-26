@@ -488,18 +488,18 @@ h1 {
 
 .grid-row {
   display: flex;
-  gap: clamp(0.2rem, 1vw, 0.4rem);
+  gap: clamp(0.3rem, 1.2vw, 0.5rem);
   justify-content: center;
 }
 
 .grid-cell {
-  width: clamp(40px, 10vw, 62px);
-  height: clamp(40px, 10vw, 62px);
+  width: clamp(45px, 12vw, 70px);
+  height: clamp(45px, 12vw, 70px);
   border: 2px solid #007acc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(0.9rem, 3.5vw, 1.2rem);
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
   font-weight: bold;
   background-color: #404040;
   color: white;
@@ -551,13 +551,13 @@ h1 {
 }
 
 .key {
-  min-width: clamp(26px, 7vw, 43px);
-  height: clamp(38px, 8vh, 54px);
+  min-width: clamp(30px, 8vw, 50px);
+  height: clamp(45px, 9vh, 62px);
   border: none;
   border-radius: 4px;
   background-color: #d81b60;
   color: white;
-  font-size: clamp(0.65rem, 2.8vw, 0.95rem);
+  font-size: clamp(0.75rem, 3vw, 1.1rem);
   font-weight: bold;
   cursor: pointer;
   display: flex;
@@ -565,7 +565,7 @@ h1 {
   justify-content: center;
   transition: background-color 0.5s;
   flex: 1;
-  max-width: 43px;
+  max-width: 50px;
 }
 
 .key:hover {
@@ -577,10 +577,10 @@ h1 {
 }
 
 .special-key {
-  min-width: clamp(50px, 12vw, 75px);
-  font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+  min-width: clamp(60px, 13vw, 85px);
+  font-size: clamp(0.7rem, 2.8vw, 0.95rem);
   flex: 1.5;
-  max-width: 75px;
+  max-width: 85px;
 }
 
 /* Keyboard key states */
@@ -608,22 +608,26 @@ h1 {
   }
 
   .keyboard-row {
-    gap: clamp(0.1rem, 0.5vw, 0.3rem);
+    gap: clamp(0.25rem, 1vw, 0.4rem);
   }
 
   .key {
-    min-width: clamp(24px, 7vw, 32px);
-    height: clamp(35px, 8vh, 45px);
-    font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+    min-width: clamp(24px, 7vw, 34px);
+    height: clamp(38px, 9vh, 50px);
+    font-size: clamp(0.65rem, 2.6vw, 0.85rem);
   }
 
   .special-key {
-    min-width: clamp(40px, 10vw, 55px);
-    font-size: clamp(0.5rem, 2vw, 0.7rem);
+    min-width: clamp(42px, 10vw, 56px);
+    font-size: clamp(0.55rem, 2vw, 0.75rem);
   }
 }
 
 @media (max-width: 320px) {
+  .keyboard-row {
+    gap: clamp(0.2rem, 0.8vw, 0.35rem);
+  }
+
   .grid-cell {
     width: clamp(35px, 15vw, 40px);
     height: clamp(35px, 15vw, 40px);
@@ -631,14 +635,14 @@ h1 {
   }
 
   .key {
-    min-width: clamp(20px, 6vw, 28px);
-    height: clamp(32px, 7vh, 40px);
-    font-size: clamp(0.5rem, 2vw, 0.7rem);
+    min-width: clamp(20px, 6.5vw, 28px);
+    height: clamp(34px, 7.5vh, 42px);
+    font-size: clamp(0.55rem, 2.2vw, 0.75rem);
   }
 
   .special-key {
-    min-width: clamp(35px, 8vw, 45px);
-    font-size: clamp(0.45rem, 1.8vw, 0.6rem);
+    min-width: clamp(36px, 8.5vw, 48px);
+    font-size: clamp(0.48rem, 1.9vw, 0.65rem);
   }
 }
 
@@ -649,12 +653,12 @@ h1 {
   }
 
   .key {
-    min-width: clamp(35px, 7vw, 42px);
-    height: clamp(45px, 9vh, 55px);
+    min-width: clamp(40px, 8vw, 48px);
+    height: clamp(50px, 10vh, 60px);
   }
 
   .special-key {
-    min-width: clamp(55px, 11vw, 68px);
+    min-width: clamp(62px, 12vw, 78px);
   }
 }
 
