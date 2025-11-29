@@ -37,6 +37,9 @@ import UserService from '@/services/user.service'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
 import { useRouter } from 'vue-router' 
+import { useUserStore } from '@/stores/UserStore'
+
+const userStore = useUserStore()
 const router = useRouter()
 const isOpen = ref(false)
 const current = ref(0)
@@ -73,6 +76,52 @@ watch(isOpen, (open) => {
   else stopAutoSlide()
 })
 
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+  }
+
+
+async function subscribe() {
+  if ("serviceWorker" in navigator && "PushManager" in window) {
+
+  const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "student/get_publickey", { 
+    headers:{
+      ...authHeader(),
+    }  
+   
+    })
+    const publicKey = response.data.publicKey;
+    const registration = await navigator.serviceWorker.register("/sw.js");
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("Permissão negada para notificações");
+      return;
+    }
+
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey:  urlBase64ToUint8Array(publicKey)
+    });
+    
+    const username = userStore.user.username
+    await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "student/push/subscribe", {subscription, username}, {
+      headers:{
+        ...authHeader(),
+      }  
+    });
+
+    alert("Subscreveste! Agora o backend pode enviar-te notificações.");
+  }
+}
+
 onMounted(async () => {
   try {
     const res = await UserService.getUserStudent()
@@ -80,48 +129,48 @@ onMounted(async () => {
 
     const needsCv = s.uploaded_cv === false || s.uploaded_cv === undefined
 
-    let isSubscribed = s.is_subscribed
-    if (typeof isSubscribed === 'undefined') {
-      const base = import.meta.env.VITE_APP_JEEC_BRAIN_URL
-      const url = new URL('/push/is_subscribed', base).toString()
-      try {
-        const { data } = await axios.get(url, { headers: authHeader() })
-        isSubscribed = !!data?.subscribed
-      } catch {console.log("failed")}
+    let isSubscribed = false
+    try {
+      const { data } = await UserService.getIsSubscribed()
+      isSubscribed = !!data?.subscribed
+    } catch (e) {
+      isSubscribed = false
     }
-    const needsSub = isSubscribed === false || typeof isSubscribed === 'undefined'
+
+    const needsSub = !isSubscribed
 
     slides.value = []
+
     if (needsCv) {
       slides.value.push({
         kind: 'cv',
         title: "You still haven't added your CV!",
         text: "Upload now to get <b>300 points</b> and get you closer to the JEECPOT.",
-        cta: "Upload CV",
+        cta: 'Upload CV',
         onClick: () => {
           const el = document.getElementById('cvInput')
           if (el) el.click()
           isOpen.value = false
           stopAutoSlide()
-          router.push('/profile') 
-        }
+          router.push('/profile')
+        },
       })
     }
 
     if (needsSub) {
       slides.value.push({
         kind: 'sub',
-        title: "Turn on the notifications!",
+        title: 'Turn on the notifications!',
         text: "Subscribe and get <b>X points</b> and don't miss any surprises.",
-        cta: "Turn on Notifications",
+        cta: 'Turn on Notifications',
         onClick: async () => {
           try {
-            // logica para subscrever nas notificacoes 
+            subscribe()
           } finally {
             isOpen.value = false
             stopAutoSlide()
           }
-        }
+        },
       })
     }
 
@@ -134,6 +183,7 @@ onMounted(async () => {
     console.log(e)
   }
 })
+
 </script>
 
 <style scoped>

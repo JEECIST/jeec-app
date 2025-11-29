@@ -330,6 +330,12 @@ class UserService {
       headers: authHeader(),
     })
   }
+
+  getIsSubscribed() {
+    return axios.get(jeec_brain_url + '/student/push/is_subscribed', {
+      headers: authHeader(),
+    })
+  }
 }
 
 export default new UserService()
