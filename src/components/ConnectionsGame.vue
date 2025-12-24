@@ -20,7 +20,7 @@
       <button @click="initializeGame">Play Again</button>
     </div>
 
-    <div v-if="gameStatus === 'playing'" class="word-grid">
+    <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
       <button
         v-for="word in activeWords"
         :key="word.text"
@@ -31,6 +31,7 @@
         {{ word.text }}
       </button>
     </div>
+
 
     <div v-if="gameStatus === 'playing'" class="mistakes">
       Mistakes remaining:
@@ -57,48 +58,69 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import axios from 'axios'
 
-const puzzleData = {
-  groups: {
-    group1: {
-      theme: "FRUITS",
-      words: ["APPLE", "BANANA", "CHERRY", "MANGO"],
-      color: "#4CC9F0", // Azul bem claro
-    },
-    group2: {
-      theme: "METALS",
-      words: ["GOLD", "SILVER", "IRON", "COPPER"],
-      color: "#4285F4", // Azul escuro
-    },
-    group3: {
-      theme: "PLANETS",
-      words: ["EARTH", "MARS", "JUPITER", "SATURN"],
-      color: "#FF006E", // Red
-    },
-    group4: {
-      theme: "CARD GAMES",
-      words: ["POKER", "BRIDGE", "GIN", "SOLITAIRE"],
-      color: "#FBBC05", // amarillo
-    },
-  },
-};
+const puzzleData = ref({ groups: {} })
 
-// ---------------------------------
-// 2. SET UP REACTIVE STATE
-// ---------------------------------
+function formatDateYYYYMMDD(d) {
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+}
 
-// Holds the words currently displayed in the 4x4 grid.
-// Each word is an object: { text: 'APPLE', group: 'group1', selected: false }
+// Toggle this while developing:
+const DEV_FORCE_DAY = "2025-05-05"  // set to null to use real today
+
+const event_days = ['2026-02-10', '2026-02-11', '2026-02-12', '2026-02-13', '2026-02-14']
+// Fetch prizes data from the backend
+async function fetchConnectionsForDay() {
+  const day = DEV_FORCE_DAY ?? formatDateYYYYMMDD(new Date())
+
+  const res = await axios.get(
+    import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + `/connections/day`,
+    { params: { day } }
+  )
+
+  // expected backend shape: [{ day, category, word }, ...]
+  const rows = res.data || []
+
+  // group by category
+  const byCategory = {}
+  for (const r of rows) {
+    if (!byCategory[r.category]) byCategory[r.category] = []
+    byCategory[r.category].push(r.word)
+  }
+
+  // build the groups object the game expects
+  const groups = {}
+  let i = 1
+  for (const [category, words] of Object.entries(byCategory)) {
+    groups[`group${i}`] = {
+      theme: category,
+      words,
+      color: "#4CC9F0", // you can map difficulty->color later
+    }
+    i++
+  }
+
+  puzzleData.value = { groups }
+}
+
+
 const activeWords = ref([]);
-
-// Holds the groups the player has successfully found.
 const foundGroups = ref([]);
-
-// Tracks remaining guesses.
 const mistakesRemaining = ref(4);
-
-// Tracks the game's current state: 'playing', 'won', 'lost'.
 const gameStatus = ref('playing');
+
+const isShaking = ref(false);
+
+function shakeGrid() {
+  isShaking.value = true;
+  setTimeout(() => {
+    isShaking.value = false;
+  }, 300); // duration matches CSS
+}
 
 // A utility function for shuffling an array (Fisher-Yates shuffle)
 function shuffle(array) {
@@ -112,39 +134,34 @@ function shuffle(array) {
   return array;
 }
 
-// ---------------------------------
-// 3. CORE GAME LOGIC
-// ---------------------------------
-
-// This function sets up the game.
 function initializeGame() {
-  // Reset all state variables
   foundGroups.value = [];
   mistakesRemaining.value = 4;
   gameStatus.value = 'playing';
   activeWords.value = [];
 
-  // "Flatten" the puzzle data into a single array of 16 word objects
   let allWords = [];
-  for (const groupId in puzzleData.groups) {
-    const group = puzzleData.groups[groupId];
+  for (const groupId in puzzleData.value.groups) {
+    const group = puzzleData.value.groups[groupId];
     group.words.forEach(wordText => {
       allWords.push({
         text: wordText,
         group: groupId,
-        selected: false, // Not selected by default
+        selected: false,
       });
     });
   }
 
-  // Shuffle the 16 words and assign them to our reactive grid
   activeWords.value = shuffle(allWords);
 }
 
+
 // Called when the component is first created.
-onMounted(() => {
-  initializeGame();
-});
+onMounted(async () => {
+  await fetchConnectionsForDay()
+  initializeGame()
+})
+
 
 // Computed property to get the currently selected words
 const selectedWords = computed(() => {
@@ -153,12 +170,9 @@ const selectedWords = computed(() => {
 
 // Handles clicking on a word in the grid
 function toggleWordSelect(word) {
-  // If 4 words are already selected, don't allow selecting a 5th
-  // unless we are deselecting one.
   if (selectedWords.value.length >= 4 && !word.selected) {
     return;
   }
-  // Toggle the 'selected' state of the clicked word
   word.selected = !word.selected;
 }
 
@@ -185,11 +199,8 @@ function submitSelection() {
   );
 
   if (isCorrectGroup) {
-    // --- CORRECT GUESS ---
-    // 1. Get the group details from our puzzle data
     const groupInfo = puzzleData.groups[firstGroup];
 
-    // 2. Add this group to the `foundGroups` array to display it
     foundGroups.value.push({
       theme: groupInfo.theme,
       words: groupInfo.words,
@@ -197,7 +208,6 @@ function submitSelection() {
     });
 
     // 3. Sort foundGroups by color (Yellow, Green, Blue, Purple)
-    // This is optional but matches the real game.
     const colorOrder = { "#f9df6d": 1, "#a0c35a": 2, "#b0c4ef": 3, "#d1a2dd": 4 };
     foundGroups.value.sort((a, b) => colorOrder[a.color] - colorOrder[b.color]);
 
@@ -215,20 +225,36 @@ function submitSelection() {
     // --- INCORRECT GUESS ---
     mistakesRemaining.value--;
 
-    // Optional: Add a "one away" message here
-
     // Check for lose condition
     if (mistakesRemaining.value === 0) {
       gameStatus.value = 'lost';
     }
 
     // You could add a 'shake' animation here before deselecting
-    deselectAll();
+    shakeGrid();
+    setTimeout(() => {
+      deselectAll();
+    }, 300);
+
   }
 }
 </script>
 
 <style>
+
+.word-grid.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-6px); }
+  80%  { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
 
 /* Basic styling to make it look good */
 .connections-game {
