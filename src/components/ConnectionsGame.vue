@@ -160,6 +160,7 @@ function initializeGame() {
 onMounted(async () => {
   await fetchConnectionsForDay()
   initializeGame()
+  console.log(puzzleData.value);
 })
 
 
@@ -199,7 +200,7 @@ function submitSelection() {
   );
 
   if (isCorrectGroup) {
-    const groupInfo = puzzleData.groups[firstGroup];
+    const groupInfo = puzzleData.value.groups[firstGroup];
 
     foundGroups.value.push({
       theme: groupInfo.theme,
