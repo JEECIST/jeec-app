@@ -67,7 +67,15 @@ const routes = [
     component: () => import('@/views/Shop.vue'),
   },
   {
-    path: '/:pathMatch(.*)*',
+    path: '/wordle',
+    name: 'Wordle',
+    component: () => import('@/views/Wordle.vue'),
+    // meta: {
+    //   userPopup: false,
+    // },
+  }, 
+  {
+      path: '/:pathMatch(.*)*',
     redirect: '/home',
   },
 ]

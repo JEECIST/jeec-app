@@ -44,6 +44,7 @@ export default {
   z-index: 1000;
   width: calc(100% - 20px);
   max-width: 400px;
+  text-align: center;
 }
 
 @keyframes slide-up {
