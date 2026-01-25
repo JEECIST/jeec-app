@@ -8,11 +8,11 @@
     <div class="login">
       <p>Login to our Webapp</p>
       <p>Stay tunned JEEC coming soon!</p>
-      <div class="button_wrapper">
+      <!-- <div class="button_wrapper">
         <GoogleLogin :callback="callback" />
-        <!-- <button @click="loginDev">Login DEV</button> -->
+        <button @click="loginDev">Login DEV</button>
         <p>v3.0</p>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
