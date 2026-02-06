@@ -3,12 +3,8 @@
     <h1>Connections-Style Game</h1>
 
     <div class="found-groups">
-      <div
-        v-for="group in foundGroups"
-        :key="group.theme"
-        class="found-group"
-        :style="{ backgroundColor: group.color }"
-      >
+      <div v-for="group in foundGroups" :key="group.theme" class="found-group"
+        :style="{ backgroundColor: group.color }">
         <strong>{{ group.theme }}</strong>
         <p>{{ group.words.join(', ') }}</p>
       </div>
@@ -21,13 +17,8 @@
     </div>
 
     <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
-      <button
-        v-for="word in activeWords"
-        :key="word.text"
-        class="word-item"
-        :class="{ 'selected': word.selected }"
-        @click="toggleWordSelect(word)"
-      >
+      <button v-for="word in activeWords" :key="word.text" class="word-item" :class="{ 'selected': word.selected }"
+        @click="toggleWordSelect(word)">
         {{ word.text }}
       </button>
     </div>
@@ -35,20 +26,13 @@
 
     <div v-if="gameStatus === 'playing'" class="mistakes">
       Mistakes remaining:
-      <span
-        v-for="n in mistakesRemaining"
-        :key="n"
-        class="mistake-dot"
-      >●</span>
+      <span v-for="n in mistakesRemaining" :key="n" class="mistake-dot">●</span>
     </div>
 
     <div v-if="gameStatus === 'playing'" class="controls">
       <button @click="shuffleActiveWords">Shuffle</button>
       <button @click="deselectAll">Deselect All</button>
-      <button
-        @click="submitSelection"
-        :disabled="selectedWords.length !== 4"
-      >
+      <button @click="submitSelection" :disabled="selectedWords.length !== 4">
         Submit
       </button>
     </div>
@@ -59,6 +43,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios'
+import authHeader from '@/services/auth-header'
 
 const puzzleData = ref({ groups: {} })
 
@@ -70,16 +55,19 @@ function formatDateYYYYMMDD(d) {
 }
 
 // Toggle this while developing:
-const DEV_FORCE_DAY = "2025-05-05"  // set to null to use real today
+const DEV_FORCE_DAY = null  // set to null to use real today
 
-const event_days = ['2026-02-10', '2026-02-11', '2026-02-12', '2026-02-13', '2026-02-14']
+// const event_days = ['2026-02-10', '2026-02-11', '2026-02-12', '2026-02-13', '2026-02-14']
 // Fetch prizes data from the backend
 async function fetchConnectionsForDay() {
   const day = DEV_FORCE_DAY ?? formatDateYYYYMMDD(new Date())
 
-  const res = await axios.get(
-    import.meta.env.VITE_APP_JEEC_BRAINSTUDENT_URL + `/connections/day`,
-    { params: { day } }
+  const res = await axios.post(
+    import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/connections/day',
+    { day: day },
+    {
+      headers: authHeader(),
+    },
   )
 
   // expected backend shape: [{ day, category, word }, ...]
@@ -160,7 +148,7 @@ function initializeGame() {
 onMounted(async () => {
   await fetchConnectionsForDay()
   initializeGame()
-  console.log(puzzleData.value);
+  // console.log(puzzleData.value);
 })
 
 
@@ -242,18 +230,34 @@ function submitSelection() {
 </script>
 
 <style>
-
 .word-grid.shake {
   animation: shake 0.3s ease-in-out;
 }
 
 @keyframes shake {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(-6px); }
-  40%  { transform: translateX(6px); }
-  60%  { transform: translateX(-6px); }
-  80%  { transform: translateX(6px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-6px);
+  }
+
+  40% {
+    transform: translateX(6px);
+  }
+
+  60% {
+    transform: translateX(-6px);
+  }
+
+  80% {
+    transform: translateX(6px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
 }
 
 
@@ -273,17 +277,20 @@ function submitSelection() {
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .found-group {
   border-radius: 8px;
   padding: 10px 15px;
   color: #121212;
   text-align: left;
 }
+
 .found-group strong {
   display: block;
   font-size: 1.1em;
   text-transform: uppercase;
 }
+
 .found-group p {
   margin: 4px 0 0;
   font-weight: 500;
@@ -293,9 +300,11 @@ function submitSelection() {
 .game-over-message {
   margin: 20px 0;
 }
+
 .game-over-message h2 {
   margin-bottom: 10px;
 }
+
 .game-over-message button {
   font-size: 1em;
   padding: 10px 15px;
@@ -309,6 +318,7 @@ function submitSelection() {
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .word-item {
   background-color: #535353;
   border: 3px solid #4CC9F0;
@@ -319,12 +329,14 @@ function submitSelection() {
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
-  height: 70px; /* Ensures consistent height */
+  height: 70px;
+  /* Ensures consistent height */
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.1s ease-in-out;
 }
+
 .word-item.selected {
   /* Style for a selected word */
   background-color: #e9dada;
@@ -337,6 +349,7 @@ function submitSelection() {
   font-size: 1.1em;
   margin-bottom: 20px;
 }
+
 .mistake-dot {
   color: #5a5a5a;
   font-size: 1.5em;
@@ -349,6 +362,7 @@ function submitSelection() {
   justify-content: center;
   gap: 10px;
 }
+
 .controls button {
   background-color: beige;
   border: 2px solid #5a5a5a;
@@ -359,12 +373,14 @@ function submitSelection() {
   cursor: pointer;
   color: black;
 }
+
 .controls button:disabled {
   background-color: #efefef;
   border-color: #ccc;
   color: #999;
   cursor: not-allowed;
 }
+
 .controls button:not(:disabled):hover {
   background-color: beige;
   color: black;
