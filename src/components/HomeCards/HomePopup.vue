@@ -85,8 +85,7 @@ function urlBase64ToUint8Array(base64String) {
 
 async function subscribe() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
-    // const vapid_public_key = import.meta.env.VITE_APP_VAPID_PUBLIC_KEY;
-    const vapid_public_key = "BHpgRVgHdy-8wN5ZRoqYt0CUj4k8Wxwad0ogZx6sgXAkLalDHFnXFYW3iC07nofL4RrdYtyV_7A7qe-rRsWv-sM";
+    const vapid_public_key = import.meta.env.VITE_APP_VAPID_PUBLIC_KEY;
     const registration = await navigator.serviceWorker.register("/sw.js");
 
     const permission = await Notification.requestPermission();
@@ -95,17 +94,10 @@ async function subscribe() {
       return;
     }
 
-    console.log("alguma coisa")
-    console.log(vapid_public_key)
-
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapid_public_key)
     });
-
-    console.log("teste")
-
-    console.log("subsc", subscription)
 
     const username = userStore.user.username
     await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/student/push/subscribe", { subscription, username }, {
