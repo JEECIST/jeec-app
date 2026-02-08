@@ -13,18 +13,13 @@
         </div>
 
         <div v-if="slides.length > 1" class="nav">
-          <button class="arrow left"  @click="prev" aria-label="Previous">&#10094;</button>
+          <button class="arrow left" @click="prev" aria-label="Previous">&#10094;</button>
           <button class="arrow right" @click="next" aria-label="Next">&#10095;</button>
         </div>
 
         <div v-if="slides.length > 1" class="dots">
-          <button
-            v-for="(s, i) in slides"
-            :key="`dot-${i}`"
-            :class="['dot', { active: i === current }]"
-            @click="go(i)"
-            :aria-label="`Go to slide ${i + 1}`"
-          />
+          <button v-for="(s, i) in slides" :key="`dot-${i}`" :class="['dot', { active: i === current }]" @click="go(i)"
+            :aria-label="`Go to slide ${i + 1}`" />
         </div>
       </div>
     </div>
@@ -36,7 +31,7 @@ import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 import UserService from '@/services/user.service'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
-import { useRouter } from 'vue-router' 
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
 
 const userStore = useUserStore()
@@ -44,7 +39,7 @@ const router = useRouter()
 const isOpen = ref(false)
 const current = ref(0)
 const slides = ref([])
-let autoSlideTimer = null 
+let autoSlideTimer = null
 
 const close = () => {
   isOpen.value = false
@@ -80,24 +75,17 @@ watch(isOpen, (open) => {
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-  }
+}
 
 
 async function subscribe() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
-
-  const response = await axios.get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "student/get_publickey", { 
-    headers:{
-      ...authHeader(),
-    }  
-   
-    })
-    const publicKey = response.data.publicKey;
+    const vapid_public_key = import.meta.env.VITE_APP_VAPID_PUBLIC_KEY;
     const registration = await navigator.serviceWorker.register("/sw.js");
 
     const permission = await Notification.requestPermission();
@@ -106,16 +94,23 @@ async function subscribe() {
       return;
     }
 
+    console.log("alguma coisa")
+    console.log(vapid_public_key)
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey:  urlBase64ToUint8Array(publicKey)
+      applicationServerKey: urlBase64ToUint8Array(vapid_public_key)
     });
-    
+
+    console.log("teste")
+
+    console.log("subsc", subscription)
+
     const username = userStore.user.username
-    await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "student/push/subscribe", {subscription, username}, {
-      headers:{
+    await axios.post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + "/student/push/subscribe", { subscription, username }, {
+      headers: {
         ...authHeader(),
-      }  
+      }
     });
 
     alert("Subscreveste! Agora o backend pode enviar-te notificações.");
@@ -254,7 +249,7 @@ onMounted(async () => {
   padding: .55rem .9rem;
   font-weight: 700;
   cursor: pointer;
-  min-height: 3rem ;
+  min-height: 3rem;
 }
 
 .slide.cv .cta {
