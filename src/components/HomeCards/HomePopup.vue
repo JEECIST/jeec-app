@@ -85,7 +85,8 @@ function urlBase64ToUint8Array(base64String) {
 
 async function subscribe() {
   if ("serviceWorker" in navigator && "PushManager" in window) {
-    const vapid_public_key = import.meta.env.VITE_APP_VAPID_PUBLIC_KEY;
+    // const vapid_public_key = import.meta.env.VITE_APP_VAPID_PUBLIC_KEY;
+    const vapid_public_key = "BHpgRVgHdy-8wN5ZRoqYt0CUj4k8Wxwad0ogZx6sgXAkLalDHFnXFYW3iC07nofL4RrdYtyV_7A7qe-rRsWv-sM";
     const registration = await navigator.serviceWorker.register("/sw.js");
 
     const permission = await Notification.requestPermission();
