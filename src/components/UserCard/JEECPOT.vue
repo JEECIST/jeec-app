@@ -109,7 +109,7 @@ p {
 
 .points {
   width: 90%;
-  height: 22px;
+  height: 25px;
   overflow: hidden;
 
   position: relative;
