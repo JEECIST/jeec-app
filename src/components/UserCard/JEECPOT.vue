@@ -106,19 +106,52 @@ p {
 .wrapper.profile > .points {
   height: 23px;
 }
+
 .points {
   width: 90%;
   height: 22px;
   overflow: hidden;
-  background: linear-gradient(0deg, rgba(25, 156, 255, 0.1), rgba(25, 156, 255, 0.1)), #1f1f1f;
-  --border-background: #199cff;
-  --border-width: 1.5px;
-  --border-radius: 50px;
+
+  position: relative;
+  border-radius: 999px;
+
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.04) 40%, rgba(0,0,0,0.10) 100%),
+    rgba(10, 18, 28, 0.55);
+
+  --border-width: 0px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.35),          
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),  
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),       
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  
 }
+
+.points::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 3px;
+  height: 40%;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.00)
+  );
+
+  pointer-events: none;
+}
+
 .progress {
   overflow: hidden;
 }
