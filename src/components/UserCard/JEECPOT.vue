@@ -133,8 +133,8 @@ p {
 .points-total {
   position: absolute;
   top: 50%;
-  left: 10px;          /* 👈 move to left */
-  right: auto;         /* 👈 ensure it’s not constrained by right */
+  left: 10px;         
+  right: auto;        
   transform: translateY(-50%);
   z-index: 2;
   padding: 0;
