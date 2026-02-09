@@ -3,19 +3,16 @@
     <div class="points radient-border-passthrough">
       <div
         class="progress radient-border-passthrough_child"
-        :style="'--progress:' + progress + '%;'"
+        :style="'--progress:' + test + '%;'"
       ></div>
       <div
         class="progress-fill"
         :style="{
-          '--progress': progress + '%',
-          ...(progress < 100 && {
-            'clip-path': 'polygon(10% 0%, 100% 0%, 100% 100%, 5% 100%)',
-          }),
+          '--progress': test + '%',
         }"
       ></div>
-      <p v-if="progress >= 100" class="points-total">Eligible!</p>
-      <p v-else class="points-total">{{ progress }}%</p>
+      <p v-if="test >= 100" class="points-total">Eligible!</p>
+      <p v-else class="points-total">{{ test }}%</p>
     </div>
   </div>
 </template>
@@ -27,6 +24,7 @@ const userStore = useUserStore()
 const props = defineProps(['variant'])
 
 const progress = ref(0)
+const test = 40
 
 function getProgress() {
   const userTotalPoints = userStore.userPoints.total_points
@@ -66,11 +64,11 @@ onMounted(() => {
   font-family: 'Lexend Exa';
   width: 100%;
   /* height: 100%; */
-  text-align: right;
+  text-align: left;
   padding-top: 5px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   padding: auto;
   gap: 3px;
@@ -110,15 +108,16 @@ p {
 }
 .points {
   width: 90%;
-  height: 16px;
+  height: 22px;
   overflow: hidden;
   background: linear-gradient(0deg, rgba(25, 156, 255, 0.1), rgba(25, 156, 255, 0.1)), #1f1f1f;
   --border-background: #199cff;
   --border-width: 1.5px;
   --border-radius: 50px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
+  
 }
 .progress {
   overflow: hidden;
@@ -128,6 +127,7 @@ p {
   height: calc(100% - var(--border-width));
   background-color: var(--color-jeec-blue);
   transition: width 0.3s ease-in-out;
+  border-radius: 999px;
 }
 
 .points-total {
