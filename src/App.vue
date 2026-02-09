@@ -1,12 +1,9 @@
 <template>
   <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader>
   <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
-  <TheUserInfo
-    v-if="userPopup"
-    :inert="stateStore.navOpen || stateStore.qrCodeOpen"
-    variant="home"
-  ></TheUserInfo>
+  <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>
+  <Loading />
   <main :inert="stateStore.navOpen || stateStore.qrCodeOpen">
     <router-view />
   </main>
@@ -17,6 +14,7 @@ import TheHeader from './components/TheHeader.vue'
 import TheHiddenHeader from './components/TheHiddenHeader.vue'
 import TheUserInfo from './components/UserCard/TheUserInfo.vue'
 import TheQrCodePopup from './components/QrCode/TheQrCodePopup.vue'
+import Loading from './components/Loading.vue'
 
 import { useStateStore } from '@/stores/StateStore'
 import { useUserStore } from '@/stores/UserStore'
@@ -37,6 +35,7 @@ watch(
   () => {
     if (userStore.loggedIn) {
       gettersStatic()
+      // userStore.logOut() //remover para prod
     }
   },
 )

@@ -67,12 +67,24 @@ const routes = [
     component: () => import('@/views/Shop.vue'),
   },
   {
+<<<<<<< HEAD
     path: '/connections',
     name: 'Connections',
     component: () => import('@/views/ConnectionsView.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
+=======
+    path: '/wordle',
+    name: 'Wordle',
+    component: () => import('@/views/Wordle.vue'),
+    // meta: {
+    //   userPopup: false,
+    // },
+  }, 
+  {
+      path: '/:pathMatch(.*)*',
+>>>>>>> 3092703cbe7e229a11b373434dddcaa588015b7b
     redirect: '/home',
   },
 ]
