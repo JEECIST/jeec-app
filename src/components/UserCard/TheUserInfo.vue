@@ -1,34 +1,55 @@
 <template>
   <div :class="[variant, { 'radient-border-passthrough': variant != 'nav' }]" class="user-card">
-    <div class="help-info" v-if="variant == 'home'">
-      <router-link to="/help">
-        <img src="@/assets/help-info.svg" aria-hidden="true" />
-      </router-link>
-    </div>
-    <div class="name-wrapper" v-if="variant != 'home'">
+    <div class="name-wrapper" v-if="variant != 'profile'">
       <p>{{ userStore.user.name }}</p>
-      <p v-if="variant == 'profile'" class="username">{{ userStore.user.username }}</p>
     </div>
-    <div class="qr-wrapper" v-if="variant == 'home'">
-      <QrCodeButton></QrCodeButton>
+
+    <div class="name-wrapper" v-else>
+      <p>{{ userStore.user.name }}</p>
+      <p class="username">{{ userStore.user.username }}</p>
     </div>
+
+    <div class="logo-wrapper" v-if="variant === 'home'">
+      <img alt="JEEC" class="jeec-logo" src="@/assets/jeec_logo_darkmode.svg" />
+    </div>
+
     <div class="tickets-wrapper">
       <CurrentPoints :variant="variant"></CurrentPoints>
     </div>
+
     <div class="points-wrapper">
       <JEECPOT :variant="variant"></JEECPOT>
     </div>
-    <div class="user-wrapper">
+
+    <button v-if="variant === 'home'" class="notif-wrapper" type="button" aria-label="Notificações">
+      <span class="notif-dot" aria-hidden="true"></span>
+
+      <svg
+        class="notif-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2Zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+
+    <div class="user-wrapper" v-else>
       <UserImage :image="userStore.user.picture" :variant="variant"></UserImage>
     </div>
+
     <div class="text-points-wrapper" v-if="variant == 'profile'">
       <p>Total Points: {{ userStore.userPoints.total_points }}</p>
       <p>JEECPOT Chances: {{ userStore.userPoints.jeecpot }}</p>
     </div>
   </div>
 </template>
+
 <script setup>
-import QrCodeButton from './QrCodeButton.vue'
 import CurrentPoints from './CurrentPoints.vue'
 import JEECPOT from './JEECPOT.vue'
 import UserImage from './UserImage.vue'
@@ -38,230 +59,172 @@ const userStore = useUserStore()
 
 import { defineProps } from 'vue'
 
-const props = defineProps({
+defineProps({
   variant: {
     default: 'nav',
   },
 })
 </script>
+
 <style scoped>
-.help-info {
-  position: absolute;
-  bottom: calc(var(--height));
-  padding: 5px;
-  z-index: 50;
-}
-.help-info a {
-  display: block; /* Ensure the link takes up the full area */
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(10px); /* Apply blur effect directly to the image */
-  -webkit-backdrop-filter: blur(10px); /* Add webkit prefix for Safari support */
-  background: rgba(25, 156, 255, 0.1);
-  border-radius: 50%; /* Ensure the background has 50% border radius */
-}
-
-.help-info img {
-  display: block; /* Ensure the image doesn't interfere with the layout */
-}
-
 .user-card.home {
-  --background: #199cff1a;
-  --border-background: #199cff;
-  --height: 80px;
+  --height: 110px;
 
-  --border-radius: 45px;
-  --border-width: 1.5px;
+  position: relative;
+  top: auto;
+  right: auto;
+  bottom: auto;
 
-  grid-template-areas:
-    'qr tickets user'
-    'qr points user';
-  grid-template-rows: min-content 1fr;
-  grid-template-columns: var(--height) 1fr var(--height);
-  position: fixed;
-  bottom: 10px;
-  width: calc(100% - 20px);
-  right: 10px;
-  height: var(--height);
-  max-width: 450px;
-  z-index: 50;
+  width: 100%;
+  max-width: none;
+
+  z-index: auto;
+  margin: 10px 0;
+
+  background: radial-gradient(120% 180% at 0% 0%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0) 100%),
+              linear-gradient(180deg, rgba(8,14,22,0.92) 0%, rgba(5,10,18,0.92) 100%);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+
   backdrop-filter: blur(10px);
-  /* Note: backdrop-filter has minimal browser support */
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 43px;
-  justify-content: center;
-  box-sizing: border-box; /* Include padding in the element's dimensions */
+
+  display: grid;
+  grid-template-areas:
+    "name  logo"
+    "tickets notif"
+    "points notif";
+
+  grid-template-columns: 1fr 96px;
+  grid-template-rows: 28px 1fr 1fr;
+  padding: 14px 16px;
+
+  box-sizing: border-box;
+  gap: 10px;
 }
 
-.user-card.home::before {
-  content: '';
+.user-card.home > .name-wrapper {
+  grid-area: name;
+  text-align: left;
+  align-self: start;
+  justify-self: start;
 }
 
-.user-card.home > .qr-wrapper {
-  padding: 5px;
+.user-card.home > .name-wrapper p {
+  font-family: "Lexend Exa";
+  font-weight: 400;
+  letter-spacing: 1px;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  margin: 0;
+  color: rgba(255,255,255,0.92);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logo-wrapper {
+  grid-area: logo;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  align-self: start;
+  justify-self: end;
+}
+
+.jeec-logo {
+  height: 3rem;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.logo-text {
+  font-family: "Lexend Exa";
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 2rem;
+  color: rgba(255,255,255,0.92);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.logo-accent {
+  color: #1a9cd8;
 }
 
 .user-card.home > .tickets-wrapper {
-  padding-right: 5px;
+  grid-area: tickets;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  justify-self: start;
+  margin: 0;
+  padding: 0;
+}
+
+.user-card.home > .tickets-wrapper :deep(*) {
+  border-radius: 999px;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 .user-card.home > .points-wrapper {
-  padding-right: 5px;
-}
-
-.user-card.home > .user-wrapper {
-  padding: 5px;
-}
-
-.user-card.nav {
-  grid-template-areas:
-    'name name'
-    'tickets user'
-    'points user';
-  grid-template-rows: min-content 1fr 1fr;
-  grid-template-columns: 1fr 80px;
-  width: 100%;
-  height: 150px;
-  padding-right: 1rem;
-  padding-left: clamp(10px, 5vw, 70px);
-}
-
-.user-card.nav > .name-wrapper p {
-  font-family: 'Lexend Exa';
-  font-weight: 500;
-  font-size: 1.6rem;
-  padding-bottom: 0.5rem;
-}
-
-.user-card.nav > .qr-wrapper {
-  padding: 17px;
-}
-
-.user-card.nav > .tickets-wrapper {
-  padding-right: 5px;
-  padding-left: 10%;
-}
-
-.user-card.nav > .points-wrapper {
-  padding-right: 5px;
-}
-
-.user-card.nav > .user-wrapper {
-  padding: 8px;
-}
-
-.user-card.profile {
-  --border-radius: 45px;
-  --border-width: 2px;
-
-  grid-template-areas:
-    'name user'
-    'tickets user'
-    'points points'
-    'tpoints tpoints';
-  grid-template-rows: min-content min-content min-content 1fr;
-  grid-template-columns: 1fr min-content;
-
-  padding: 1rem 0 1rem 2rem;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-@media screen and (max-width: 600px) {
-  .user-card.profile {
-    grid-template-areas:
-      'name user'
-      'tickets tickets'
-      'points points'
-      'tpoints tpoints';
-  }
-  .user-card.profile > .tickets-wrapper {
-    margin-right: 3rem !important;
-  }
-}
-
-.user-card.profile::before {
-  content: '';
-}
-
-.user-card.profile > .name-wrapper {
-  height: 100%;
-}
-
-.user-card.profile > .name-wrapper p:first-child {
-  font-family: 'Lexend Exa';
-  letter-spacing: 2px;
-  font-size: clamp(1.2rem, 6vw, 2rem);
-  text-align: start;
-  padding-right: 2ch;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.user-card.profile > .name-wrapper .username {
-  font-size: clamp(0.9rem, 4vw, 1.1rem);
-  text-align: left;
-  padding-left: 0.3rem;
-  color: #1a9cd8;
-  padding-bottom: 0.5rem;
-}
-
-.user-card.profile > .tickets-wrapper {
-  margin-right: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.user-card.profile > .user-wrapper {
-  position: relative;
-  margin-right: 1rem;
-  width: max-content;
-  aspect-ratio: 1;
-  max-width: calc(100% - 1rem);
-  display: flex;
-}
-
-.user-card.profile > .points-wrapper {
-  margin-right: 3rem;
-  margin-bottom: 0.2rem;
-}
-
-.user-card.profile > .text-points-wrapper p {
-  padding-top: 0.3rem;
-  font-family: 'Lexend Exa';
-  letter-spacing: 1px;
-  padding-left: 1ch;
-  font-size: clamp(1rem, 4.5vw, 1.2rem);
-}
-
-.user-card {
-  display: grid;
-}
-
-.name-wrapper {
-  grid-area: name;
-  text-align: right;
-}
-
-.qr-wrapper {
-  grid-area: qr;
-}
-
-.tickets-wrapper {
-  grid-area: tickets;
-}
-
-.points-wrapper {
   grid-area: points;
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+  align-self: start;
+  justify-self: start;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  width: 100%;
+  max-width: 360px;
 }
 
-.user-wrapper {
-  grid-area: user;
+.user-card.home > .points-wrapper :deep(*) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
-.text-points-wrapper {
-  grid-area: tpoints;
+.notif-wrapper {
+  grid-area: notif;
+  grid-row: 2 / 4;
+  align-self: center;
+  justify-self: end;
+  margin: 0;
+  margin-top: 30px;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.18);
+  background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 55%, rgba(0,0,0,0) 100%);
+
+  display: grid;
+  place-items: center;
+
+  position: relative;
+  cursor: pointer;
+}
+
+.notif-icon {
+  width: 26px;
+  height: 26px;
+  color: rgba(255,255,255,0.9);
+}
+
+.notif-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #33e08a;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
 }
 
 @media screen and (max-width: 850px) {
