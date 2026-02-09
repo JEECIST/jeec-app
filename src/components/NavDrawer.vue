@@ -11,7 +11,7 @@
       <nav>
         <ul>
           <li>
-            <router-link to="/home">Game</router-link>
+            <router-link to="/home">Games</router-link>
           </li>
           <li>
             <router-link to="/profile">Store</router-link>
@@ -27,10 +27,6 @@
           </li>
           <li>
             <router-link to="/shop">Ranking</router-link>
-          </li>
-          <li>
-            <router-link to="/wordle">wordle</router-link>
-            <div class="link-underline"></div>
           </li>
         </ul>
         <div class="help-info">
