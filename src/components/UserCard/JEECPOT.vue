@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper" :class="variant">
-    <p class="chances">JEECPOT chances</p>
     <div class="points radient-border-passthrough">
       <div
         class="progress radient-border-passthrough_child"
@@ -134,8 +133,11 @@ p {
 .points-total {
   position: absolute;
   top: 50%;
-  translate: 0 -50%;
-  padding-right: 1ch;
+  left: 10px;          /* 👈 move to left */
+  right: auto;         /* 👈 ensure it’s not constrained by right */
+  transform: translateY(-50%);
   z-index: 2;
+  padding: 0;
+  margin: 0;
 }
 </style>
