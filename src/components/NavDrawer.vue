@@ -56,7 +56,7 @@ const userStore = useUserStore()
   width: 100%;
   height: 100svh;
   visibility: hidden;
-  z-index: 101;
+  z-index: 2001;
   overflow: hidden;
 }
 

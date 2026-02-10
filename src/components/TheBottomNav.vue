@@ -6,16 +6,30 @@
       class="nav-btn"
       :class="{ center: item.center, active: isActive(item) }"
       type="button"
-      :aria-current="isActive(item) ? 'page' : undefined"
-      @click="go(item)"
+      :aria-current="item.to && isActive(item) ? 'page' : undefined"
+      :aria-expanded="item.action === 'drawer' ? stateStore.navOpen : undefined"
+      :aria-controls="item.action === 'drawer' ? 'nav-drawer' : undefined"
+      @click="item.center ? undefined : go(item)"
     >
-      <img :src="item.icon" :alt="item.label" />
+      <div v-if="item.center" class="qr-hang">
+        <QrCodeButton class="qr-pop" />
+      </div>
+
+      <img v-else class="nav-icon" :src="item.icon" :alt="item.label" />
     </button>
   </nav>
+
+  <NavDrawer />
 </template>
 
+
 <script setup>
+import { onBeforeUnmount, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useStateStore } from "@/stores/StateStore"
+
+import NavDrawer from "@/components/NavDrawer.vue"
+import QrCodeButton from "@/components/UserCard/QrCodeButton.vue"
 
 import homeIcon from "@/assets/home.svg"
 import profileIcon from "@/assets/user.svg"
@@ -25,80 +39,48 @@ import menuIcon from "@/assets/hamburger.svg"
 
 const route = useRoute()
 const router = useRouter()
+const stateStore = useStateStore()
 
-/**
- * IMPORTANT:
- * - `matchNames` are the route.name values that should light this tab.
- * - `to` is where clicking goes (by name if possible, else by path).
- *
- * Adjust matchNames/to to YOUR existing route names/paths.
- */
 const items = [
-  {
-    key: "home",
-    label: "Home",
-    icon: homeIcon,
-    matchNames: ["Home", "home", "HomeView"],
-    to: { name: "Home" },
-  },
-  {
-    key: "profile",
-    label: "Profile",
-    icon: profileIcon,
-    matchNames: ["Profile", "profile", "User", "Account"],
-    to: { name: "Profile" },
-  },
-  {
-    key: "scan",
-    label: "Scan",
-    icon: scanIcon,
-    center: true,
-    matchNames: ["Scan", "QR", "Qr", "QrCode"],
-    to: { name: "Scan" },
-  },
-  {
-    key: "map",
-    label: "Map",
-    icon: mapIcon,
-    matchNames: ["Map", "map"],
-    to: { name: "Map" },
-  },
-  {
-    key: "menu",
-    label: "Menu",
-    icon: menuIcon,
-    matchNames: ["Menu", "menu"],
-    to: { name: "Menu" },
+  { key: "home", label: "Home", icon: homeIcon, matchNames: ["Home", "home", "HomeView"], to: { name: "Home" } },
+  { key: "profile", label: "Profile", icon: profileIcon, matchNames: ["Profile", "profile", "User", "Account"], to: { name: "Profile" } },
 
-  },
+  // This becomes the hanging QR button. The popup behavior comes from QrCodeButton.
+  { key: "scan", label: "Scan", center: true, matchNames: ["Scan", "QR", "Qr", "QrCode"], to: { name: "Scan" } },
+
+  { key: "map", label: "JEEC Fair Map", icon: mapIcon, matchNames: ["Map", "map", "JEEC Fair Map"], to: { name: "JEEC Fair Map" } },
+  { key: "menu", label: "Menu", icon: menuIcon, action: "drawer" },
 ]
 
 function isActive(item) {
-  // 1) Prefer route.name matching (most stable given your App.vue)
+  if (item.action === "drawer") return stateStore.navOpen
   const currentName = route.name != null ? String(route.name) : ""
-  if (item.matchNames && item.matchNames.includes(currentName)) return true
-
-  // 2) Fallback: path prefix matching if you uncomment fallbackPath
-  if (item.fallbackPath && route.path && route.path.startsWith(item.fallbackPath)) return true
-
+  if (item.matchNames?.includes(currentName)) return true
+  if (item.fallbackPath && route.path?.startsWith(item.fallbackPath)) return true
   return false
 }
 
 function go(item) {
-  if (isActive(item)) return
-
-  // Try navigation by name first (no router changes needed)
-  if (item.to?.name) {
-    router.push(item.to).catch(() => {})
+  if (item.action === "drawer") {
+    stateStore.navOpen = !stateStore.navOpen
     return
   }
 
-  // Optional fallback by path (if you set fallbackPath)
-  if (item.fallbackPath) {
-    router.push(item.fallbackPath).catch(() => {})
-  }
+  if (stateStore.navOpen) stateStore.navOpen = false
+  if (isActive(item)) return
+
+  if (item.to?.name) router.push(item.to).catch(() => {})
+  else if (item.fallbackPath) router.push(item.fallbackPath).catch(() => {})
 }
+
+function onKeydown(e) {
+  if (e.key === "Escape" && stateStore.navOpen) stateStore.navOpen = false
+}
+
+onMounted(() => window.addEventListener("keydown", onKeydown))
+onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
 </script>
+
 
 <style scoped>
 .bottom-nav {
@@ -110,45 +92,94 @@ function go(item) {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
   background: #14548c;
-  background: linear-gradient(0deg, rgba(20, 84, 140, 1) 0%, rgba(13, 40, 71, 1) 17%, rgba(5, 10, 16, 1) 100%);}
-
-.bottom-nav::before {
-  content: "";
-  position: absolute;
-  top: -14px;
-  left: 0;
-  right: 0;
-  height: 28px;
-  pointer-events: none;
+  background: linear-gradient(
+    0deg,
+    rgba(20, 84, 140, 1) 0%,
+    rgba(13, 40, 71, 1) 17%,
+    rgba(5, 10, 16, 1) 100%
+  );
+  overflow: visible;
 }
 
+/* regular buttons */
 .nav-btn {
   position: relative;
   background: transparent;
   border: none;
-  padding: 10px 14px;
+  width: 54px;
+  height: 54px;
   border-radius: 14px;
   cursor: pointer;
-  opacity: .9;
+  opacity: 0.9;
   display: grid;
   place-items: center;
 }
 
-.nav-btn img {
-  width: 26px;
-  height: 26px;
-  position: relative;
-  z-index: 1;
+/* icons (non-center) */
+.nav-icon {
+  width: 26px !important;
+  height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
+  object-fit: contain;
+  display: block;
 }
 
-.nav-btn.center img {
-  width: 28px;
-  height: 28px;
+/* center button stays aligned with the bar */
+.nav-btn.center {
+  width: 54px;
+  height: 54px;
+  opacity: 1;
 }
 
-/* Active circle highlight */
+/* this wrapper is what actually “hangs” up */
+.qr-hang {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateY(-22px); /* lift amount */
+  width: 64px;
+  height: 64px;
+  z-index: 10;
+}
+
+/* ensure the component fills the hanging hit area */
+.qr-pop {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+
+/* Make whatever QrCodeButton renders fill the nav button nicely */
+.qr-pop {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* If QrCodeButton renders an img/svg inside, this prevents weird sizing */
+.qr-pop :deep(img),
+.qr-pop :deep(svg) {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Make sure the clickable element inside QrCodeButton behaves normally */
+.qr-pop :deep(button),
+.qr-pop :deep(.qr-code-button) {
+  position: static !important;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* active highlight for normal tabs (optional) */
 .nav-btn.active {
   opacity: 1;
 }
@@ -159,13 +190,13 @@ function go(item) {
   width: 54px;
   height: 54px;
   border-radius: 999px;
-  background: radial-gradient(circle at 50% 40%,
-    rgba(255,255,255,.12) 0%,
-    rgba(255,255,255,.06) 45%,
-    rgba(0,0,0,0) 70%);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 10px 26px rgba(0, 140, 255, .18);
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(0, 0, 0, 0) 70%
+  );
   z-index: 0;
 }
 </style>
+
