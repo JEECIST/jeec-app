@@ -11,7 +11,7 @@
       <nav>
         <ul>
           <li>
-            <router-link to="/home">Games</router-link>
+            <router-link to="/games">Games</router-link>
           </li>
           <li>
             <router-link to="/profile">Store</router-link>

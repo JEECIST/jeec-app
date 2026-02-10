@@ -24,6 +24,11 @@ const routes = [
     component: () => import('@/views/QRCode.vue'),
   },
   {
+    path: '/games',
+    name: 'Games',
+    component: () => import('@/views/Games.vue'),
+  },
+  {
     path: '/schedule',
     name: 'Schedule',
     component: () => import('@/views/Schedule.vue'),
