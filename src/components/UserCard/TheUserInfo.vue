@@ -114,36 +114,51 @@ const props = defineProps({
 }
 
 .user-card.nav {
+  /* layout like the screenshot: name left, logo/user right, then pill, then bar */
   grid-template-areas:
-    'name name'
-    'tickets user'
-    'points user';
-  grid-template-rows: min-content 1fr 1fr;
+    "name user"
+    "tickets tickets"
+    "points points";
+  grid-template-rows: min-content min-content min-content;
   grid-template-columns: 1fr 80px;
   width: 100%;
-  height: 150px;
-  padding-right: 1rem;
-  padding-left: clamp(10px, 5vw, 70px);
+  height: auto;
+  padding: 14px 16px;
+  gap: 10px;
+
+}
+
+.user-card.nav > .name-wrapper {
+  align-self: center;
 }
 
 .user-card.nav > .name-wrapper p {
-  font-family: 'Lexend Exa';
-  font-weight: 500;
+  font-family: "Lexend Exa";
   font-size: 1.6rem;
-  padding-bottom: 0.5rem;
+  padding: 0;
+  margin: 0;
+  color: white;
+}
+
+.user-card.nav > .user-wrapper {
+  justify-self: end;
+  align-self: start;
+  padding: 0; /* the screenshot logo is tight to the corner */
+}
+.user-card.nav > .tickets-wrapper :deep(*), .points-wrapper :deep(*) {
+  justify-content: flex-start !important;
 }
 
 .user-card.nav > .qr-wrapper {
   padding: 17px;
 }
 
-.user-card.nav > .tickets-wrapper {
-  padding-right: 5px;
-  padding-left: 10%;
-}
-
+.user-card.nav > .tickets-wrapper,
 .user-card.nav > .points-wrapper {
-  padding-right: 5px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .user-card.nav > .user-wrapper {
@@ -241,7 +256,7 @@ const props = defineProps({
 
 .name-wrapper {
   grid-area: name;
-  text-align: right;
+  text-align: left;
 }
 
 .qr-wrapper {
