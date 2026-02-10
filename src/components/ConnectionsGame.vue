@@ -13,7 +13,7 @@
     <div v-if="gameStatus !== 'playing'" class="game-over-message">
       <h2 v-if="gameStatus === 'won'">You win! 🎉</h2>
       <h2 v-if="gameStatus === 'lost'">Out of mistakes. Better luck next time!</h2>
-      <button @click="initializeGame">Play Again</button>
+      <button @click="playAgain">Play Again</button>
     </div>
 
     <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
@@ -41,193 +41,163 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
+import { useConnectionsStore } from '@/stores/ConnectionsStore'
+import { storeToRefs } from 'pinia'
 
-const puzzleData = ref({ groups: {} })
+const store = useConnectionsStore()
+const { puzzleGroups, wordsInPlay, foundGroups, tries, gameStatus, puzzleDateStamp } = storeToRefs(store)
 
-function formatDateYYYYMMDD(d) {
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
+const isShaking = ref(false)
+
+function shakeGrid() {
+  isShaking.value = true
+  setTimeout(() => {
+    isShaking.value = false
+  }, 300)
 }
 
-// Toggle this while developing:
-const DEV_FORCE_DAY = null  // set to null to use real today
+// Fisher-Yates
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex)
+    currentIndex--
+    ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+  }
+  return array
+}
 
-// const event_days = ['2026-02-10', '2026-02-11', '2026-02-12', '2026-02-13', '2026-02-14']
-// Fetch prizes data from the backend
-async function fetchConnectionsForDay() {
-  const day = DEV_FORCE_DAY ?? formatDateYYYYMMDD(new Date())
-
+// Fetch puzzle for Lisbon dayStamp, return { groups }
+async function fetchConnectionsForDay(dayStamp) {
   const res = await axios.post(
     import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/connections/day',
-    { day: day },
-    {
-      headers: authHeader(),
-    },
+    { day: dayStamp },
+    { headers: authHeader() },
   )
-
-  // expected backend shape: [{ day, category, word }, ...]
   const rows = res.data || []
-
-  // group by category
   const byCategory = {}
+
   for (const r of rows) {
     if (!byCategory[r.category]) byCategory[r.category] = []
     byCategory[r.category].push(r.word)
   }
 
-  // build the groups object the game expects
   const groups = {}
   let i = 1
   for (const [category, words] of Object.entries(byCategory)) {
     groups[`group${i}`] = {
       theme: category,
       words,
-      color: "#4CC9F0", // you can map difficulty->color later
+      color: '#4CC9F0',
     }
     i++
   }
 
-  puzzleData.value = { groups }
-}
-
-
-const activeWords = ref([]);
-const foundGroups = ref([]);
-const mistakesRemaining = ref(4);
-const gameStatus = ref('playing');
-
-const isShaking = ref(false);
-
-function shakeGrid() {
-  isShaking.value = true;
-  setTimeout(() => {
-    isShaking.value = false;
-  }, 300); // duration matches CSS
-}
-
-// A utility function for shuffling an array (Fisher-Yates shuffle)
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-  return array;
+  return { groups }
 }
 
 function initializeGame() {
-  foundGroups.value = [];
-  mistakesRemaining.value = 4;
-  gameStatus.value = 'playing';
-  activeWords.value = [];
-
-  let allWords = [];
-  for (const groupId in puzzleData.value.groups) {
-    const group = puzzleData.value.groups[groupId];
-    group.words.forEach(wordText => {
-      allWords.push({
-        text: wordText,
-        group: groupId,
-        selected: false,
-      });
-    });
-  }
-
-  activeWords.value = shuffle(allWords);
+  store.startNewGameFromPuzzle(shuffle)
 }
 
-
-// Called when the component is first created.
+// --- mount bootstrap ---
 onMounted(async () => {
-  await fetchConnectionsForDay()
-  initializeGame()
-  // console.log(puzzleData.value);
+  // 1) Hydrate progress+puzzle from localStorage
+  store.hydrate()
+
+  // 2) Auto-persist on any store change (no plugin needed)
+  store.$subscribe(
+    (_mutation, state) => {
+      localStorage.setItem('connections-store-v1', JSON.stringify(state))
+    },
+    { detached: true },
+  )
+
+  const today = store.today()
+  // 3) Fetch only if we don't already have today's puzzle cached
+  if (!puzzleGroups.value || puzzleDateStamp.value !== today) {
+    const { groups } = await fetchConnectionsForDay(today)
+    store.setPuzzle(groups, today)
+  }
+
+  // 4) If no progress exists yet, start new game
+  if (!wordsInPlay.value || wordsInPlay.value.length === 0) {
+    initializeGame()
+  }
 })
 
+// --- computed bindings ---
+const activeWords = computed(() => wordsInPlay.value)
+const mistakesRemaining = computed(() => tries.value)
 
-// Computed property to get the currently selected words
 const selectedWords = computed(() => {
-  return activeWords.value.filter(word => word.selected);
-});
+  return (wordsInPlay.value || []).filter(w => w.selected)
+})
 
-// Handles clicking on a word in the grid
+// --- UI actions ---
 function toggleWordSelect(word) {
-  if (selectedWords.value.length >= 4 && !word.selected) {
-    return;
-  }
-  word.selected = !word.selected;
+  if (selectedWords.value.length >= 4 && !word.selected) return
+  word.selected = !word.selected
 }
 
-// Shuffles only the words remaining in the grid
 function shuffleActiveWords() {
-  activeWords.value = shuffle([...activeWords.value]);
+  store.wordsInPlay = shuffle([...store.wordsInPlay])
 }
 
-// Clears all current selections
 function deselectAll() {
-  activeWords.value.forEach(word => {
-    word.selected = false;
-  });
+  store.deselectAll()
 }
 
-// The main logic: checking if the 4 selected words are a correct group
-function submitSelection() {
-  if (selectedWords.value.length !== 4) return;
+// NOTE: This currently refetches (per your request).
+// When you’re ready to stop refetching here, remove the fetch and just call initializeGame().
+async function playAgain() {
+  const today = store.today()
+  const { groups } = await fetchConnectionsForDay(today) // TODO: remove to avoid refetch on "Play Again"
+  store.setPuzzle(groups, today)
+  initializeGame()
+}
 
-  // Check if all selected words belong to the same group
-  const firstGroup = selectedWords.value[0].group;
-  const isCorrectGroup = selectedWords.value.every(
-    word => word.group === firstGroup
-  );
+function submitSelection() {
+  if (selectedWords.value.length !== 4) return
+
+  const firstGroup = selectedWords.value[0].group
+  const isCorrectGroup = selectedWords.value.every(w => w.group === firstGroup)
 
   if (isCorrectGroup) {
-    const groupInfo = puzzleData.value.groups[firstGroup];
+    const groupInfo = puzzleGroups.value[firstGroup]
 
-    foundGroups.value.push({
+    store.foundGroups.push({
       theme: groupInfo.theme,
       words: groupInfo.words,
       color: groupInfo.color,
-    });
+    })
 
-    // 3. Sort foundGroups by color (Yellow, Green, Blue, Purple)
-    const colorOrder = { "#f9df6d": 1, "#a0c35a": 2, "#b0c4ef": 3, "#d1a2dd": 4 };
-    foundGroups.value.sort((a, b) => colorOrder[a.color] - colorOrder[b.color]);
+    const colorOrder = { '#f9df6d': 1, '#a0c35a': 2, '#b0c4ef': 3, '#d1a2dd': 4 }
+    store.foundGroups.sort((a, b) => colorOrder[a.color] - colorOrder[b.color])
 
-    // 4. Remove the found words from the active grid
-    activeWords.value = activeWords.value.filter(
-      word => !word.selected
-    );
+    store.wordsInPlay = store.wordsInPlay.filter(w => !w.selected)
 
-    // 5. Check for win condition
-    if (activeWords.value.length === 0) {
-      gameStatus.value = 'won';
+    if (store.wordsInPlay.length === 0) {
+      store.gameStatus = 'won'
     }
-
   } else {
-    // --- INCORRECT GUESS ---
-    mistakesRemaining.value--;
+    store.tries--
 
-    // Check for lose condition
-    if (mistakesRemaining.value === 0) {
-      gameStatus.value = 'lost';
+    if (store.tries === 0) {
+      store.gameStatus = 'lost'
     }
 
-    // You could add a 'shake' animation here before deselecting
-    shakeGrid();
+    shakeGrid()
     setTimeout(() => {
-      deselectAll();
-    }, 300);
-
+      deselectAll()
+    }, 300)
   }
 }
 </script>
+
 
 <style>
 .word-grid.shake {
