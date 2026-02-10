@@ -69,7 +69,6 @@ export const useConnectionsStore = defineStore('connections', {
       }
 
       
-
       try {
         const saved = JSON.parse(raw)
         console.log('Hydrating store from saved state', saved)

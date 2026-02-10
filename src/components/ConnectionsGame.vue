@@ -13,6 +13,17 @@
     <div v-if="gameStatus !== 'playing'" class="game-over-message">
       <h2 v-if="gameStatus === 'won'">You win! 🎉</h2>
       <h2 v-if="gameStatus === 'lost'">Out of mistakes. Better luck next time!</h2>
+      <div v-if="gameStatus === 'lost'" class="found-groups">
+        <div
+          v-for="group in missingSolutionGroups"
+          :key="group.theme"
+          class="found-group"
+          :style="{ backgroundColor: group.color }"
+        >
+          <strong>{{ group.theme }}</strong>
+          <p>{{ group.words.join(', ') }}</p>
+        </div>
+      </div>
       <button @click="playAgain">Play Again</button>
     </div>
 
@@ -59,6 +70,21 @@ function shakeGrid() {
   }, 300)
 }
 
+const solutionGroups = computed(() => {
+  if (!puzzleGroups.value) return []
+  return Object.values(puzzleGroups.value).map(g => ({
+    theme: g.theme,
+    words: g.words,
+    color: g.color,
+  }))
+})
+
+// groups not yet found (so you only reveal the missing ones)
+const missingSolutionGroups = computed(() => {
+  const foundThemes = new Set((foundGroups.value || []).map(g => g.theme))
+  return solutionGroups.value.filter(g => !foundThemes.has(g.theme))
+})
+
 // Fisher-Yates
 function shuffle(array) {
   let currentIndex = array.length, randomIndex
@@ -80,7 +106,8 @@ async function fetchConnectionsForDay(dayStamp) {
   )
   const rows = res.data || []
   const byCategory = {}
-
+  console.log(rows);
+  console.log(byCategory);
   for (const r of rows) {
     if (!byCategory[r.category]) byCategory[r.category] = []
     byCategory[r.category].push(r.word)
@@ -88,11 +115,12 @@ async function fetchConnectionsForDay(dayStamp) {
 
   const groups = {}
   let i = 1
+  let groupColor = ["#199CFF","#00C896","#00E5FF","#B8A1FF"];
   for (const [category, words] of Object.entries(byCategory)) {
     groups[`group${i}`] = {
       theme: category,
       words,
-      color: '#4CC9F0',
+      color: groupColor[i-1],
     }
     i++
   }
@@ -127,7 +155,7 @@ onMounted(async () => {
   }
 
   // 4) If no progress exists yet, start new game
-  if (!wordsInPlay.value || wordsInPlay.value.length === 0) {
+  if (gameStatus.value === 'playing' && (!wordsInPlay.value || wordsInPlay.value.length === 0)) {
     initializeGame()
   }
 })
