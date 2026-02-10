@@ -18,32 +18,47 @@ function lisbonDayStamp(date = new Date()) {
   return `${yyyy}-${mm}-${dd}`
 }
 
+const isValidSavedState = (saved) => {
+  // Must have puzzleGroups with 4 groups and 16 words total (or whatever your rules are)
+  if (!saved || typeof saved !== 'object') return false
+  if (!saved.puzzleGroups || typeof saved.puzzleGroups !== 'object') return false
+
+  const groups = Object.values(saved.puzzleGroups)
+  if (groups.length !== 4) return false
+
+  const allWords = groups.flatMap(g => Array.isArray(g.words) ? g.words : [])
+  if (allWords.length !== 16) return false
+  if (allWords.some(w => typeof w !== 'string' || !w.trim())) return false
+
+  // wordsInPlay should have "text"
+  if (!Array.isArray(saved.wordsInPlay)) return false
+  if (saved.wordsInPlay.some(w => typeof w?.text !== 'string')) return false
+
+  return true
+}
+
+
 export const useConnectionsStore = defineStore('connections', {
   state: () => ({
     devOverrideDayStamp: '2025-05-05',
-    // Daily identity
-    dateStamp: null,        // progress day stamp (Lisbon)
-    puzzleDateStamp: null,  // puzzle day stamp (Lisbon)
+    dateStamp: null,
+    puzzleDateStamp: null,
 
-    // Puzzle data (what you build from backend)
-    puzzleGroups: null,     // { group1: {theme, words, color}, ... }
+    puzzleGroups: null,
 
-    // Progress
     foundGroups: [],
-    wordsInPlay: [],        // [{ text, group, selected }]
+    wordsInPlay: [],
     tries: 4,
-    gameStatus: 'playing',  // 'playing', 'won', 'lost'
+    gameStatus: 'playing',
   }),
 
   actions: {
-     // <-- EDIT THIS (or set to null)
+
     today() {
       if (this.devOverrideDayStamp) return this.devOverrideDayStamp
-      console.log('Using Lisbon day stamp:')
       return lisbonDayStamp()
     },
 
-    // Load from localStorage and reset if it's a new Lisbon day
     hydrate() {
       const raw = localStorage.getItem(STORAGE_KEY)
       const today = this.today()
@@ -53,14 +68,17 @@ export const useConnectionsStore = defineStore('connections', {
         return
       }
 
+      
+
       try {
         const saved = JSON.parse(raw)
-
+        console.log('Hydrating store from saved state', saved)
         // If day changed, wipe everything (new puzzle+progress)
-        if (saved?.dateStamp !== today) {
+        if (saved?.dateStamp !== today || !isValidSavedState(saved)) {
           this.resetForNewDay(today)
           return
         }
+        
 
         // Restore whole store snapshot
         this.$patch({
@@ -73,12 +91,10 @@ export const useConnectionsStore = defineStore('connections', {
           gameStatus: saved.gameStatus ?? 'playing',
         })
       } catch {
-        // Corrupted storage -> hard reset
         this.resetForNewDay(today)
       }
     },
 
-    // Called when Lisbon day changes (or first ever run)
     resetForNewDay(dayStamp = this.today()) {
       this.dateStamp = dayStamp
       this.puzzleDateStamp = null

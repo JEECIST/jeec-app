@@ -72,6 +72,7 @@ function shuffle(array) {
 
 // Fetch puzzle for Lisbon dayStamp, return { groups }
 async function fetchConnectionsForDay(dayStamp) {
+
   const res = await axios.post(
     import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/connections/day',
     { day: dayStamp },
@@ -105,9 +106,10 @@ function initializeGame() {
 
 // --- mount bootstrap ---
 onMounted(async () => {
+
   // 1) Hydrate progress+puzzle from localStorage
   store.hydrate()
-
+  console.log(store.wordsInPlay);
   // 2) Auto-persist on any store change (no plugin needed)
   store.$subscribe(
     (_mutation, state) => {
@@ -118,7 +120,8 @@ onMounted(async () => {
 
   const today = store.today()
   // 3) Fetch only if we don't already have today's puzzle cached
-  if (!puzzleGroups.value || puzzleDateStamp.value !== today) {
+ 
+  if (!puzzleGroups.value || puzzleDateStamp.value !== today || store.wordsInPlay.length == 0) {
     const { groups } = await fetchConnectionsForDay(today)
     store.setPuzzle(groups, today)
   }
