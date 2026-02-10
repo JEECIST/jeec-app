@@ -103,7 +103,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   overflow: visible;
 }
 
-/* regular buttons */
 .nav-btn {
   position: relative;
   background: transparent;
@@ -117,7 +116,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   place-items: center;
 }
 
-/* icons (non-center) */
 .nav-icon {
   width: 26px !important;
   height: 26px !important;
@@ -127,33 +125,28 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   display: block;
 }
 
-/* center button stays aligned with the bar */
 .nav-btn.center {
   width: 54px;
   height: 54px;
   opacity: 1;
 }
 
-/* this wrapper is what actually “hangs” up */
 .qr-hang {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) translateY(-22px); /* lift amount */
+  transform: translate(-50%, -50%) translateY(-22px);
   width: 64px;
   height: 64px;
   z-index: 10;
 }
 
-/* ensure the component fills the hanging hit area */
 .qr-pop {
   width: 100%;
   height: 100%;
   display: block;
 }
 
-
-/* Make whatever QrCodeButton renders fill the nav button nicely */
 .qr-pop {
   width: 100%;
   height: 100%;
@@ -161,7 +154,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   place-items: center;
 }
 
-/* If QrCodeButton renders an img/svg inside, this prevents weird sizing */
 .qr-pop :deep(img),
 .qr-pop :deep(svg) {
   width: 34px;
@@ -170,7 +162,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   display: block;
 }
 
-/* Make sure the clickable element inside QrCodeButton behaves normally */
 .qr-pop :deep(button),
 .qr-pop :deep(.qr-code-button) {
   position: static !important;
@@ -179,7 +170,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
 }
 
 
-/* active highlight for normal tabs (optional) */
 .nav-btn.active {
   opacity: 1;
 }
