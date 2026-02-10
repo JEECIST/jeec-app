@@ -7,6 +7,18 @@
   >
     <div class="nav-backdrop" @click="stateStore.navOpen = false"></div>
     <div id="nav-drawer">
+      <button
+        class="nav-close"
+        aria-label="Close navigation"
+        @click="stateStore.navOpen = false"
+        >
+        <img
+          src="@/assets/cross.svg"
+          alt=""
+          class="nav-close-icon"
+          aria-hidden="true"
+        />
+      </button>
       <TheUserInfo variant="nav"></TheUserInfo>
       <nav>
         <ul>
@@ -199,4 +211,37 @@ li a.active-link::before {
   align-items: center;
   gap: 1ch;
 }
+
+.nav-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-close-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.nav-close:hover {
+  opacity: 0.7;
+}
+
+.nav-close:focus-visible {
+  outline: 2px solid #178ee9;
+  outline-offset: 2px;
+}
+
 </style>

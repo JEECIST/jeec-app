@@ -114,6 +114,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   opacity: 0.9;
   display: grid;
   place-items: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-icon {
