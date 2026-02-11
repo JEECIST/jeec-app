@@ -7,54 +7,47 @@
   >
     <div class="nav-backdrop" @click="stateStore.navOpen = false"></div>
     <div id="nav-drawer">
-      <button class="nav-logout" @click="userStore.logOut()">Logout</button>
+      <button
+        class="nav-close"
+        aria-label="Close navigation"
+        @click="stateStore.navOpen = false"
+        >
+        <img
+          src="@/assets/cross.svg"
+          alt=""
+          class="nav-close-icon"
+          aria-hidden="true"
+        />
+      </button>
       <TheUserInfo variant="nav"></TheUserInfo>
       <nav>
         <ul>
           <li>
-            <router-link to="/home">home</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/games">Games</router-link>
           </li>
           <li>
-            <router-link to="/profile">profile</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/profile">Store</router-link>
           </li>
           <li>
-            <router-link to="/schedule">schedule</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/schedule">Prizes</router-link>
           </li>
           <li>
-            <router-link to="/eletrolink">eletrolink</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/eletrolink">Schedule</router-link>
           </li>
           <li>
-            <router-link to="/draw">draw</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/draw">Eletrolink</router-link>
           </li>
           <li>
-            <router-link to="/shop">shop</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/rankings">rankings</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/map">map</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/wordle">wordle</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/shop">Ranking</router-link>
           </li>
         </ul>
         <div class="help-info">
           <router-link to="/help">
             <img src="@/assets/help-info.svg" aria-hidden="true" />
-            Help and Info
           </router-link>
         </div>
       </nav>
+      <button class="nav-logout" @click="userStore.logOut()">Logout</button>
     </div>
   </div>
 </template>
@@ -75,7 +68,7 @@ const userStore = useUserStore()
   width: 100%;
   height: 100svh;
   visibility: hidden;
-  z-index: 101;
+  z-index: 2001;
   overflow: hidden;
 }
 
@@ -123,16 +116,17 @@ const userStore = useUserStore()
 
 .nav-logout {
   position: absolute;
-  top: 19px;
-  left: 5%;
-  border: 3px solid #f72585;
+  top: 92%;
+  left: 12.5%;
+  width: 75%;
+  border: 3px solid #178ee9;
   cursor: pointer;
   border-radius: 10px;
   padding: 0.4rem 1.3ch;
   font-family: 'Lexend Exa';
   font-size: 1rem;
   font-weight: 600;
-  background: linear-gradient(110deg, #f72585 -100%, #f725840a 110%);
+  background: linear-gradient(110deg, #0b2943 -100%, #0b2943 110%);
 }
 
 .placeholder-profile {
@@ -154,8 +148,8 @@ ul {
   text-align: end;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  padding: 1rem;
+  align-items: flex-start;
+  padding: 3rem;
 }
 
 li {
@@ -165,9 +159,9 @@ li {
 
 li a {
   text-decoration: none;
-  text-transform: uppercase;
-  font-family: 'Russo One';
-  font-size: 2.2rem;
+  text-transform: none;
+  font-family: 'Lexend Exa';
+  font-size: 1.2rem;
   padding: 0 0.5ch;
   position: relative;
   overflow: hidden;
@@ -181,7 +175,7 @@ li a.active-link::before {
   bottom: 0;
   translate: -50% 50%;
   border-radius: 50%;
-  background: radial-gradient(50% 50%, #4ccaf043, #7109b700);
+  
   width: 100%;
   height: 60px;
   z-index: -1;
@@ -197,11 +191,11 @@ li a.active-link::before {
 
 .help-info {
   width: 100%;
-  height: 5rem;
+  height: 10rem;
   position: absolute;
   background-color: var(--color-background-sec);
   bottom: 0;
-  right: 0;
+  right: 200;
 }
 
 .help-info img {
@@ -213,8 +207,41 @@ li a.active-link::before {
   text-decoration: none;
   font-family: 'Lexend Exa';
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
   gap: 1ch;
 }
+
+.nav-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-close-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.nav-close:hover {
+  opacity: 0.7;
+}
+
+.nav-close:focus-visible {
+  outline: 2px solid #178ee9;
+  outline-offset: 2px;
+}
+
 </style>

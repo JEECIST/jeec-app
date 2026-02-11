@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper" :class="variant">
-    <p class="chances">JEECPOT chances</p>
+    <p v-if="variant !== 'nav'" class="chances">JEECPOT chances</p>
     <div class="points radient-border-passthrough">
       <div
         class="progress radient-border-passthrough_child"
@@ -71,7 +71,7 @@ onMounted(() => {
   padding-top: 5px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   padding: auto;
   gap: 3px;

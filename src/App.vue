@@ -1,17 +1,17 @@
 <template>
   <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader>
   <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
-  <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>
   <main :inert="stateStore.navOpen || stateStore.qrCodeOpen">
     <router-view />
   </main>
+  <TheBottomNav />
 </template>
 
 <script setup>
 import TheHeader from './components/TheHeader.vue'
 import TheHiddenHeader from './components/TheHiddenHeader.vue'
-import TheUserInfo from './components/UserCard/TheUserInfo.vue'
+import TheBottomNav from './components/TheBottomNav.vue'
 import TheQrCodePopup from './components/QrCode/TheQrCodePopup.vue'
 
 import { useStateStore } from '@/stores/StateStore'
@@ -33,7 +33,7 @@ watch(
   () => {
     if (userStore.loggedIn) {
       gettersStatic()
-      userStore.logOut() //remover para prod
+      // userStore.logOut() //remover para prod
     }
   },
 )
