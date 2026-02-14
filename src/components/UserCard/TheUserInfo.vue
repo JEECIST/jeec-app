@@ -21,7 +21,15 @@
       <JEECPOT :variant="variant"></JEECPOT>
     </div>
 
-    <button v-if="variant === 'home'" class="notif-wrapper" type="button" aria-label="Notificações">
+    <button
+  v-if="variant === 'home'"
+  class="notif-wrapper"
+  type="button"
+  aria-label="Notificações"
+  :aria-expanded="stateStore.notificationsOpen"
+  aria-controls="notifications-drawer"
+  @click="stateStore.notificationsOpen = !stateStore.notificationsOpen"
+>
       <span class="notif-dot" aria-hidden="true"></span>
 
       <svg
@@ -37,6 +45,7 @@
         />
       </svg>
     </button>
+    <NotificationsDrawer v-if="variant === 'home'" />
 
     <div class="user-wrapper" v-else>
       <UserImage :image="userStore.user.picture" :variant="variant"></UserImage>
@@ -50,11 +59,14 @@
 </template>
 
 <script setup>
+import NotificationsDrawer from '../NotificationsDrawer.vue'
 import CurrentPoints from './CurrentPoints.vue'
 import JEECPOT from './JEECPOT.vue'
 import UserImage from './UserImage.vue'
 
 import { useUserStore } from '@/stores/UserStore'
+import { useStateStore } from '@/stores/StateStore'
+const stateStore = useStateStore()
 const userStore = useUserStore()
 
 import { defineProps } from 'vue'

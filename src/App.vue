@@ -1,5 +1,5 @@
 <template>
-  <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader>
+  <!-- <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader> -->
   <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
   <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>

@@ -5,6 +5,7 @@ export const useStateStore = defineStore('StateStore', {
     return {
       navOpen: false,
       qrCodeOpen: false,
+      notificationsOpen: false,
     }
   },
 })
