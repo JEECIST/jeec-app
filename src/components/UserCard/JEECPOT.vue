@@ -1,5 +1,6 @@
 <template>
   <div class="wrapper" :class="variant">
+    <p v-if="variant !== 'nav'" class="chances">JEECPOT chances</p>
     <div class="points radient-border-passthrough">
       <div
         class="progress radient-border-passthrough_child"

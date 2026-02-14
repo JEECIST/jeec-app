@@ -24,6 +24,11 @@ const routes = [
     component: () => import('@/views/QRCode.vue'),
   },
   {
+    path: '/games',
+    name: 'Games',
+    component: () => import('@/views/Games.vue'),
+  },
+  {
     path: '/schedule',
     name: 'Schedule',
     component: () => import('@/views/Schedule.vue'),
@@ -67,6 +72,12 @@ const routes = [
     component: () => import('@/views/Shop.vue'),
   },
   {
+    path: '/connections',
+    name: 'Connections',
+    component: () => import('@/views/ConnectionsView.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
     path: '/wordle',
     name: 'Wordle',
     component: () => import('@/views/Wordle.vue'),

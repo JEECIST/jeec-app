@@ -46,7 +46,21 @@ watch(
   height: 70%;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+}
+.img {
+  width: 40px;
+  height: 380%;
+  object-fit: contain;
+}
+.bar {
+  text-align: right;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
+  height: 100%;
+}
+.wrapper.profile > .bar {
+  text-align: left;
 }
 
 /* pill container */
