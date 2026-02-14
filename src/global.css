@@ -9,7 +9,7 @@
 }
 
 :root {
-  --color-background: #1f1f1f;
+  --color-background: #08111A;
   --color-background-sec: #2b2b2b;
   --color-font: #efeeee;
   --color-strong-pink: #ff006e;
@@ -17,6 +17,10 @@
   --color-yellow: #ffbe0b;
   --color-yellow-rgb: 255, 190, 11;
   --color-jeec-blue: #199cff;
+  --color-prizes-background: #1b2a45;
+  --color-prizes-background-rgb: 27, 42, 69;
+  --color-prizes-border: #abcfea;
+  --color-prizes-border-rgb: 171, 207, 234;
 
   --c-acc-blue: #199cff;
   --c-acc-lighter-dark-blue: #2e55ff;

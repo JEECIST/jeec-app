@@ -2,10 +2,7 @@
   <div>
     <HomePopup></HomePopup>
     <HomeActivities class="card radient-border-passthrough"></HomeActivities>
-    <HomeSales class="card radient-border-passthrough"></HomeSales>
-    <HomePrizes class="card radient-border-passthrough"></HomePrizes>
-    <HomeEletrolink class="card radient-border-passthrough"></HomeEletrolink>
-    <HomeCv class="card radient-border-passthrough"></HomeCv>
+    <HomePrizes class="card radient-border-passthrough prizes-card"></HomePrizes>
   </div>
 </template>
 
@@ -13,9 +10,7 @@
 import HomePopup from '@/components/HomeCards/HomePopup.vue'
 import HomeActivities from '@/components/HomeCards/HomeActivities.vue'
 import HomePrizes from '@/components/HomeCards/HomePrizes.vue'
-import HomeEletrolink from '@/components/HomeCards/HomeEletrolink.vue'
-import HomeCv from '@/components/HomeCards/HomeCv.vue'
-import HomeSales from '@/components/HomeCards/HomeSales.vue'
+
 </script>
 
 <style scoped>
@@ -52,6 +47,11 @@ import HomeSales from '@/components/HomeCards/HomeSales.vue'
   .card {
     width: 90%;
   }
+}
+
+.prizes-card {
+  overflow: visible !important;
+  margin-top: 8rem;
 }
 
 @media screen and (max-width: 500px) {
