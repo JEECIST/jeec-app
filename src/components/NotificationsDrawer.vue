@@ -56,8 +56,9 @@
     if (!iso) return ''
     const d = new Date(iso)
     if (Number.isNaN(d.getTime())) return ''
-    return d.toLocaleString()
+    return d.toLocaleDateString('pt-PT')
   }
+
   
   const fetchNotifications = async () => {
     try {
@@ -188,34 +189,55 @@
     padding: 0;
     margin: 0;
     width: 100%;
-  }
+    display: grid;
+    gap: 12px;
+    }
   
   .notif-item {
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  
-  .notif-top {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.03);
+
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }  
+  
+ .notif-top {
+    display: flex;
+    align-items: baseline;
     justify-content: space-between;
     gap: 12px;
-    align-items: baseline;
-  }
-  
-  .notif-title {
+ }
+ .notif-title {
     font-family: 'Lexend Exa';
-  }
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
+ }
   
-  .notif-date {
-    opacity: 0.75;
-    font-size: 0.85rem;
-    white-space: nowrap;
-  }
-  
-  .notif-message {
-    margin: 6px 0 0 0;
-    opacity: 0.9;
-    font-family: 'Lexend Exa';
-  }
+.notif-date {
+  font-family: 'Lexend Exa';
+  font-size: 0.82rem;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.notif-message {
+  margin: 0;
+  font-family: 'Lexend Exa';
+  opacity: 0.9;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
   </style>
   
