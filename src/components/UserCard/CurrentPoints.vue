@@ -72,16 +72,6 @@ watch(
   border-radius: 999px;
   overflow: hidden;
 
-  /* glassy background */
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 45%, rgba(0,0,0,0.12) 100%),
-    rgba(10, 18, 28, 0.55);
-
-  /* prevent double border from your gradient-border system */
-  --border-background: #199cff;
-  --border-width: 0px;
-  --border-radius: 50px;
-
   /* subtle transparent border */
   border: 1px solid rgba(255, 255, 255, 0.20);
 
@@ -121,7 +111,8 @@ watch(
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 5px;
+  box-shadow: none;
 }
 
 /* number */
@@ -142,12 +133,6 @@ watch(
   border-radius: 999px;
   display: grid;
   place-items: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.18);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    inset 0 -1px 0 rgba(0,0,0,0.25);
 }
 
 .tickets-icon img {

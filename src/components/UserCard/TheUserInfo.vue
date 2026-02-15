@@ -1,5 +1,5 @@
 <template>
-  <div :class="[variant, { 'radient-border-passthrough': variant != 'nav' }]" class="user-card">
+  <div :class="[variant, { 'radient-border-passthrough': variant != 'nav' && variant != 'home' }]" class="user-card">
     <div class="name-wrapper" v-if="variant != 'profile'">
       <p>{{ userStore.user.name }}</p>
     </div>
@@ -25,7 +25,7 @@
   v-if="variant === 'home'"
   class="notif-wrapper"
   type="button"
-  aria-label="Notificações"
+  aria-label="Notifications"
   :aria-expanded="stateStore.notificationsOpen"
   aria-controls="notifications-drawer"
   @click="stateStore.notificationsOpen = !stateStore.notificationsOpen"
@@ -93,14 +93,7 @@ defineProps({
   z-index: auto;
   margin: 10px 0;
 
-  background: radial-gradient(120% 180% at 0% 0%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0) 100%),
-              linear-gradient(180deg, rgba(8,14,22,0.92) 0%, rgba(5,10,18,0.92) 100%);
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
   display: grid;
   grid-template-areas:
     "name  logo"
@@ -213,7 +206,6 @@ defineProps({
   border-radius: 999px;
 
   border: 1px solid rgba(255,255,255,0.18);
-  background: radial-gradient(120% 120% at 30% 20%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 55%, rgba(0,0,0,0) 100%);
 
   display: grid;
   place-items: center;
