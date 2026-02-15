@@ -12,9 +12,9 @@ function lisbonDayStamp(date = new Date()) {
     day: '2-digit',
   }).formatToParts(date)
 
-  const yyyy = parts.find(p => p.type === 'year')?.value
-  const mm = parts.find(p => p.type === 'month')?.value
-  const dd = parts.find(p => p.type === 'day')?.value
+  const yyyy = parts.find((p) => p.type === 'year')?.value
+  const mm = parts.find((p) => p.type === 'month')?.value
+  const dd = parts.find((p) => p.type === 'day')?.value
   return `${yyyy}-${mm}-${dd}`
 }
 
@@ -26,21 +26,20 @@ const isValidSavedState = (saved) => {
   const groups = Object.values(saved.puzzleGroups)
   if (groups.length !== 4) return false
 
-  const allWords = groups.flatMap(g => Array.isArray(g.words) ? g.words : [])
+  const allWords = groups.flatMap((g) => (Array.isArray(g.words) ? g.words : []))
   if (allWords.length !== 16) return false
-  if (allWords.some(w => typeof w !== 'string' || !w.trim())) return false
+  if (allWords.some((w) => typeof w !== 'string' || !w.trim())) return false
 
   // wordsInPlay should have "text"
   if (!Array.isArray(saved.wordsInPlay)) return false
-  if (saved.wordsInPlay.some(w => typeof w?.text !== 'string')) return false
+  if (saved.wordsInPlay.some((w) => typeof w?.text !== 'string')) return false
 
   return true
 }
 
-
 export const useConnectionsStore = defineStore('connections', {
   state: () => ({
-    devOverrideDayStamp: '2025-05-05',
+    devOverrideDayStamp: null,
     dateStamp: null,
     puzzleDateStamp: null,
 
@@ -53,7 +52,6 @@ export const useConnectionsStore = defineStore('connections', {
   }),
 
   actions: {
-
     today() {
       if (this.devOverrideDayStamp) return this.devOverrideDayStamp
       return lisbonDayStamp()
@@ -68,7 +66,6 @@ export const useConnectionsStore = defineStore('connections', {
         return
       }
 
-      
       try {
         const saved = JSON.parse(raw)
         console.log('Hydrating store from saved state', saved)
@@ -77,7 +74,6 @@ export const useConnectionsStore = defineStore('connections', {
           this.resetForNewDay(today)
           return
         }
-        
 
         // Restore whole store snapshot
         this.$patch({
@@ -119,7 +115,7 @@ export const useConnectionsStore = defineStore('connections', {
       const allWords = []
       for (const groupId in this.puzzleGroups) {
         const group = this.puzzleGroups[groupId]
-        group.words.forEach(wordText => {
+        group.words.forEach((wordText) => {
           allWords.push({
             text: wordText,
             group: groupId,
@@ -132,12 +128,12 @@ export const useConnectionsStore = defineStore('connections', {
     },
 
     setSelected(wordText, selected) {
-      const w = this.wordsInPlay.find(x => x.text === wordText)
+      const w = this.wordsInPlay.find((x) => x.text === wordText)
       if (w) w.selected = selected
     },
 
     deselectAll() {
-      this.wordsInPlay.forEach(w => (w.selected = false))
+      this.wordsInPlay.forEach((w) => (w.selected = false))
     },
   },
 })

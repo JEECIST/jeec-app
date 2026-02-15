@@ -1,6 +1,9 @@
 <template>
   <div class="connections-game">
-    <h1>Connections-Style Game</h1>
+
+    <DuckPopUp v-if="showDuck" :duckState="duckMood" @close="showDuck = false" />
+
+    <h1>Connections</h1>
 
     <div class="found-groups">
       <div v-for="group in foundGroups" :key="group.theme" class="found-group"
@@ -11,20 +14,13 @@
     </div>
 
     <div v-if="gameStatus !== 'playing'" class="game-over-message">
-      <h2 v-if="gameStatus === 'won'">You win! 🎉</h2>
-      <h2 v-if="gameStatus === 'lost'">Out of mistakes. Better luck next time!</h2>
       <div v-if="gameStatus === 'lost'" class="found-groups">
-        <div
-          v-for="group in missingSolutionGroups"
-          :key="group.theme"
-          class="found-group"
-          :style="{ backgroundColor: group.color }"
-        >
+        <div v-for="group in missingSolutionGroups" :key="group.theme" class="found-group"
+          :style="{ backgroundColor: group.color }">
           <strong>{{ group.theme }}</strong>
           <p>{{ group.words.join(', ') }}</p>
         </div>
       </div>
-      <button @click="playAgain">Play Again</button>
     </div>
 
     <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
@@ -58,10 +54,21 @@ import authHeader from '@/services/auth-header'
 import { useConnectionsStore } from '@/stores/ConnectionsStore'
 import { storeToRefs } from 'pinia'
 
+import DuckPopUp from '@/components/DuckPopUp.vue'
+
 const store = useConnectionsStore()
+
+const showDuck = ref(false)
+
 const { puzzleGroups, wordsInPlay, foundGroups, tries, gameStatus, puzzleDateStamp } = storeToRefs(store)
 
 const isShaking = ref(false)
+
+const duckMood = computed(() => {
+  if (gameStatus.value === 'won') return 'happy'
+  if (gameStatus.value === 'lost') return 'sad'
+  return ''
+})
 
 function shakeGrid() {
   isShaking.value = true
@@ -91,7 +98,7 @@ function shuffle(array) {
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex)
     currentIndex--
-    ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+      ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
   }
   return array
 }
@@ -115,12 +122,12 @@ async function fetchConnectionsForDay(dayStamp) {
 
   const groups = {}
   let i = 1
-  let groupColor = ["#199CFF","#00C896","#00E5FF","#B8A1FF"];
+  let groupColor = ["#199CFF", "#00C896", "#00E5FF", "#B8A1FF"];
   for (const [category, words] of Object.entries(byCategory)) {
     groups[`group${i}`] = {
       theme: category,
       words,
-      color: groupColor[i-1],
+      color: groupColor[i - 1],
     }
     i++
   }
@@ -148,14 +155,18 @@ onMounted(async () => {
 
   const today = store.today()
   // 3) Fetch only if we don't already have today's puzzle cached
- 
+
   if (!puzzleGroups.value || puzzleDateStamp.value !== today || store.wordsInPlay.length == 0) {
     const { groups } = await fetchConnectionsForDay(today)
     store.setPuzzle(groups, today)
   }
 
   // 4) If no progress exists yet, start new game
-  if (gameStatus.value === 'playing' && (!wordsInPlay.value || wordsInPlay.value.length === 0)) {
+  if (gameStatus.value !== 'playing') {
+    showDuck.value = true
+  }
+  // Caso contrário, se não houver palavras, inicia novo jogo
+  else if (!wordsInPlay.value || wordsInPlay.value.length === 0) {
     initializeGame()
   }
 })
@@ -213,12 +224,16 @@ function submitSelection() {
 
     if (store.wordsInPlay.length === 0) {
       store.gameStatus = 'won'
+      showDuck.value = true
+      submitGameResult(true)
     }
   } else {
     store.tries--
 
     if (store.tries === 0) {
       store.gameStatus = 'lost'
+      showDuck.value = true
+      submitGameResult(false)
     }
 
     shakeGrid()
@@ -227,6 +242,23 @@ function submitSelection() {
     }, 300)
   }
 }
+
+
+const submitGameResult = async (won) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/game-finish`,
+      {
+        won: won,
+        game: "connections"
+      },
+      { headers: authHeader() }
+    )
+  } catch (error) {
+
+  }
+}
+
 </script>
 
 
