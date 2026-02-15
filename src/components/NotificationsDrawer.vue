@@ -192,24 +192,43 @@
     display: grid;
     gap: 12px;
     }
-  
-  .notif-item {
-    width: 100%;
-    border-radius: 14px;
-    padding: 12px 14px;
+    .notif-item {
+        width: 100%;
+        border-radius: 14px;
+        padding: 12px 14px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
 
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    background: rgba(255, 255, 255, 0.03);
+        /* (podes manter ou remover o teu shadow antigo) */
+        background: rgba(255, 255, 255, 0.03);
+        }
+        .notif-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 2px;
 
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%),
+    radial-gradient(circle at 50% 0%, #3262F1 0%, #030712 75%);
 
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }  
-  
+  border-top: 1px solid rgba(100, 150, 255, 0.4);
+  box-shadow: inset 0px 15px 25px -10px rgba(50, 100, 255, 0.6);
+
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+.notif-item > * {
+  position: relative;
+  z-index: 1;
+}
+
  .notif-top {
     display: flex;
     align-items: baseline;
