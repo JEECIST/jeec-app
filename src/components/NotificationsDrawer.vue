@@ -1,37 +1,39 @@
 <template>
-    <div
-      class="notifications-wrapper"
-      :class="{ open: stateStore.notificationsOpen }"
-      :aria-hidden="!stateStore.notificationsOpen"
-      :inert="!stateStore.notificationsOpen"
-    >
-      <div class="notifications-backdrop" @click="close"></div>
-  
-      <div id="notifications-drawer">
-        <div class="notifications-header">
-          <h2>Notifications</h2>
-          <button class="close-btn" @click="close" aria-label="Fechar">✕</button>
+    <teleport to="body">
+        <div
+        class="notifications-wrapper"
+        :class="{ open: stateStore.notificationsOpen }"
+        :aria-hidden="!stateStore.notificationsOpen"
+        :inert="!stateStore.notificationsOpen"
+        >
+            <div class="notifications-backdrop" @click="close"></div>
+        
+            <div id="notifications-drawer">
+                <div class="notifications-header">
+                    <h2>Notifications</h2>
+                    <button class="close-btn" @click="close" aria-label="Fechar">✕</button>
+                </div>
+        
+                <div class="notifications-body">
+                    <p v-if="isLoading">A carregar notificações…</p>
+            
+                    <p v-else-if="errorMsg">{{ errorMsg }}</p>
+            
+                    <p v-else-if="notifications.length === 0">Sem notificações por agora.</p>
+            
+                    <ul v-else class="notif-list">
+                        <li v-for="n in notifications" :key="n.id" class="notif-item">
+                        <div class="notif-top">
+                            <strong class="notif-title">{{ n.title }}</strong>
+                            <span class="notif-date">{{ formatDate(n.scheduled_at) }}</span>
+                        </div>
+                        <p class="notif-message">{{ n.message }}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-  
-        <div class="notifications-body">
-          <p v-if="isLoading">A carregar notificações…</p>
-  
-          <p v-else-if="errorMsg">{{ errorMsg }}</p>
-  
-          <p v-else-if="notifications.length === 0">Sem notificações por agora.</p>
-  
-          <ul v-else class="notif-list">
-            <li v-for="n in notifications" :key="n.id" class="notif-item">
-              <div class="notif-top">
-                <strong class="notif-title">{{ n.title }}</strong>
-                <span class="notif-date">{{ formatDate(n.scheduled_at) }}</span>
-              </div>
-              <p class="notif-message">{{ n.message }}</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    </teleport>
   </template>
   
   <script setup>
@@ -138,8 +140,7 @@
     translate: 100% 0;
     transition: cubic-bezier(0.445, 0.05, 0.55, 0.95) 0.17s;
     border-radius: 20px 0 0 20px;
-    background-color: red;
-    z-index: 1000;
+    z-index: 999;
   }
   
   .notifications-wrapper.open #notifications-drawer {

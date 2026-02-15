@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper" :class="variant">
-    <div class="tickets-progress radient-border-passthrough">
-      <div class="progress radient-border-passthrough_child"></div>
+    <div class="tickets-progress">
 
       <div class="tickets">
         <p class="tickets-value">{{ userDailyPoints }}</p>
@@ -43,7 +42,7 @@ watch(
 <style scoped>
 .wrapper {
   width: 200px;
-  height: 70%;
+  height: 60%;
   display: flex;
   justify-content: flex-start;
 }
@@ -72,9 +71,6 @@ watch(
   border-radius: 999px;
   overflow: hidden;
 
-  /* subtle transparent border */
-  border: 1px solid rgba(255, 255, 255, 0.20);
-
   /* soft depth */
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.30),
@@ -92,7 +88,6 @@ watch(
   top: 4px;
   height: 40%;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.00));
   pointer-events: none;
 }
 

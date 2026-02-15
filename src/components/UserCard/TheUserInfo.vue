@@ -80,7 +80,7 @@ defineProps({
 
 <style scoped>
 .user-card.home {
-  --height: 110px;
+  height: 12rem;
 
   position: relative;
   top: auto;
@@ -91,7 +91,6 @@ defineProps({
   max-width: none;
 
   z-index: auto;
-  margin: 10px 0;
 
   border-radius: 18px;
   display: grid;
@@ -101,11 +100,12 @@ defineProps({
     "points notif";
 
   grid-template-columns: 1fr 96px;
-  grid-template-rows: 28px 1fr 1fr;
-  padding: 14px 16px;
+  grid-template-rows: 42px auto auto;
+  align-content: flex-start;
+  padding: 30px;
 
   box-sizing: border-box;
-  gap: 10px;
+  gap: 0px 10px;
 }
 
 .user-card.home > .name-wrapper {
@@ -178,14 +178,14 @@ defineProps({
   grid-area: points;
   display: flex;
   align-items: center;
-  padding-right: 10px;
+  padding-right: 0;
   align-self: start;
   justify-self: start;
   margin: 0;
   padding-top: 0;
   padding-bottom: 0;
   width: 100%;
-  max-width: 360px;
+  max-width: none;
 }
 
 .user-card.home > .points-wrapper :deep(*) {
@@ -200,7 +200,7 @@ defineProps({
   justify-self: end;
   margin: 0;
   margin-top: 30px;
-
+  background: transparent;
   width: 56px;
   height: 56px;
   border-radius: 999px;
@@ -217,7 +217,6 @@ defineProps({
 .notif-icon {
   width: 26px;
   height: 26px;
-  color: rgba(255,255,255,0.9);
 }
 
 .notif-dot {
