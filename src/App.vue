@@ -79,7 +79,6 @@ onMounted(async () => {
 <style scoped>
 main {
   padding: 0 2ch;
-  padding-top: 90px;
   z-index: 1;
   position: relative;
 }
