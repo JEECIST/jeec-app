@@ -10,7 +10,7 @@
     </div>
 
     <div class="logo-wrapper" v-if="variant === 'home'">
-      <img alt="JEEC" class="jeec-logo" src="@/assets/jeec_logo_darkmode.svg" />
+      <img alt="JEEC" class="jeec-logo" src="@/assets/jeec_horizontal_mobile_white.svg" />
     </div>
 
     <div class="tickets-wrapper">
@@ -138,7 +138,7 @@ defineProps({
 }
 
 .jeec-logo {
-  height: 3rem;
+  height: 1.7rem;
   width: auto;
   display: block;
   object-fit: contain;
@@ -204,14 +204,18 @@ defineProps({
   width: 56px;
   height: 56px;
   border-radius: 999px;
-
-  border: 1px solid rgba(255,255,255,0.18);
-
+  border:transparent;
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.40),   /* top-left mais forte */
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),       /* bottom-right */
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15),   /* cantos restantes mais suave */
+    inset -1px -1px 2px rgba(0, 0, 0, 0.1);
   display: grid;
   place-items: center;
 
   position: relative;
   cursor: pointer;
+
 }
 
 .notif-icon {

@@ -115,8 +115,14 @@ p {
 
   position: relative;
   border-radius: 999px;
+  border:transparent;
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,0.40),   /* top-left mais forte */
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),       /* bottom-right */
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15),   /* cantos restantes mais suave */
+    inset -1px -1px 2px rgba(0, 0, 0, 0.1);
 
-
+  background: transparent;
   --border-width: 0px;
 
   display: flex;
@@ -132,12 +138,12 @@ p {
   top: 3px;
   height: 40%;
   border-radius: 999px;
-
-  background: linear-gradient(
+  
+  /* background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.22),
     rgba(255, 255, 255, 0.00)
-  );
+  ); */
 
   pointer-events: none;
 }

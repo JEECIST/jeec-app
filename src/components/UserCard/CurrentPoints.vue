@@ -70,13 +70,13 @@ watch(
 
   border-radius: 999px;
   overflow: hidden;
-
-  /* soft depth */
+  border:transparent;
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.30),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    inset 2px 2px 4px rgba(255,255,255,0.40),   /* top-left mais forte */
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),       /* bottom-right */
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15),   /* cantos restantes mais suave */
+    inset -1px -1px 2px rgba(0, 0, 0, 0.1);
+
 }
 
 /* top shine strip */
