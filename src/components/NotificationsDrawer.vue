@@ -108,7 +108,7 @@
   async function handleSubscribe() {
     try {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        alert('O teu browser não suporta notificações push.')
+        alert('Your browser does not support notification push')
         return
       }
   
@@ -117,7 +117,7 @@
   
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
-        alert('Permissão negada para notificações')
+        alert('Permission denied')
         stateStore.notificationsSubscribed = false
         return
       }
@@ -138,11 +138,10 @@
       stateStore.notificationsSubscribed = true
       await stateStore.refreshNotificationSubscription()
   
-      alert('Subscreveste! Agora o backend pode enviar-te notificações.')
     } catch (e) {
       console.error(e)
       stateStore.notificationsSubscribed = false
-      alert('Falha ao subscrever notificações.')
+      alert('Error')
     }
   }
   
@@ -302,6 +301,37 @@
     z-index: 1;
   }
   
+  .notif-item:nth-child(even) {
+        width: 100%;
+        border-radius: 14px;
+        padding: 12px 14px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.03);
+    }
+  
+
+  .notif-item:nth-child(even)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    padding: 2px;
+  
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%),
+      radial-gradient(circle at 50% 0%, #32c4f1 0%, #030712 75%);
+  
+    border-top: 1px solid rgba(100, 150, 255, 0.4);
+    box-shadow: inset 0px 15px 25px -10px #319df5;
+  
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  
+    pointer-events: none;
+  }
   .notif-top {
     display: flex;
     align-items: baseline;

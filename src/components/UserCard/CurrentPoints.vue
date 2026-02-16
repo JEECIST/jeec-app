@@ -47,7 +47,7 @@ watch(
   justify-content: flex-start;
 }
 .img {
-  width: 40px;
+  width: 50px;
   height: 380%;
   object-fit: contain;
 }
@@ -131,8 +131,8 @@ watch(
 }
 
 .tickets-icon img {
-  width: 14px;
-  height: 14px;
+  width: 1.5em;
+  height: auto;
   object-fit: contain;
 }
 

@@ -13,7 +13,7 @@
         }"
       ></div>
       <p v-if="test >= 100" class="points-total">Eligible!</p>
-      <p v-else class="points-total">{{ test }}%</p>
+      <p v-else class="points-total">{{ progress }}%</p>
     </div>
   </div>
 </template>
@@ -25,7 +25,6 @@ const userStore = useUserStore()
 const props = defineProps(['variant'])
 
 const progress = ref(0)
-const test = 40
 
 function getProgress() {
   const userTotalPoints = userStore.userPoints.total_points
