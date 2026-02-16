@@ -67,7 +67,7 @@ const userStore = useUserStore()
 
 import { defineProps } from 'vue'
 
-import UserService from '../../services/user.service' // ajusta o path ao teu projeto
+import UserService from '../../services/user.service'
 
 onMounted(() => {
   stateStore.refreshNotificationSubscription()

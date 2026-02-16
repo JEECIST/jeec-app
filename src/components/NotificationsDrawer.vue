@@ -98,7 +98,6 @@
       }
     } catch (err) {
       console.error('Error fetching notifications:', err)
-      errorMsg.value = 'Falha ao carregar notificações.'
       notifications.value = []
     } finally {
       isLoading.value = false
