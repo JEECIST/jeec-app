@@ -59,7 +59,7 @@ import NotificationsDrawer from '../NotificationsDrawer.vue'
 import CurrentPoints from './CurrentPoints.vue'
 import JEECPOT from './JEECPOT.vue'
 import UserImage from './UserImage.vue'
-
+import { onMounted } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useStateStore } from '@/stores/StateStore'
 const stateStore = useStateStore()
@@ -68,6 +68,10 @@ const userStore = useUserStore()
 import { defineProps } from 'vue'
 
 import UserService from '../../services/user.service' // ajusta o path ao teu projeto
+
+onMounted(() => {
+  stateStore.refreshNotificationSubscription()
+})
 
 async function openNotifications() {
   stateStore.notificationsOpen = true

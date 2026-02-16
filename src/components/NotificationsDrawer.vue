@@ -136,7 +136,7 @@
       )
   
       stateStore.notificationsSubscribed = true
-      await fetchNotifications()
+      await stateStore.refreshNotificationSubscription()
   
       alert('Subscreveste! Agora o backend pode enviar-te notificações.')
     } catch (e) {
