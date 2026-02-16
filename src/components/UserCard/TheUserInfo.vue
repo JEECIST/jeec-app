@@ -9,9 +9,9 @@
       <p class="username">{{ userStore.user.username }}</p>
     </div>
 
-    <div class="logo-wrapper" v-if="variant === 'home'">
+    <router-link v-if="variant === 'home'" class="logo-wrapper" to="/home" aria-label="Go to Home">
       <img alt="JEEC" class="jeec-logo" src="@/assets/jeec_horizontal_mobile_white.svg" />
-    </div>
+    </router-link>
 
     <div class="tickets-wrapper">
       <CurrentPoints :variant="variant"></CurrentPoints>
