@@ -90,7 +90,7 @@ async function subscribe() {
 
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
-      alert("Permissão negada para notificações");
+      alert("Permission denied");
       return;
     }
 
@@ -105,8 +105,6 @@ async function subscribe() {
         ...authHeader(),
       }
     });
-
-    alert("Subscreveste! Agora o backend pode enviar-te notificações.");
   }
 }
 
