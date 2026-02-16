@@ -1,57 +1,55 @@
 <template>
-  <div class="create-squad expanded">
+  <div class="create-squad">
     <div class="create-modal">
-      <div class="create-header">
-        <p>CREATE SQUAD</p>
-      </div>
+      <h1 class="title">Create a squad</h1>
 
-      <div class="name-image">
+      <button class="avatar" @click.stop="input_click" aria-label="Upload squad picture">
+        <img v-if="image_uploaded" :src="currentImage" alt="Squad" />
+        <img v-else :src="currentImage" alt="Default squad" class="avatar-default" />
+        <span class="avatar-plus">+</span>
+
         <input
-          class="create-name"
-          :class="{ input_exists: name.length }"
-          type="text"
-          placeholder="Your Squad Name..."
-          v-model="name"
-          @input="validateInput"
-          maxlength="25"
-          minlength="4"
+          type="file"
+          accept="image/*"
+          ref="image_input"
+          @change="input_file"
+          style="display: none"
         />
+      </button>
 
-        <button class="create-image" @click.stop="input_click">
-          <p v-if="!image_uploaded">ADD<br />PICTURE</p>
-          <img
-            v-if="image_uploaded"
-            :src="currentImage"
-            alt="uploaded-image"
-            ref="uploaded_image"
-          />
-          <div class="plus-symbol">+</div>
-          <input
-            type="file"
-            accept="image/*"
-            ref="image_input"
-            @change="input_file"
-            style="display: none"
-          />
-        </button>
+      <p class="field-label">Your squad name</p>
+      <input
+        class="name-input"
+        :class="{ input_exists: name.length }"
+        type="text"
+        v-model="name"
+        maxlength="25"
+        minlength="4"
+      />
+
+      <p class="section-label">Add members</p>
+
+      <div class="member-search">
+        <input
+          class="member-search-input"
+          type="text"
+          v-model="memberQuery"
+          placeholder="Name"
+        />
       </div>
-      <div class="motto">
-        <p>Motto</p>
-        <div class="create-motto">
-          <input
-            :class="{ input_exists: cry.length }"
-            type="text"
-            placeholder="Your motto..."
-            v-model="cry"
-            maxlength="60"
-          />
+
+      <div class="member-list">
+        <div class="member-row" v-for="m in filteredMembers" :key="m.id">
+          <span class="member-name">{{ m.name }}</span>
+          <button class="member-add" type="button" @click="addMember(m)">
+            Add member
+          </button>
         </div>
       </div>
 
-      <div class="join-decline" v-if="!loading">
-        <button class="confirm" @click.stop="create_squad">Confirm</button>
-        <button class="cancel" @click.stop="cancel">Cancel</button>
-      </div>
+      <button class="create-btn" :disabled="loading" @click.stop="create_squad">
+        Create Squad
+      </button>
 
       <p class="error-msg" v-if="error">{{ error }}</p>
     </div>
@@ -60,7 +58,6 @@
 
 <script>
 import UserService from '../../services/user.service'
-import jeec_colour_no_edition_transparent from '@/assets/jeec_colour_no_edition_transparent.svg'
 import jeec_mobile_white from '../../assets/jeec_mobile_white.svg'
 
 export default {
@@ -70,7 +67,7 @@ export default {
     return {
       files: [],
       image_uploaded: false,
-      currentImage: jeec_colour_no_edition_transparent,
+      currentImage: jeec_mobile_white,
       name: '',
       cry: '',
       error: '',
@@ -82,7 +79,7 @@ export default {
       toastType: 'success',
     }
   },
-  // other computed properties...
+
   methods: {
     showNotification(message, type) {
       this.$emit('notification', message, type)
@@ -105,7 +102,7 @@ export default {
         reader.readAsDataURL(this.files[0])
       }
     },
-    // Method to convert image URL to Blob
+
     async getDefaultImageBlob() {
       const response = await fetch(jeec_mobile_white)
       const data = await response.blob()
@@ -116,10 +113,7 @@ export default {
       if (!this.nameExists) {
         this.error = 'Invalid information for new squad - Name cannot be left blank'
         return
-      } else if (!this.cryExists) {
-        this.error = 'Invalid information for new squad - Motto cannot be left blank'
-        return
-      }
+      } 
       this.loading = true
 
       let imageData
@@ -132,23 +126,17 @@ export default {
       const formData = new FormData()
       formData.append('file', imageData)
       formData.append('name', this.name)
-      formData.append('cry', this.cry)
 
       await UserService.createSquad(formData)
         .then((response) => {
-          // handle success
-
           this.showNotification('Squad created successfully', 'success')
-
           this.$emit('back')
         })
         .catch((error) => {
-          // handle error
           this.error = error.response.data.error
           console.log(error)
           this.loading = false
           this.error = 'Squad name already taken'
-          // this.showNotification("Squad already exists", "error");
         })
     },
     async cancel() {
@@ -168,144 +156,212 @@ export default {
 
 <style scoped>
 .create-squad {
-  background-color: #199cff1a;
-  border: 1.5px solid #199cff;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 650px;
+  width: 100%;
+  max-width: 420px;
   margin: 1.5rem auto;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  padding: 1.2rem 1.2rem 1.6rem;
+  border-radius: 22px;
+
   display: flex;
-  flex-direction: column;
-}
-
-.create-modal {
-  display: flex;
-  flex-direction: column;
-  gap: 0rem;
-  font-family: 'Lexend Exa', sans-serif;
-}
-
-.name-image {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-.create-name {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: white;
-  font-family: inherit;
-  width: 100%;
-}
-
-.create-name::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-}
-
-.create-image {
-  width: 110px;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  border: 1.5px solid #199cff;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: transparent;
-  position: relative;
-  z-index: 0;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
+  font-family: "Lexend Exa", sans-serif;
 
-.create-image p {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-align: center;
-  color: #199cff;
-  text-transform: uppercase;
-  line-height: 1rem;
-}
-
-.create-image .plus-symbol {
-  position: absolute;
-  bottom: -6px;
-  left: 0px;
-  background-color: #199cff;
-  border-radius: 50%;
-  color: white;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  border: none;
-  z-index: 2;
-}
-
-.create-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.motto {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.motto p {
-  color: white;
-  font-family: inherit;
-  font-size: 1rem;
-  margin: 0;
-  min-width: max-content;
-}
-
-.create-header p {
-  color: white;
-  font-family: inherit;
-  font-size: 1rem;
-  margin: 0;
-  min-width: max-content;
-}
-
-.create-motto {
-  flex: 1;
-  border: 1.5px solid #199cff;
-  border-radius: 25px;
-  padding: 0.5rem 1rem;
   background: transparent;
 }
 
-.create-motto input {
-  background: none;
-  border: none;
+.create-modal {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  margin: 0.2rem 0 1.2rem;
+  font-weight: 100;
+  font-size: 1.8rem;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+.avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 1px solid #199cff;
+  background: transparent;
+
+  display: grid;
+  place-items: center;
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+}
+
+.avatar img {
+  width: auto;
+  height: auto;
+  object-fit: contain;        
+  box-sizing: border-box;
+}
+
+.avatar-default {
+  opacity: 0.9;
+}
+
+.avatar-plus {
+  position: absolute;
+  left: -2px;
+  bottom: -6px;
+
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #199cff;
   color: white;
+
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.field-label {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+
+.name-input {
+  width: 70%;
+  min-width: 240px;
+  text-align: center;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.35rem 0.2rem;
+
+  border-bottom: 1px solid rgba(25, 156, 255, 0.45);
+}
+
+.section-label {
+  width: 100%;
+  margin: 4rem 0 0.55rem;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: left;
+}
+
+.member-search {
+  width: 100%;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #00E5FF;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+}
+
+.member-search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
   font-family: inherit;
+}
+
+.member-list {
+  width: 100%;
+  margin-top: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.member-row {
+  width: 100%;
+  border: 2px solid rgba(25, 156, 255, 0.55);
+  border-radius: 18px;
+  padding: 0.55rem 0.9rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.member-name {
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1rem;
 }
 
-.buttons {
-  display: flex;
-  gap: 0.8rem;
-  justify-content: center;
-  flex-wrap: wrap;
+.member-add {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}
+
+.member-add:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.create-btn{
+  padding: 9px 16px;
+  border-radius: 999px;
+
+  background: rgba(8,14,20,0.55);
+  border: 2px solid rgba(0,229,255,0.78);
+
+  color: rgba(255,255,255,0.78);
+  font-family: "Lexend Exa", sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .8px;
+
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,0.28) inset, 
+    0 0 8px rgba(0,229,255,0.18);       
+
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.create-btn:hover{
+  box-shadow:
+    0 0 0 1px rgba(0,229,255,0.36) inset,
+    0 0 10px rgba(0,229,255,0.24);
+}
+
+.create-btn:active{
+  transform: translateY(0);
+  opacity: 0.92;
+}
+
+.create-btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow:
+    0 0 0 2px rgba(0, 229, 255, 0.10) inset,
+    0 0 10px rgba(0, 229, 255, 0.12);
 }
 
 .error-msg {
-  color: red;
-  font-size: 1rem;
+  margin-top: 0.9rem;
+  color: #ff5a5a;
+  font-size: 0.95rem;
   text-align: center;
-  margin: 0;
 }
 
 .join-decline {

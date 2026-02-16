@@ -1,44 +1,42 @@
 <template>
   <div class="profile">
     <div class="user-card">
-      <div class="top-section">
-        <div class="left-section">
-          <h2 class="user-name">{{ student.name || 'First Last' }}</h2>
-          <p class="user-username">{{ student.username || 'username' }}</p>
-          <div class="user-stats">
-            <span class="ticket">
-              <span class="ticket-text" :style="{ opacity: hasTicket ? '0' : '1' }">No Ticket</span>
-              <img
-                v-if="hasTicket"
-                src="@/assets/icons/daily_ticket.svg"
-                alt="Ticket"
-                class="ticket-icon"
-              />
-            </span>
-            <span class="points">
-              {{ student.current_points || 0 }}
-              <img src="@/assets/icons/flash_home.svg" alt="Energy" />
-            </span>
+
+      <div class="header-row">
+        <h2 class="user-name">{{ student?.name || 'John Doe' }}</h2>
+        <img src="@/assets/jeec_logo_new.svg" alt="JEEC" class="jeec-logo" />
+      </div>
+
+      <div class="content-row">
+        <div class="left-content">
+          <div class="points-display">
+            <span class="points-value">{{ student?.current_points || 175 }}</span>
+            <img src="@/assets/icons/flash_home_white22.svg" alt="Energy" class="points-icon" />
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{ width: percentage + '%' }"></div>
+            </div>
+            <span class="progress-text">{{ percentage }}%</span>
           </div>
         </div>
 
-        <div class="user-wrapper">
-          <UserImage :image="student.photo" variant="profile" />
-        </div>
-      </div>
-
-      <div class="text-points-wrapper">
-        <JEECPOT variant="profile" />
+        <button class="notification-bell" title="Notifications">
+          <svg class="bell-icon" viewBox="0 0 24 24" fill="none" xmlns="/assets/icons/Bellicon.svg">
+            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="notification-dot"></span>
+        </button>
       </div>
     </div>
 
     <div class="profile-buttons-jeec">
       <button class="linkedin-button" @click="toggleModal">
-        <img class="icon" src="@/assets/linkedin_button_img.svg" alt="LinkedIn" />
         <div class="button-text">
           <div class="button-text">
-            <p v-if="student.linkedin_url == '' || student.linkedin_url == null">
-              Submit<br />LinkedIn
+            <p v-if="student?.linkedin_url == '' || student?.linkedin_url == null">
+              SUBMIT<br />LinkedIn
             </p>
             <p v-else>LinkedIn<br />Submitted</p>
           </div>
@@ -46,25 +44,28 @@
       </button>
 
       <button class="cv-button" @click.stop="toggleModal2">
-        <img class="icon" src="@/assets/cv_button_img.svg" alt="CV" />
         <div class="button-text">
           <div class="button-text">
-            <p v-if="!student.uploaded_cv">Upload<br />your CV</p>
-            <p v-else-if="student.approved_cv">CV<br />Approved</p>
+            <p v-if="!student?.uploaded_cv">UPLOAD CV</p>
+            <p v-else-if="student?.approved_cv">CV<br />Approved</p>
             <p v-else>CV<br />Uploaded</p>
           </div>
         </div>
       </button>
     </div>
 
+    <div class="what-can-win-divider">
+      <span class="divider-line"></span>
+      <span class="divider-text">What I can Win?</span>
+      <span class="divider-line"></span>
+    </div>
+
     <div class="squad-section">
-      <h2 class="squad-title">SQUAD</h2>
-      <!-- <div v-if="!isInSquad"> -->
       <div v-if="!isInSquad()">
         <div v-if="!isCreatingSquad">
           <div class="profile-buttons-jeec">
-            <button @click="change_Create" class="create-squad-button">
-              <p>CREATE SQUAD</p>
+            <button @click="change_Create" class="create-squad-button" aria-label="Create a squad">
+              <img class="squad-btn-img" :src="createSquadIcon" alt="" />
             </button>
           </div>
 
@@ -87,6 +88,27 @@
       </div>
     </div>
 
+    <div class="rankings-section">
+      <h2 class="ranking-title">RANKING</h2>
+      <RankingsPodium
+        v-if="rankingsData.length > 0"
+        :other_rankingdata="rankingsData"
+        :user_ranking="userRanking"
+        :user_points="student?.current_points || 0"
+        :identity="student?.name || 'You'"
+        :flag="true"
+        :type="'Squad'"
+      />
+      <div v-else class="rankings-placeholder">
+        <p>Rankings coming soon...</p>
+      </div>
+      <div class="view-all-link">
+        <span class="view-all-link-line"></span>
+        <a href="/rankings">view all</a>
+        <span class="view-all-link-line"></span>
+      </div>
+    </div>
+
     <div style="position: absolute">
       <!-- LinkedIn Modal -->
       <div class="modal" v-if="modalVisible == true">
@@ -95,7 +117,7 @@
           <div class="modal-header">
             <h2 class="modal-title">
               {{
-                student.linkedin_url == '' || student.linkedin_url == null
+                student?.linkedin_url == '' || student?.linkedin_url == null
                   ? 'Add LinkedIn'
                   : 'Edit LinkedIn'
               }}
@@ -116,7 +138,7 @@
             <div class="modal-submit center-submit">
               <button class="invite-button" type="submit">
                 {{
-                  student.linkedin_url == '' || student.linkedin_url == null ? 'Confirm' : 'Edit'
+                  student?.linkedin_url == '' || student?.linkedin_url == null ? 'Confirm' : 'Edit'
                 }}
               </button>
             </div>
@@ -130,7 +152,7 @@
         <div class="modal-content custom-modal">
           <div class="modal-header">
             <h2 class="modal-title">
-              {{ student.uploaded_cv ? 'Update Uploaded CV' : 'Add CV' }}
+              {{ student?.uploaded_cv ? 'Update Uploaded CV' : 'Add CV' }}
             </h2>
             <button class="modal-close" @click="toggleModal2">&times;</button>
           </div>
@@ -198,6 +220,7 @@ import { useUserStore } from '@/stores/UserStore'
 import axios from 'axios'
 import UserService from '../services/user.service'
 import authHeader from '../services/auth-header'
+import createSquadIcon from "@/assets/icons/create-squad.svg";
 
 // Importação de componentes
 import TheUserInfo from '@/components/UserCard/TheUserInfo.vue'
@@ -207,6 +230,7 @@ import Squad from '@/components/Squads/Squad.vue'
 import ToastNotification from '@/components/Squads/ToastNotification.vue'
 import Invite from '@/components/Squads/Invite.vue'
 import SquadCreation from '@/components/Squads/SquadCreation.vue'
+import RankingsPodium from '@/components/RankingsPodium.vue'
 import User from '@/models/user'
 
 // Variáveis de estado
@@ -237,6 +261,8 @@ const linkedin_url = ref('')
 const percentage = ref(50)
 const user = ref({}) // Tornar user reativo
 const invites = ref([])
+const rankingsData = ref([])
+const userRanking = ref(0)
 
 // Computed properties
 const isInSquad = () => {
@@ -486,138 +512,320 @@ onMounted(fetchProfile)
 
 <style scoped>
 .user-card {
-  background-color: #199cff1a;
-  border: 1.5px solid #199cff;
-  border-radius: 20px 60px 20px 20px;
-  padding: 1rem 1.5rem;
-  width: 90%;
+  background-color: transparent;
+  border-radius: 20px;
+  width: 95%;
   max-width: 650px;
   margin: 1.5rem auto;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.top-section {
+.header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.left-section {
+.content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.left-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-right: 20px;
+  gap: 0.8rem;
 }
 
-.text-points-wrapper {
-  width: 100%;
-  margin-top: 0.5rem;
+.notification-bell {
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(120% 120% at 50% 0%,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 55%
+    ),
+    linear-gradient(180deg, rgba(8,17,26,.95) 0%, rgba(0,0,0,.95) 100%);
+
+  box-shadow: 0 0 2px #fff; 
+  align-self: center;
+}
+
+.bell-icon {
+  font-size: 10px;
+}
+
+.jeec-logo {
+  height: 42px;
+  width: auto;
 }
 
 .user-name {
   font-size: 1.7rem;
   color: white;
-  font-weight: 700;
+  font-weight: 300;
   font-family: 'Lexend Exa', sans-serif;
-  margin: 0;
+  margin-left: 0;
 }
 
-.user-username {
-  padding-bottom: 0.5rem;
+.points-display{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+
+  padding:.4rem .8rem;
+  border-radius:25px;
+  width: fit-content;
+
+  border: 1px solid rgba(0,0,0,1);             
+  background:
+    radial-gradient(120% 120% at 50% 0%,
+      rgba(255,255,255,.08) 0%,
+      rgba(255,255,255,0) 55%
+    ),
+    linear-gradient(180deg, rgba(8,17,26,.95) 0%, rgba(0,0,0,.95) 100%);
+
+  box-shadow: 0 0 2px #fff;
 }
 
-.user-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-
-.ticket,
-.points {
-  border: 2px solid #199cff;
-  padding: 0.3rem 0.6rem;
-  border-radius: 25px;
-  font-size: 0.8rem;
+.points-value {
+  font-size: 1.2rem;
+  font-weight: 600;
   font-family: 'Lexend Exa', sans-serif;
-  font-weight: 100;
+  color: white;
+}
+
+.points-icon {
+  height: 1rem;
+  width: auto;
+}
+
+.progress-section {
   display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  align-items: left;
   position: relative;
-  overflow: visible;
-  /* permite que o conteúdo ultrapasse os limites */
 }
 
-.ticket-text {
-  font-size: 0.8rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 100;
-  display: flex;
-  align-items: center;
-}
-
-.ticket-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.points img {
-  height: 0.9rem;
-  vertical-align: middle;
-}
-
-.user-wrapper {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.profile-buttons-jeec {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-  max-width: 680px;
-  margin-left: auto;
-  margin-right: auto;
-  gap: 0.7rem;
-  padding: 0 1rem;
-}
-
-.profile-buttons-jeec button.linkedin-button,
-.profile-buttons-jeec button.cv-button {
+.progress-bar{
   flex: 1;
-  min-width: 0;
-  max-width: 100%;
+  height: 22px;              
+  border-radius: 11px;      
+  overflow: hidden;
+
+  background:
+    radial-gradient(120% 140% at 50% 0%,
+      rgba(25,156,255,.25) 0%,   
+      rgba(25,156,255,0) 55%
+    ),
+    linear-gradient(180deg,
+      rgba(8,17,26,1) 0%,        
+      rgba(3,8,14,1) 100%
+    );
+
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.06),
+    inset 0 -10px 16px rgba(0,0,0,.65),     
+    0 0 10px rgba(25,156,255,.10);         
 }
 
-.profile-buttons-jeec button {
+.progress-fill{
+  height: 100%;
+  border-radius: 11px;
+  transition: left .3s ease;
+
+  background:
+    radial-gradient(120% 140% at 50% 0%,
+      rgba(25,156,255,.7) 25%,
+      rgba(25,156,255,.04) 100%
+    );
+
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.10),
+    inset 0 -8px 12px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(25,156,255,.18),
+    0 0 12px rgba(25,156,255,.18);
+}
+
+.progress-text {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  font-size: 0.9rem;
+  font-family: 'Lexend Exa', sans-serif;
+  color: white;
+}
+
+.what-can-win-divider {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
-  background-color: #199cff;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  padding: 0.6rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 550;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  text-align: left;
-  flex: none;
-  letter-spacing: 0.1em;
+  gap: 1rem;
+  margin: 2rem auto;
+  max-width: 680px;
+  padding: 0 1rem;
 }
 
-.profile-buttons-jeec button:hover {
-  transform: scale(1.02);
+.divider-line {
+  flex: 1;
+  height: .3px;
+  max-width: 50px;   
+  background: #fff;
+}
+
+.divider-text {
+  color: white;
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rankings-section {
+  margin: 3rem auto 5rem;
+  max-width: 650px;
+  padding: 0 1rem;
+}
+
+.ranking-title {
+  font-family: 'Lexend Exa', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  text-align: left;
+  background: linear-gradient(90deg, #B8A1FF 1000%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+
+.rankings-placeholder {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  font-family: 'Lexend', sans-serif;
+}
+
+.view-all-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.view-all-link-line{
+  flex: 1;
+  height: 1px;
+  max-width: 50px;   
+  background: #fff;
+}
+
+.view-all-link a{
+  color: rgba(255,255,255,.7);
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: .9rem;
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.profile-buttons-jeec{
+  display:flex;
+  justify-content:space-between;
+  gap:.75rem;
+  padding:1rem 1rem;  
+}
+
+.profile-buttons-jeec button{
+  position:relative;
+  flex:1;
+
+  cursor:pointer;
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:transparent;
+  transition:transform .18s ease, filter .18s ease;
+}
+
+.profile-buttons-jeec button::before{
+  content:"";
+  border-radius:inherit;
+
+  background:var(--btn-border);
+  z-index:0;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+}
+
+.profile-buttons-jeec button::after{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:inherit;
+  z-index:1;
+}
+
+.profile-buttons-jeec button .btn-label{
+  position:relative;
+  z-index:2;
+  line-height:1.05;
+  text-align:center;
+  color:rgba(255,255,255,.88);
+  text-shadow:0 0 10px rgba(255,255,255,.22);
+}
+
+.profile-buttons-jeec .linkedin-button{
+  border-radius: 45px;
+  border: .5px solid #199CFF;
+  width: 170px;
+  height: 42px;
+
+  background: linear-gradient(180deg,#0F3C5B 0%,#072A3F 100%);
+  box-shadow:inset 0 0 0 .5px #199CFF, 0 0 18px rgba(25,156,255,.35);
+}
+
+.profile-buttons-jeec .cv-button{
+  border-radius: 45px;
+  border: .5px solid #7209B7;
+  width: 161px;
+  height: 42px;
+
+  background:linear-gradient(180deg,#1B0F33 0%,#120A26 100%);
+  box-shadow:inset 0 0 0 .5px #8A2DFF, 0 0 18px rgba(138,45,255,.35);
+}
+
+.profile-buttons-jeec button:hover{
+  transform:scale(1.02);
+  filter:brightness(1.05);
+}
+.profile-buttons-jeec button:active{
+  transform:scale(.99);
 }
 
 .profile-buttons-jeec .icon {
@@ -626,40 +834,12 @@ onMounted(fetchProfile)
 }
 
 .button-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  font-family:'Lexend Exa', sans-serif;
   line-height: 1.1rem;
-}
-
-.section-title {
-  color: white;
-  text-align: center;
-  font-size: 2rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 700;
-  text-shadow: 0 0 10px #199cff;
-  margin-top: 3rem;
-}
-
-.create-squad-button {
-  background-color: #199cff;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  text-transform: uppercase;
-  width: auto;
-}
-
-.create-squad-button:hover {
-  transform: scale(1.02);
+  font-size: 13;
+  font-weight: bolder;
+  letter-spacing:.14em;
+  text-transform:uppercase;
 }
 
 .squad-section {
@@ -667,41 +847,22 @@ onMounted(fetchProfile)
   margin-top: 2rem;
 }
 
-.squad-title {
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  color: white;
-  text-shadow: 0 0 10px #199cff;
-  margin-bottom: 1rem;
-}
-
-.create-squad-button {
-  background-color: #199cff;
-  border: none;
-  border-radius: 15px;
-  color: white;
-  padding: 0.8rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  width: 182px;
-  margin: 0 auto;
-  transition: transform 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.create-squad-button:hover {
-  transform: scale(1.02);
+.profile-buttons-jeec .create-squad-button{
+  flex: 0 0 auto;   
+  width: auto;        
+  padding: 0;         
+  background: none;
+  box-shadow: none;
+  border: 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: auto;
   height: 100%;
   z-index: 999;
   display: flex;
@@ -714,7 +875,7 @@ onMounted(fetchProfile)
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   height: 100%;
-  width: 100%;
+  width: auto;
   top: 0;
   left: 0;
   z-index: -1;
@@ -727,7 +888,7 @@ onMounted(fetchProfile)
   width: 90%;
   max-width: 500px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  font-family: 'Lexend Exa', sans-serif;
+  font-family: 'Lexend Exa Light', sans-serif;
   color: white;
 }
 
@@ -745,7 +906,7 @@ onMounted(fetchProfile)
   letter-spacing: 0.1rem;
   color: white;
   text-align: center;
-  font-family: 'Lexend', sans-serif;
+  font-family: 'Lexend Exa', sans-serif;
 }
 
 .modal-close {
@@ -776,7 +937,7 @@ onMounted(fetchProfile)
 }
 
 .modal-input {
-  width: 100%;
+  width: auto;
   padding: 0.5rem 0.7rem;
   border-radius: 12px;
   border: 2px solid #199cff;
@@ -841,34 +1002,14 @@ onMounted(fetchProfile)
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  width: 100%;
-  justify-content: flex-start;
+  width: 90%;
+  justify-content: center;
 }
 
 .inline-radio-group label {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  white-space: nowrap;
 }
 
-.upload-cv-button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  border: 2px solid #199cff;
-  background-color: transparent;
-  font-family: 'Lexend Exa', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: white;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.upload-cv-button:hover {
-  border-color: #42b5ff;
-}
 </style>
