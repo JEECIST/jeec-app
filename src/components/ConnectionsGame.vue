@@ -1,9 +1,7 @@
 <template>
   <div class="connections-game">
 
-    <DuckPopUp v-if="showDuck" :duckState="duckMood" @close="showDuck = false" />
-
-    <h1>Connections</h1>
+    <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
     <div class="found-groups">
       <div v-for="group in foundGroups" :key="group.theme" class="found-group"
@@ -59,6 +57,7 @@ import DuckPopUp from '@/components/DuckPopUp.vue'
 const store = useConnectionsStore()
 
 const showDuck = ref(false)
+const received_points = ref(null)
 
 const { puzzleGroups, wordsInPlay, foundGroups, tries, gameStatus, puzzleDateStamp } = storeToRefs(store)
 
@@ -224,7 +223,7 @@ function submitSelection() {
 
     if (store.wordsInPlay.length === 0) {
       store.gameStatus = 'won'
-      showDuck.value = true
+      // showDuck.value = true
       submitGameResult(true)
     }
   } else {
@@ -232,7 +231,7 @@ function submitSelection() {
 
     if (store.tries === 0) {
       store.gameStatus = 'lost'
-      showDuck.value = true
+      // showDuck.value = true
       submitGameResult(false)
     }
 
@@ -254,6 +253,10 @@ const submitGameResult = async (won) => {
       },
       { headers: authHeader() }
     )
+
+    received_points.value = response.data.points_awarded
+    showDuck.value = true
+
   } catch (error) {
 
   }

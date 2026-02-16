@@ -14,8 +14,14 @@
                     <img v-if="duckState == 'sad'" :src="SadDuckGif" alt="Pato Duck Dance Sticker" class="pato-gif" />
                 </div>
             </div>
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 5px;" v-if="points != null">
+                <h3>You earned {{ points }} </h3>
+                <img class="points_duck" :src="DuckPoints" />
+            </div>
+
 
             <h3>Come back tomorrow!</h3>
+
         </div>
     </div>
 </template>
@@ -23,6 +29,7 @@
 <script setup>
 import DuckGif from "@/assets/pato-duck.gif"
 import SadDuckGif from "@/assets/sad-shuba-shuba.gif"
+import DuckPoints from "@/assets/icons/flash_home.svg"
 
 const emit = defineEmits(['close'])
 
@@ -30,6 +37,10 @@ const props = defineProps({
     duckState: {
         type: String,
         default: '',
+    },
+    points: {
+        type: Number,
+        default: null,
     }
 })
 
@@ -40,6 +51,11 @@ function exitPopUp() {
 </script>
 
 <style scoped>
+.points_duck {
+    height: auto;
+    width: 2em;
+}
+
 .gif-container {
     display: flex;
     flex-direction: column;

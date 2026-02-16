@@ -1,11 +1,11 @@
 <template>
   <div class="wordle-page">
-    <DuckPopUp v-if="showDuck" :duckState="duckMood" @close="showDuck = false" />
+    <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="loading">
+    <!-- <div v-if="isLoading" class="loading">
       <p>Loading today's word...</p>
-    </div>
+    </div> -->
 
     <!-- Already Played Message -->
     <!-- <div v-else-if="hasPlayedToday" class="already-played">
@@ -14,7 +14,7 @@
     </div> -->
 
     <!-- Game Content -->
-    <div v-else>
+    <div>
       <!-- Game Grid -->
       <div class="game-grid">
         <div v-for="(row, rowIndex) in gameGrid" :key="rowIndex" class="grid-row">
@@ -69,6 +69,7 @@ import { useWordleStore } from '@/stores/WordleStore'
 import DuckPopUp from '@/components/DuckPopUp.vue'
 
 const showDuck = ref(false)
+const received_points = ref(null)
 
 const store = useWordleStore()
 
@@ -176,9 +177,10 @@ const submitGameResult = async (won) => {
       { headers: authHeader() }
     )
 
-    if (response.data.points_awarded > 0) {
+    received_points.value = response.data.points_awarded
+    showDuck.value = true
 
-    }
+
   } catch (error) {
     console.error('Error submitting game result:', error)
     if (error.response?.status === 409) {
@@ -299,7 +301,7 @@ const checkWord = async () => {
       store.gameStatus = 'won'
       // hasPlayedToday.value = true
 
-      showDuck.value = true
+      // showDuck.value = true
 
       store.saveState()
 
@@ -317,7 +319,7 @@ const checkWord = async () => {
       store.gameStatus = 'lost'
       // hasPlayedToday.value = true
 
-      showDuck.value = true
+      // showDuck.value = true
 
       // Submit loss to backend
       await submitGameResult(false)
