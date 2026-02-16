@@ -20,31 +20,27 @@
     <div class="points-wrapper">
       <JEECPOT :variant="variant"></JEECPOT>
     </div>
-
     <button
-  v-if="variant === 'home'"
-  class="notif-wrapper"
-  type="button"
-  aria-label="Notifications"
-  :aria-expanded="stateStore.notificationsOpen"
-  aria-controls="notifications-drawer"
-  @click="stateStore.notificationsOpen = !stateStore.notificationsOpen"
->
-      <span class="notif-dot" aria-hidden="true"></span>
-
-      <svg
-        class="notif-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
+      v-if="variant === 'home'"
+      class="notif-wrapper"
+      type="button"
+      aria-label="Notifications"
+      :aria-expanded="stateStore.notificationsOpen"
+      aria-controls="notifications-drawer"
+      @click="openNotifications"
+    >
+      <span class="notif-dot" :class="{
+    green: stateStore.notificationsSubscribed === true,
+    red: stateStore.notificationsSubscribed === false,
+  }" aria-hidden="true"></span>
+      <svg class="notif-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path
           d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2Zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"
           fill="currentColor"
         />
       </svg>
     </button>
+
     <NotificationsDrawer v-if="variant === 'home'" />
 
     <div class="user-wrapper" v-else>
@@ -70,6 +66,22 @@ const stateStore = useStateStore()
 const userStore = useUserStore()
 
 import { defineProps } from 'vue'
+
+import UserService from '../../services/user.service' // ajusta o path ao teu projeto
+
+async function openNotifications() {
+  stateStore.notificationsOpen = true
+
+  let isSubscribed = false
+  try {
+    const { data } = await UserService.getIsSubscribed()
+    isSubscribed = !!data?.subscribed
+  } catch (e) {
+    isSubscribed = false
+  }
+
+  stateStore.notificationsSubscribed = isSubscribed
+}
 
 defineProps({
   variant: {
@@ -234,6 +246,25 @@ defineProps({
   box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
 }
 
+.notif-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+
+  background: #ff3b3b; /* default quando ainda não sabes */
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
+}
+
+.notif-dot.green {
+  background: #33e08a;
+}
+
+.notif-dot.red {
+  background: #ff3b3b;
+}
 @media screen and (max-width: 850px) {
   .user-card.home {
     left: 50%;
