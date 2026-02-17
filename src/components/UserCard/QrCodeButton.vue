@@ -19,15 +19,15 @@ button {
   width: 100%;
   aspect-ratio: 1;
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
 }
-button:before {
-  content: '';
-  float: left;
-  padding-top: 100%;
-}
+
 button > img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
 }
 </style>

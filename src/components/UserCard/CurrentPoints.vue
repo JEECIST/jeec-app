@@ -71,7 +71,7 @@ watch(
   height: 100%;
   margin-top: 7px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 .img {
   width: 40px;

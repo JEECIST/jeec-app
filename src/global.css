@@ -9,8 +9,9 @@
 }
 
 :root {
-  --color-background: #08111A;
-  --color-background-sec: #2b2b2b;
+  --color-background: #08111a;
+  /*  --color-background-sec: #2b2b2b;*/
+  --color-background-sec: #08111a;
   --color-font: #efeeee;
   --color-strong-pink: #ff006e;
   --color-strong-pink-rgb: 255, 0, 110;
