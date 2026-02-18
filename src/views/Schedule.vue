@@ -116,12 +116,27 @@
                       <p>{{ activity.date }}</p>
                     </div>
                   </transition>
-                  <button
-                    :class="['info', className(activity.type, '-info')]"
-                    @click="toggleActivityInfo(index)"
-                  >
-                    {{ isExpanded(index) ? '−info' : '+info' }}
-                  </button>
+                  <div class="actions-row">
+                    <button
+                      :class="['info', className(activity.type, '-info')]"
+                      @click="toggleActivityInfo(index)"
+                    >
+                      {{ isExpanded(index) ? '-info' : '+info' }}
+                    </button>
+                    <div class="calendar-dropdown">
+                      <button :class="['calendar-btn', className(activity.type, '-info')]" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
+                        <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z" fill="currentColor"/>
+                        </svg>
+                      </button>
+                      <transition name="expand-fade">
+                        <div v-if="calendarMenuIndex === index" class="calendar-menu">
+                          <button @click="addToICalendar(activity)">iCalendar (.ics)</button>
+                          <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
                 </div>
                 <div class="logos">
                   <!-- Container fixo para o company logo -->
@@ -286,7 +301,7 @@
               </transition>
             </template>
             <button class="info" @click="toggleEletrolinkInfo">
-              {{ showEletrolinkInfo ? '−info' : '+info' }}
+              {{ showEletrolinkInfo ? '-info' : '+info' }}
             </button>
           </div>
         </section>
@@ -317,12 +332,27 @@
                       <p>{{ activity.date }}</p>
                     </div>
                   </transition>
-                  <button
-                    :class="['info-mobile', className(activity.type, '-info')]"
-                    @click="toggleActivityInfo(index)"
-                  >
-                    {{ isExpanded(index) ? '−info' : '+info' }}
-                  </button>
+                  <div class="actions-row">
+                    <button
+                      :class="['info-mobile', className(activity.type, '-info')]"
+                      @click="toggleActivityInfo(index)"
+                    >
+                      {{ isExpanded(index) ? '-info' : '+info' }}
+                    </button>
+                    <div class="calendar-dropdown">
+                      <button :class="['calendar-btn', className(activity.type, '-info')]" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
+                        <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z" fill="currentColor"/>
+                        </svg>
+                      </button>
+                      <transition name="expand-fade">
+                        <div v-if="calendarMenuIndex === index" class="calendar-menu">
+                          <button @click="addToICalendar(activity)">iCalendar (.ics)</button>
+                          <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
                 </div>
                 <div class="logos-mobile">
                   <!-- Container para company logo (só aparece se existir speaker) -->
@@ -406,6 +436,7 @@ const expandedEvent = ref(null)
 const showEletrolinkInfo = ref(false)
 const loading = ref(false)
 const currentLogoIndex = ref({})
+const calendarMenuIndex = ref(null)
 let globalInterval = null
 
 const db_activities = ref([
@@ -425,7 +456,7 @@ const db_activities = ref([
 ])
 
 const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY']
-const event_days = ['2025-05-05', '2025-05-06', '2025-05-07', '2025-05-08', '2025-05-09']
+const event_days = ['2026-02-09', '2026-02-10', '2026-02-11', '2026-02-12', '2026-02-13']
 const eletrolink_description =
   'A new, exciting booth where students can engage in 1-on-1 conversations with companies and potentially find their next job or internship.'
 
@@ -549,6 +580,72 @@ function formatActivityDate(day, startTime, endTime) {
   return `${month} ${dayNum} | ${startTime.slice(-12, -7).replace(':', 'h')} - ${endTime.slice(-12, -7).replace(':', 'h')}`
 }
 
+function toggleCalendarMenu(index) {
+  calendarMenuIndex.value = calendarMenuIndex.value === index ? null : index
+}
+
+function closeCalendarMenu() {
+  calendarMenuIndex.value = null
+}
+
+function getCalendarDates(activity) {
+  const dayIndex = days.findIndex((d) => d === activity.dayOfWeek)
+  if (dayIndex === -1) return null
+  const dateStr = event_days[dayIndex]
+
+  const startParts = activity.time.replace('h', ':').split(':')
+  const endParts = activity.end_time.replace('h', ':').split(':')
+
+  const startDT = `${dateStr.replace(/-/g, '')}T${startParts[0].padStart(2, '0')}${startParts[1].padStart(2, '0')}00`
+  const endDT = `${dateStr.replace(/-/g, '')}T${endParts[0].padStart(2, '0')}${endParts[1].padStart(2, '0')}00`
+
+  return { startDT, endDT }
+}
+
+function addToICalendar(activity) {
+  const dates = getCalendarDates(activity)
+  if (!dates) return
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//JEEC IST//Schedule//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${dates.startDT}`,
+    `DTEND:${dates.endDT}`,
+    `SUMMARY:${activity.title}`,
+    `DESCRIPTION:${activity.description || ''}`,
+    `LOCATION:${activity.location || ''}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${activity.title.replace(/[^a-zA-Z0-9]/g, '_')}.ics`
+  a.click()
+  URL.revokeObjectURL(url)
+  closeCalendarMenu()
+}
+
+function addToGoogleCalendar(activity) {
+  const dates = getCalendarDates(activity)
+  if (!dates) return
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: activity.title,
+    dates: `${dates.startDT}/${dates.endDT}`,
+    details: activity.description || '',
+    location: activity.location || '',
+  })
+
+  window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank')
+  closeCalendarMenu()
+}
+
 async function fetchData() {
   loading.value = true
 
@@ -560,6 +657,7 @@ async function fetchData() {
       new Promise((resolve) => setTimeout(resolve, 200)),
     ])
     const data = response.data
+    console.log('Dados recebidos:', data)
     base_path.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('ist/', 'ist')
     db_activities.value = data.other_activities.map((activity) => ({
       id: activity.id,
@@ -650,6 +748,7 @@ watch(
 onMounted(() => {
   updateIsMobile()
   window.addEventListener('resize', updateIsMobile)
+  document.addEventListener('click', closeCalendarMenu)
 
   setTimeout(() => {
     scrollToTab(activeDay.value)
@@ -663,6 +762,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateIsMobile)
+  document.removeEventListener('click', closeCalendarMenu)
 
   if (globalInterval) {
     clearInterval(globalInterval)
@@ -1136,6 +1236,72 @@ h1 {
 
 .activity-tech-visit-info {
   color: var(--c-acc-orange);
+}
+
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.calendar-dropdown {
+  position: relative;
+}
+
+.calendar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: var(--c-acc-blue);
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.calendar-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.calendar-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.calendar-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 10;
+  min-width: 160px;
+}
+
+.calendar-menu button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-align: left;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.calendar-menu button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .icon {
