@@ -1,109 +1,75 @@
 <template>
   <div class="wordle-page">
+    <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
+
     <!-- Loading State -->
-    <div v-if="isLoading" class="loading">
+    <!-- <div v-if="isLoading" class="loading">
       <p>Loading today's word...</p>
-    </div>
+    </div> -->
 
     <!-- Already Played Message -->
-    <div v-else-if="hasPlayedToday" class="already-played">
+    <!-- <div v-else-if="hasPlayedToday" class="already-played">
       <h2>Come back tomorrow!</h2>
       <p>You've already played today's Wordle.</p>
-    </div>
-    
+    </div> -->
+
     <!-- Game Content -->
-    <div v-else>
+    <div>
       <!-- Game Grid -->
       <div class="game-grid">
-        <div 
-          v-for="(row, rowIndex) in gameGrid" 
-          :key="rowIndex" 
-          class="grid-row"
-        >
-          <div 
-            v-for="(cell, cellIndex) in row" 
-            :key="cellIndex" 
-            class="grid-cell"
-            :class="{
-              'filled': cell.letter,
-              'correct': cell.status === 'correct',
-              'present': cell.status === 'present',
-              'absent': cell.status === 'absent',
-              'reveal': cell.revealing,
-              'bounce': cell.bouncing
-            }"
-          >
+        <div v-for="(row, rowIndex) in gameGrid" :key="rowIndex" class="grid-row">
+          <div v-for="(cell, cellIndex) in row" :key="cellIndex" class="grid-cell" :class="{
+            'filled': cell.letter,
+            'correct': cell.status === 'correct',
+            'present': cell.status === 'present',
+            'absent': cell.status === 'absent',
+            'reveal': cell.revealing,
+            'bounce': cell.bouncing
+          }">
             {{ cell.letter }}
           </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Keyboard -->
-    <div class="keyboard">
-      <div class="keyboard-row">
-        <button 
-          v-for="key in firstRow" 
-          :key="key" 
-          class="key"
-          :class="getKeyClass(key)"
-          @click="handleKeyPress(key)"
-        >
-          {{ key }}
-        </button>
+      <!-- Keyboard -->
+      <div class="keyboard">
+        <div class="keyboard-row">
+          <button v-for="key in firstRow" :key="key" class="key" :class="getKeyClass(key)" @click="handleKeyPress(key)">
+            {{ key }}
+          </button>
+        </div>
+        <div class="keyboard-row">
+          <button v-for="key in secondRow" :key="key" class="key" :class="getKeyClass(key)"
+            @click="handleKeyPress(key)">
+            {{ key }}
+          </button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key special-key" @click="handleKeyPress('ENTER')">
+            ENTER
+          </button>
+          <button v-for="key in thirdRow" :key="key" class="key" :class="getKeyClass(key)" @click="handleKeyPress(key)">
+            {{ key }}
+          </button>
+          <button class="key special-key" @click="handleKeyPress('BACKSPACE')">
+            ⌫
+          </button>
+        </div>
       </div>
-      <div class="keyboard-row">
-        <button 
-          v-for="key in secondRow" 
-          :key="key" 
-          class="key"
-          :class="getKeyClass(key)"
-          @click="handleKeyPress(key)"
-        >
-          {{ key }}
-        </button>
-      </div>
-      <div class="keyboard-row">
-        <button 
-          class="key special-key"
-          @click="handleKeyPress('ENTER')"
-        >
-          ENTER
-        </button>
-        <button 
-          v-for="key in thirdRow" 
-          :key="key" 
-          class="key"
-          :class="getKeyClass(key)"
-          @click="handleKeyPress(key)"
-        >
-          {{ key }}
-        </button>
-        <button 
-          class="key special-key"
-          @click="handleKeyPress('BACKSPACE')"
-        >
-          ⌫
-        </button>
-      </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <ToastNotification
-      :message="toastMessage"
-      :type="toastType"
-      :visible="showToast"
-      @close="showToast = false"
-    />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import ToastNotification from '@/components/Squads/ToastNotification.vue'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
 import { useWordleStore } from '@/stores/WordleStore'
+
+import DuckPopUp from '@/components/DuckPopUp.vue'
+
+const showDuck = ref(false)
+const received_points = ref(null)
 
 const store = useWordleStore()
 
@@ -116,11 +82,6 @@ const isLoading = ref(true)
 const hasPlayedToday = ref(false) // Track if user already played
 
 const isRevealing = ref(false)
-
-// Toast notification state
-const showToast = ref(false)
-const toastMessage = ref('')
-const toastType = ref('success')
 
 const gameGrid = computed(() => store.gameGrid)
 const currentRow = computed({
@@ -139,50 +100,55 @@ const firstRow = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P']
 const secondRow = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L']
 const thirdRow = ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
 
-// Show toast notification
-const showNotification = (message, type = 'success') => {
-  toastMessage.value = message
-  toastType.value = type
-  showToast.value = true
-}
+const duckMood = computed(() => {
+  if (store.gameStatus === 'won') return 'happy'
+  if (store.gameStatus === 'lost') return 'sad'
+  return ''
+})
+
 
 const fetchWordOfDay = async () => {
   try {
     isLoading.value = true
-    console.log('Fetching word of day...')
+
+    // 1. Tentar restaurar o estado ANTES de chamar a API
+    const restored = store.loadState()
+
+    // Verifica se temos um jogo guardado, se é do dia de hoje e se tem uma palavra alvo
+    if (restored && store.targetWord) {
+      console.log('JOGO RESTAURADO DO STORAGE:', store.targetWord)
+
+      TARGET_WORD.value = store.targetWord
+
+      // Se o jogo já não estiver em "playing", marca como jogado
+      if (store.gameStatus !== 'playing') {
+        hasPlayedToday.value = true
+
+        showDuck.value = true
+      }
+
+      isLoading.value = false
+      return // <--- SAI DA FUNÇÃO AQUI (Não chama a API)
+    }
+
+    // 2. Se não houver jogo guardado, ENTÃO chama a API
+    console.log('Fetching word of day from API...')
     const response = await axios.get(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-word-of-day`,
       { headers: authHeader() }
     )
 
-    // Check if user already played
+    // Check if user already played (validar pelo backend)
     if (response.data.has_played) {
       hasPlayedToday.value = true
-      showNotification('You have already played today! Come back tomorrow.', 'info')
       isLoading.value = false
       return
     }
 
-    console.log('Word received:', response.data.word)
+    // 3. Iniciar novo jogo com a palavra da API
+    console.log('New Word received:', response.data.word)
     TARGET_WORD.value = response.data.word
 
-    // Attempt to restore state
-    const restored = store.loadState()
-    console.log('State restored:', restored, 'Target word match:', store.targetWord === TARGET_WORD.value)
-
-    if (restored && store.targetWord === TARGET_WORD.value) {
-      console.log('Game status:', store.gameStatus)
-
-      if (store.gameStatus !== 'playing') {
-        hasPlayedToday.value = true
-      }
-      
-      isLoading.value = false
-      return
-    }
-
-    // New day -> Initialize new game
-    console.log('Initializing new game...')
     store.targetWord = TARGET_WORD.value
     store.dateStamp = new Date().toISOString().slice(0, 10)
     store.initGrid(MAX_ATTEMPTS, WORD_LENGTH)
@@ -193,9 +159,7 @@ const fetchWordOfDay = async () => {
     console.error('Error fetching word:', err)
     if (err.response?.data?.has_played) {
       hasPlayedToday.value = true
-      showNotification('You have already played today! Come back tomorrow.', 'info')
     } else {
-      showNotification('Failed to load today\'s word.', 'error')
     }
     isLoading.value = false
   }
@@ -205,23 +169,24 @@ const fetchWordOfDay = async () => {
 const submitGameResult = async (won) => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-finish`,
+      `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/game-finish`,
       {
-        won: won  // Only send won status
+        won: won,
+        game: "wordle"
       },
       { headers: authHeader() }
     )
 
-    if (response.data.points_awarded > 0) {
-      showNotification(`Congrats! 
-      \n You earned ${response.data.points_awarded} points!`, 'success')
-    }
+    received_points.value = response.data.points_awarded
+    showDuck.value = true
+
+
   } catch (error) {
     console.error('Error submitting game result:', error)
     if (error.response?.status === 409) {
       console.log('Game already submitted')
     } else {
-      showNotification('Failed to save game result', 'error')
+
     }
   }
 }
@@ -236,16 +201,16 @@ const getCurrentWord = () => {
 // Handle letter input
 const addLetter = (letter) => {
   if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
-  
+
   if (currentCol.value < WORD_LENGTH && currentRow.value < MAX_ATTEMPTS) {
     const cell = gameGrid.value[currentRow.value][currentCol.value]
     cell.letter = letter
     cell.bouncing = true
-    
+
     setTimeout(() => {
       cell.bouncing = false
     }, 200)
-    
+
     currentCol.value++
     store.saveState()
   }
@@ -254,7 +219,7 @@ const addLetter = (letter) => {
 // Handle backspace
 const removeLetter = () => {
   if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
-  
+
   if (currentCol.value > 0) {
     currentCol.value--
     gameGrid.value[currentRow.value][currentCol.value].letter = ''
@@ -266,35 +231,39 @@ const removeLetter = () => {
 // Check word and provide feedback
 const checkWord = async () => {
   if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
-  
+
+  console.log("1")
+
   const currentWord = getCurrentWord()
 
   if (currentWord.length !== WORD_LENGTH) {
     return
   }
-  
+
+  console.log("2")
+
   const row = gameGrid.value[currentRow.value]
   const targetLetters = TARGET_WORD.value.split('')
   const guessLetters = currentWord.split('')
-  
+
   // First pass: mark correct letters
   const targetLetterCounts = {}
   for (let i = 0; i < WORD_LENGTH; i++) {
     const letter = targetLetters[i]
     targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1
-    
+
     if (guessLetters[i] === letter) {
       targetLetterCounts[letter]--
     }
   }
-  
+
   // Second pass: determine all statuses first
   const statuses = []
   const keyUpdates = []
-  
+
   for (let i = 0; i < WORD_LENGTH; i++) {
     const letter = guessLetters[i]
-    
+
     if (guessLetters[i] === targetLetters[i]) {
       statuses[i] = 'correct'
       keyUpdates.push({ letter, status: 'correct' })
@@ -307,52 +276,55 @@ const checkWord = async () => {
       keyUpdates.push({ letter, status: 'absent' })
     }
   }
-  
+
   // Set revealing state to block input
   isRevealing.value = true
-  
+
   // Apply reveal animation with staggered timing
   for (let i = 0; i < WORD_LENGTH; i++) {
     setTimeout(() => {
       row[i].revealing = true
       row[i].status = statuses[i]
       updateKeyState(keyUpdates[i].letter, keyUpdates[i].status)
-      
+
       setTimeout(() => {
         row[i].revealing = false
       }, 600)
     }, i * 400)
   }
-  
+
   // Check win/lose conditions after all animations complete
   setTimeout(async () => {
     isRevealing.value = false
-    
+
     if (currentWord === TARGET_WORD.value) {
       store.gameStatus = 'won'
       // hasPlayedToday.value = true
-      showNotification('Congratulations! You won!', 'success')
+
+      // showDuck.value = true
+
       store.saveState()
-      
+
       // Submit win to backend
       await submitGameResult(true)
       return
     }
-    
+
     // Move to next row
     currentRow.value++
     currentCol.value = 0
-    
+
     // Check lose condition
     if (currentRow.value >= MAX_ATTEMPTS) {
       store.gameStatus = 'lost'
       // hasPlayedToday.value = true
-      showNotification(`Game Over! The word was: ${TARGET_WORD.value}`, 'error')
-      
+
+      // showDuck.value = true
+
       // Submit loss to backend
       await submitGameResult(false)
     }
-    
+
     store.saveState()
   }, WORD_LENGTH * 400 + 100)
 }
@@ -360,10 +332,10 @@ const checkWord = async () => {
 // Update keyboard key states
 const updateKeyState = (letter, status) => {
   const currentState = store.keyStates[letter]
-  
+
   if (currentState === 'correct') return
   if (currentState === 'present' && status === 'absent') return
-  
+
   store.keyStates[letter] = status
   store.saveState()
 }
@@ -381,7 +353,7 @@ const getKeyClass = (key) => {
 // Handle key press
 const handleKeyPress = (key) => {
   if (gameStatus.value !== 'playing' || isRevealing.value || hasPlayedToday.value) return
-  
+
   if (key === 'ENTER') {
     checkWord()
   } else if (key === 'BACKSPACE') {
@@ -394,7 +366,7 @@ const handleKeyPress = (key) => {
 // Handle physical keyboard input
 const handlePhysicalKeyPress = (event) => {
   const key = event.key.toUpperCase()
-  
+
   if (key === 'ENTER') {
     handleKeyPress('ENTER')
   } else if (key === 'BACKSPACE') {
@@ -687,23 +659,29 @@ h1 {
     background-color: #404040;
     border-color: #007acc;
   }
+
   50% {
     transform: rotateX(90deg);
     background-color: #404040;
     border-color: #007acc;
   }
+
   55% {
     transform: rotateX(90deg);
   }
+
   100% {
     transform: rotateX(0deg);
   }
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.15);
   }

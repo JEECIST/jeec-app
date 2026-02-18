@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="nav-wrapper"
-    :class="{ open: stateStore.navOpen }"
-    :aria-hidden="!stateStore.navOpen"
-    :inert="!stateStore.navOpen"
-  >
+  <div class="nav-wrapper" :class="{ open: stateStore.navOpen }" :aria-hidden="!stateStore.navOpen"
+    :inert="!stateStore.navOpen">
     <div class="nav-backdrop" @click="stateStore.navOpen = false"></div>
     <div id="nav-drawer">
       <button
@@ -26,19 +22,19 @@
             <router-link to="/games">Games</router-link>
           </li>
           <li>
-            <router-link to="/profile">Store</router-link>
+            <router-link to="/shop">Store</router-link>
           </li>
           <li>
-            <router-link to="/schedule">Prizes</router-link>
+            <router-link to="/draw">Prizes</router-link>
           </li>
           <li>
-            <router-link to="/eletrolink">Schedule</router-link>
+            <router-link to="/schedule">Schedule</router-link>
           </li>
           <li>
-            <router-link to="/draw">Eletrolink</router-link>
+            <router-link to="/eletrolink">Eletrolink</router-link>
           </li>
           <li>
-            <router-link to="/shop">Ranking</router-link>
+            <router-link to="/rankings">Rankings</router-link>
           </li>
         </ul>
         <div class="help-info">
@@ -175,7 +171,7 @@ li a.active-link::before {
   bottom: 0;
   translate: -50% 50%;
   border-radius: 50%;
-  
+
   width: 100%;
   height: 60px;
   z-index: -1;
