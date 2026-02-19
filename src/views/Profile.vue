@@ -1,13 +1,13 @@
 <template>
   <div class="profile">
-    <div class="user-card">
+    <!-- <div class="user-card">
 
-      <div class="header-row">
+            <div class="header-row">
         <h2 class="user-name">{{ student?.name || 'John Doe' }}</h2>
         <img src="@/assets/jeec_logo_new.svg" alt="JEEC" class="jeec-logo" />
-      </div>
+      </div> 
 
-      <div class="content-row">
+       <div class="content-row">
         <div class="left-content">
           <div class="points-display">
             <span class="points-value">{{ student?.current_points || 175 }}</span>
@@ -24,12 +24,14 @@
 
         <button class="notification-bell" title="Notifications">
           <svg class="bell-icon" viewBox="0 0 24 24" fill="none" xmlns="/assets/icons/Bellicon.svg">
-            <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path
+              d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.89 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z"
+              fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <span class="notification-dot"></span>
         </button>
       </div>
-    </div>
+    </div> -->
 
     <div class="profile-buttons-jeec">
       <button class="linkedin-button" @click="toggleModal">
@@ -64,19 +66,14 @@
       <div v-if="!isInSquad()">
         <div v-if="!isCreatingSquad">
           <div class="profile-buttons-jeec">
-            <button @click="change_Create" class="create-squad-button" aria-label="Create a squad">
-              <img class="squad-btn-img" :src="createSquadIcon" alt="" />
+            <button @click="change_Create" class="create-squad-button">
+              <p>CREATE A SQUAD</p>
             </button>
           </div>
 
           <div class="invites">
-            <Invite
-              v-for="invite in invites"
-              :key="invite.id"
-              :invite="invite"
-              @accept="handleAcceptInvite"
-              @reject="handleRejectInvite"
-            />
+            <Invite v-for="invite in invites" :key="invite.id" :invite="invite" @accept="handleAcceptInvite"
+              @reject="handleRejectInvite" />
           </div>
         </div>
         <div v-else>
@@ -90,15 +87,8 @@
 
     <div class="rankings-section">
       <h2 class="ranking-title">RANKING</h2>
-      <RankingsPodium
-        v-if="rankingsData.length > 0"
-        :other_rankingdata="rankingsData"
-        :user_ranking="userRanking"
-        :user_points="student?.current_points || 0"
-        :identity="student?.name || 'You'"
-        :flag="true"
-        :type="'Squad'"
-      />
+      <RankingsPodium v-if="rankingsData.length > 0" :other_rankingdata="rankingsData" :user_ranking="userRanking"
+        :user_points="student?.current_points || 0" :identity="student?.name || 'You'" :flag="true" :type="'Squad'" />
       <div v-else class="rankings-placeholder">
         <p>Rankings coming soon...</p>
       </div>
@@ -110,7 +100,6 @@
     </div>
 
     <div style="position: absolute">
-      <!-- LinkedIn Modal -->
       <div class="modal" v-if="modalVisible == true">
         <div class="modal-backdrop" @click="toggleModal"></div>
         <div class="modal-content custom-modal">
@@ -126,14 +115,10 @@
           </div>
           <form @submit="add_linkedin">
             <div class="modal-body">
-              <input
-                type="url"
-                v-model="linkedin_url"
-                class="modal-input"
+              <input type="url" v-model="linkedin_url" class="modal-input"
                 placeholder="https://www.linkedin.com/in/XXXXX/"
                 pattern="^https?://((www|\\w\\w)\\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\\w|\\d)+/?){3}))$"
-                autofocus
-              />
+                autofocus />
             </div>
             <div class="modal-submit center-submit">
               <button class="invite-button" type="submit">
@@ -173,12 +158,7 @@
               </div>
               <div class="modal-spacer"></div>
               <p>Your level of education:</p>
-              <select
-                class="modal-input"
-                v-model="educationLevel"
-                placeholder="Your level of education"
-                required
-              >
+              <select class="modal-input" v-model="educationLevel" placeholder="Your level of education" required>
                 <option value="BSc">BSc</option>
                 <option value="MSc">MSc</option>
                 <option value="Other">Other</option>
@@ -186,14 +166,7 @@
               <div class="modal-spacer"></div>
               <p>Your CV:</p>
               <label class="upload-cv-button" for="cvInput">Upload your CV</label>
-              <input
-                id="cvInput"
-                hidden
-                type="file"
-                accept="application/pdf"
-                ref="cvInput"
-                @change="add_cv_novo"
-              />
+              <input id="cvInput" hidden type="file" accept="application/pdf" ref="cvInput" @change="add_cv_novo" />
             </div>
             <div class="modal-submit center-submit">
               <button class="invite-button" type="submit">Confirm</button>
@@ -205,12 +178,7 @@
   </div>
 
   <div>
-    <ToastNotification
-      :message="toastMessage"
-      :type="toastType"
-      :visible="showToast"
-      @close="showToast = false"
-    />
+    <ToastNotification :message="toastMessage" :type="toastType" :visible="showToast" @close="showToast = false" />
   </div>
 </template>
 
@@ -220,7 +188,6 @@ import { useUserStore } from '@/stores/UserStore'
 import axios from 'axios'
 import UserService from '../services/user.service'
 import authHeader from '../services/auth-header'
-import createSquadIcon from "@/assets/icons/create-squad.svg";
 
 // Importação de componentes
 import TheUserInfo from '@/components/UserCard/TheUserInfo.vue'
@@ -554,14 +521,14 @@ onMounted(fetchProfile)
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+
   background:
     radial-gradient(120% 120% at 50% 0%,
-      rgba(255,255,255,.08) 0%,
-      rgba(255,255,255,0) 55%
-    ),
-    linear-gradient(180deg, rgba(8,17,26,.95) 0%, rgba(0,0,0,.95) 100%);
+      rgba(255, 255, 255, .08) 30%,
+      rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, rgba(8, 17, 26, .95) 0%, rgba(0, 0, 0, .95) 100%);
 
-  box-shadow: 0 0 2px #fff; 
+  box-shadow: 0 0 2.5px #fff;
   align-self: center;
 }
 
@@ -582,24 +549,22 @@ onMounted(fetchProfile)
   margin-left: 0;
 }
 
-.points-display{
-  display:flex;
-  align-items:center;
-  gap:.5rem;
+.points-display {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 
-  padding:.4rem .8rem;
-  border-radius:25px;
+  padding: .4rem .8rem;
+  border-radius: 25px;
   width: fit-content;
 
-  border: 1px solid rgba(0,0,0,1);             
   background:
     radial-gradient(120% 120% at 50% 0%,
-      rgba(255,255,255,.08) 0%,
-      rgba(255,255,255,0) 55%
-    ),
-    linear-gradient(180deg, rgba(8,17,26,.95) 0%, rgba(0,0,0,.95) 100%);
+      rgba(255, 255, 255, .08) 30%,
+      rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, rgba(8, 17, 26, .95) 0%, rgba(0, 0, 0, .95) 100%);
 
-  box-shadow: 0 0 2px #fff;
+  box-shadow: 0 0 2.5px #fff;
 }
 
 .points-value {
@@ -620,44 +585,41 @@ onMounted(fetchProfile)
   position: relative;
 }
 
-.progress-bar{
+.progress-bar {
   flex: 1;
-  height: 22px;              
-  border-radius: 11px;      
+  height: 22px;
+  border-radius: 11px;
   overflow: hidden;
 
   background:
     radial-gradient(120% 140% at 50% 0%,
-      rgba(25,156,255,.25) 0%,   
-      rgba(25,156,255,0) 55%
-    ),
+      rgba(25, 156, 255, .25) 0%,
+      rgba(25, 156, 255, 0) 55%),
     linear-gradient(180deg,
-      rgba(8,17,26,1) 0%,        
-      rgba(3,8,14,1) 100%
-    );
+      rgba(8, 17, 26, 1) 0%,
+      rgba(3, 8, 14, 1) 100%);
 
   box-shadow:
-    inset 0 2px 4px rgba(255,255,255,.06),
-    inset 0 -10px 16px rgba(0,0,0,.65),     
-    0 0 10px rgba(25,156,255,.10);         
+    inset 0 2px 4px rgba(255, 255, 255, .06),
+    inset 0 -10px 16px rgba(0, 0, 0, .65),
+    0 0 10px rgba(25, 156, 255, .10);
 }
 
-.progress-fill{
+.progress-fill {
   height: 100%;
   border-radius: 11px;
   transition: left .3s ease;
 
   background:
     radial-gradient(120% 140% at 50% 0%,
-      rgba(25,156,255,.7) 25%,
-      rgba(25,156,255,.04) 100%
-    );
+      rgba(25, 156, 255, .7) 25%,
+      rgba(25, 156, 255, .04) 100%);
 
   box-shadow:
-    inset 0 1px 2px rgba(255,255,255,.10),
-    inset 0 -8px 12px rgba(0,0,0,.55),
-    inset 0 0 0 1px rgba(25,156,255,.18),
-    0 0 12px rgba(25,156,255,.18);
+    inset 0 1px 2px rgba(255, 255, 255, .10),
+    inset 0 -8px 12px rgba(0, 0, 0, .55),
+    inset 0 0 0 1px rgba(25, 156, 255, .18),
+    0 0 12px rgba(25, 156, 255, .18);
 }
 
 .progress-text {
@@ -684,7 +646,7 @@ onMounted(fetchProfile)
 .divider-line {
   flex: 1;
   height: .3px;
-  max-width: 50px;   
+  max-width: 50px;
   background: #fff;
 }
 
@@ -706,7 +668,7 @@ onMounted(fetchProfile)
   font-family: 'Lexend Exa', sans-serif;
   font-weight: 700;
   font-size: 2rem;
-  text-align: left;
+  text-align: center;
   background: linear-gradient(90deg, #B8A1FF 1000%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -732,100 +694,101 @@ onMounted(fetchProfile)
   width: 100%;
 }
 
-.view-all-link-line{
+.view-all-link-line {
   flex: 1;
   height: 1px;
-  max-width: 50px;   
+  max-width: 50px;
   background: #fff;
 }
 
-.view-all-link a{
-  color: rgba(255,255,255,.7);
+.view-all-link a {
+  color: rgba(255, 255, 255, .7);
   font-family: 'Lexend Exa', sans-serif;
   font-size: .9rem;
   text-decoration: none;
   transition: color .2s ease;
 }
 
-.profile-buttons-jeec{
-  display:flex;
-  justify-content:space-between;
-  gap:.75rem;
-  padding:1rem 1rem;  
+.profile-buttons-jeec {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: 1rem 1rem;
 }
 
-.profile-buttons-jeec button{
-  position:relative;
-  flex:1;
+.profile-buttons-jeec button {
+  position: relative;
+  flex: 1;
 
-  cursor:pointer;
-  overflow:hidden;
+  cursor: pointer;
+  overflow: hidden;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  background:transparent;
-  transition:transform .18s ease, filter .18s ease;
+  background: transparent;
+  transition: transform .18s ease, filter .18s ease;
 }
 
-.profile-buttons-jeec button::before{
-  content:"";
-  border-radius:inherit;
+.profile-buttons-jeec button::before {
+  content: "";
+  border-radius: inherit;
 
-  background:var(--btn-border);
-  z-index:0;
+  background: var(--btn-border);
+  z-index: 0;
 
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-          mask-composite:exclude;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
-.profile-buttons-jeec button::after{
-  content:"";
-  position:absolute;
-  inset:2px;
-  border-radius:inherit;
-  z-index:1;
+.profile-buttons-jeec button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  z-index: 1;
 }
 
-.profile-buttons-jeec button .btn-label{
-  position:relative;
-  z-index:2;
-  line-height:1.05;
-  text-align:center;
-  color:rgba(255,255,255,.88);
-  text-shadow:0 0 10px rgba(255,255,255,.22);
+.profile-buttons-jeec button .btn-label {
+  position: relative;
+  z-index: 2;
+  line-height: 1.05;
+  text-align: center;
+  color: rgba(255, 255, 255, .88);
+  text-shadow: 0 0 10px rgba(255, 255, 255, .22);
 }
 
-.profile-buttons-jeec .linkedin-button{
+.profile-buttons-jeec .linkedin-button {
   border-radius: 45px;
   border: .5px solid #199CFF;
-  width: 170px;
+  width: 160px;
   height: 42px;
 
-  background: linear-gradient(180deg,#0F3C5B 0%,#072A3F 100%);
-  box-shadow:inset 0 0 0 .5px #199CFF, 0 0 18px rgba(25,156,255,.35);
+  background: linear-gradient(180deg, rgba(25, 156, 255, .35) 0%, #072A3F 100%);
+  box-shadow: inset 0 0 0 .5px #199CFF, 0 0 18px rgba(25, 156, 255, .35);
 }
 
-.profile-buttons-jeec .cv-button{
+.profile-buttons-jeec .cv-button {
   border-radius: 45px;
   border: .5px solid #7209B7;
-  width: 161px;
+  width: 160px;
   height: 42px;
 
-  background:linear-gradient(180deg,#1B0F33 0%,#120A26 100%);
-  box-shadow:inset 0 0 0 .5px #8A2DFF, 0 0 18px rgba(138,45,255,.35);
+  background: linear-gradient(180deg, rgba(138, 45, 255, .35) 0%, #120A26 100%);
+  box-shadow: inset 0 0 0 .5px #8A2DFF, 0 0 18px rgba(138, 45, 255, .35);
 }
 
-.profile-buttons-jeec button:hover{
-  transform:scale(1.02);
-  filter:brightness(1.05);
+.profile-buttons-jeec button:hover {
+  transform: scale(1.02);
+  filter: brightness(1.05);
 }
-.profile-buttons-jeec button:active{
-  transform:scale(.99);
+
+.profile-buttons-jeec button:active {
+  transform: scale(.99);
 }
 
 .profile-buttons-jeec .icon {
@@ -834,12 +797,12 @@ onMounted(fetchProfile)
 }
 
 .button-text {
-  font-family:'Lexend Exa', sans-serif;
+  font-family: 'Lexend Exa', sans-serif;
   line-height: 1.1rem;
   font-size: 13;
   font-weight: bolder;
-  letter-spacing:.14em;
-  text-transform:uppercase;
+  letter-spacing: .03rem;
+  text-transform: uppercase;
 }
 
 .squad-section {
@@ -847,15 +810,43 @@ onMounted(fetchProfile)
   margin-top: 2rem;
 }
 
-.profile-buttons-jeec .create-squad-button{
-  flex: 0 0 auto;   
-  width: auto;        
-  padding: 0;         
-  background: none;
-  box-shadow: none;
-  border: 0;
-  margin-left: auto;
-  margin-right: auto;
+.profile-buttons-jeec .create-squad-button {
+  width: 100%;
+  max-width: 250px;
+  height: 64px;
+  border-radius: 25px;
+  border: 2px solid rgba(0, 255, 235, .75);
+  background:
+    radial-gradient(140% 120% at 50% 0%, rgba(0, 255, 235, .18), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, rgba(8, 30, 40, .92), rgba(5, 14, 22, .94));
+  box-shadow:
+    0 0 10px rgba(0, 255, 235, .35),
+    0 0 28px rgba(0, 255, 235, .18),
+    inset 0 1px 0 rgba(255, 255, 255, .06),
+    inset 0 -22px 30px rgba(0, 0, 0, .55);
+
+  margin: 0 auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font: 800 1.05rem "Lexend Exa", sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(235, 220, 242, .92);
+  text-shadow: 0 0 12px rgba(0, 255, 230, .10);
+
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.profile-buttons-jeec .create-squad-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.profile-buttons-jeec .create-squad-button:active {
+  transform: scale(.99);
 }
 
 .modal {
@@ -930,7 +921,7 @@ onMounted(fetchProfile)
   margin-bottom: 1.5rem;
 }
 
-.modal-body > p {
+.modal-body>p {
   font-size: 1.05rem;
   font-weight: 500;
   color: white;
@@ -992,7 +983,7 @@ onMounted(fetchProfile)
   font-size: 0.95rem;
 }
 
-.inline-radio-group > p {
+.inline-radio-group>p {
   font-size: 1.05rem;
   font-weight: 500;
   color: white;
@@ -1011,5 +1002,4 @@ onMounted(fetchProfile)
   align-items: center;
   gap: 0.4rem;
 }
-
 </style>
