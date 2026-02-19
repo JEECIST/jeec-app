@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&family=Lexend+Exa:wght@300;400;500;600;700&family=Russo+One&display=swap');
+
 *,
 *::before,
 *::after {
@@ -13,8 +15,14 @@
   /*  --color-background-sec: #2b2b2b;*/
   --color-background-sec: #08111a;
   --color-font: #efeeee;
-  --color-strong-pink: #ff006e;
-  --color-strong-pink-rgb: 255, 0, 110;
+  --color-magenta: #f16ce5;
+  --color-magenta-rgb: 241, 108, 229;
+  --color-violet: #b8a1ff;
+  --color-violet-rgb: 184, 161, 255;
+  --color-light-pink: #edd2f0;
+  --color-light-pink-rgb: 237, 210, 240;
+  --color-light-green: #00c896;
+  --color-light-green-rgb: 0, 200, 150;
   --color-yellow: #ffbe0b;
   --color-yellow-rgb: 255, 190, 11;
   --color-jeec-blue: #199cff;
@@ -31,7 +39,7 @@
   --c-acc-orange: #fb5607;
   --c-acc-orange-rgb: 251, 86, 7;
 
-  --font-schedule: 'Russo One', sans-serif;
+  --font-schedule: 'Lexend Exa', sans-serif;
 }
 
 body {
