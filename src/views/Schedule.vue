@@ -57,7 +57,7 @@
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
-                    <div>
+                    <div class="eletrocomp-text">
                       <div class="eletrocomp-title">
                         <p>{{ eletrocomp.title }}</p>
                       </div>
@@ -68,6 +68,7 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
+                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -270,7 +271,7 @@
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
-                    <div>
+                    <div class="eletrocomp-text">
                       <div class="eletrocomp-title">
                         <p>{{ eletrocomp.title }}</p>
                       </div>
@@ -281,6 +282,7 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
+                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -1292,17 +1294,46 @@ h1 {
   gap: 10px;
 }
 
+.eletrolink-signup-btn {
+  margin-left: auto;
+  font-family: 'Lexend Exa';
+  background-color: var(--color-magenta);
+  color: var(--color-font);
+  font-size: clamp(0.6rem, 0.6vw + 0.35rem, 0.95rem);
+  font-weight: 500;
+  padding: 3px 6px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.eletrolink-signup-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+.eletrocomp-text{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5px;
+}
+
 .eletrocomp-title p {
-  font-size: clamp(0.9rem, 0.8vw + 0.4rem, 1.2rem);
+  font-size: clamp(0.8rem, 0.8vw + 0.4rem, 1.2rem);
 }
 
 .eletrocomp-location p {
-  font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
+  font-size: clamp(0.65rem, 0.6vw + 0.35rem, 0.95rem);
   font-weight: 300;
 }
 
 .eletrocomp-time p {
-  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
+  font-size: clamp(0.55rem, 0.5vw + 0.3rem, 0.8rem);
   font-weight: 300;
 }
 
@@ -1330,7 +1361,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 130px;
+  max-width: 30%;
   flex-shrink: 0;
   height: 60px;
 }
@@ -1629,7 +1660,7 @@ h1 {
 .loading-spinner {
   border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top: 4px solid #9c27b0;
+  border-top: 4px solid rgba(var(--color-magenta-rgb), 1);
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
