@@ -19,7 +19,7 @@
       <transition name="fade" mode="out-in">
         <section class="eletrolink" :key="activeDay" v-if="!loading">
           <div class="box">
-            <h3>Eletrolink <img :src="eletrolinkIcon" alt="Eletrolink Icon" class="eletrolink-icon" /></h3>
+            <h3>Eletrolink <img :src="pointsIcon" alt="Points Icon" class="points-icon" /></h3>
             <div class="eletrolink-description" v-if="showEletrolinkInfo">
               {{ eletrolink_description }}
             </div>
@@ -80,7 +80,7 @@
               </transition>
             </template>
             <button class="info" @click="toggleEletrolinkInfo">
-              {{ showEletrolinkInfo ? '−info' : '+info' }}
+              {{ showEletrolinkInfo ? '-info' : '+info' }}
             </button>
           </div>
         </section>
@@ -209,29 +209,17 @@
   <div class="mobile" v-else>
     <div class="view">
       <section class="tabs-container">
-        <div class="tabs-wrapper">
-          <div class="tabs" :style="tabsStyle">
-            <div
-              v-for="(day, index) in days"
-              :key="index"
-              class="tab"
-              :class="{ active: activeDay === index }"
-              @click="setActiveDay(index)"
-            >
-              {{ day }}
-            </div>
+        <div class="tabs">
+          <div
+            v-for="(day, index) in days"
+            :key="index"
+            class="tab"
+            :class="{ active: activeDay === index }"
+            @click="setActiveDay(index)"
+          >
+            {{ day }}
           </div>
         </div>
-        <button class="nav-button prev" @click="scrollPrev" :disabled="activeDay === 0">
-          &lt;
-        </button>
-        <button
-          class="nav-button next"
-          @click="scrollNext"
-          :disabled="activeDay === days.length - 1"
-        >
-          &gt;
-        </button>
       </section>
       <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
@@ -246,7 +234,7 @@
             </div>
             <p>Today's companies:</p>
             <template v-if="filteredEletrocomps.length">
-              <transition name="eletrolink-toggle">
+              <transition name="eletrolink-toggle" >
                 <div v-if="!showEletrolinkInfo" class="row">
                   <div
                     v-for="(eletrocomp, index) in filteredEletrocomps.slice(0, 2)"
@@ -260,6 +248,7 @@
                   </div>
                 </div>
               </transition>
+              <p class="points-info">Sign up in advance and get <b>50</b><img :src="pointsIcon" alt="Points Icon" class="points-icon" /></p>
             </template>
 
             <!-- Sem transição para o "NO COMPANIES" -->
@@ -439,10 +428,9 @@ import keynoteIcon from '@/assets/icons/keynote_icon.svg'
 import fifteenIcon from '@/assets/icons/15_15_icon.svg'
 import insideTalkIcon from '@/assets/icons/inside_talk_icon.svg'
 import eletrolinkIcon from '@/assets/icons/eletrolink-icon.svg'
+import pointsIcon from '@/assets/icons/flash_home22.svg'
 
 const isMobile = ref(false)
-const tabWidth = ref(250)
-const tabsStyle = ref({ transform: 'translateX(0)' })
 const base_path = ref(null)
 
 const activeDay = ref(0)
@@ -494,34 +482,6 @@ const filteredEletrocomps = computed(() => {
 
 function updateIsMobile() {
   isMobile.value = window.innerWidth <= 800
-  scrollToTab(activeDay.value)
-}
-
-// Scroll para a tab ativa
-function scrollToTab(index) {
-  if (!isMobile.value) return
-
-  const containerWidth = window.innerWidth
-  const tabCenterPosition = index * tabWidth.value + tabWidth.value / 2 + 10
-  const containerCenter = containerWidth / 2
-  const offset = containerCenter - tabCenterPosition + index * 40
-
-  tabsStyle.value = {
-    transform: `translateX(${offset}px)`,
-    transition: 'transform 0.3s ease-in-out',
-  }
-}
-
-function scrollPrev() {
-  if (activeDay.value > 0) {
-    setActiveDay(activeDay.value - 1)
-  }
-}
-
-function scrollNext() {
-  if (activeDay.value < days.length - 1) {
-    setActiveDay(activeDay.value + 1)
-  }
 }
 
 // Mudar o dia ativo
@@ -529,8 +489,6 @@ function setActiveDay(index) {
   activeDay.value = index
   expandedEvent.value = null
   showEletrolinkInfo.value = false
-
-  scrollToTab(index)
 }
 
 // Dia atual como padrão
@@ -788,10 +746,6 @@ onMounted(() => {
   window.addEventListener('resize', updateIsMobile)
   document.addEventListener('click', closeCalendarMenu)
 
-  setTimeout(() => {
-    scrollToTab(activeDay.value)
-  }, 100)
-
   globalInterval = setInterval(rotateAllLogos, 3000)
 
   setDefaultDay()
@@ -819,7 +773,6 @@ onUnmounted(() => {
 */
 .view {
   padding-top: var(--header-height);
-  --acc-color: var(--c-acc-strong-pink);
 }
 
 h1 {
@@ -834,47 +787,30 @@ h1 {
   position: relative;
   display: flex;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
   gap: 10px;
-  padding: 20px;
+  padding: 5px;
   width: 100%;
   top: -10px;
 }
 
 .tab {
   text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  flex: 1;
+  padding-top: 10px;
+  padding-bottom: 10px;
   letter-spacing: 0.1em;
   overflow: auto;
-  font-size: 1.2rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: white;
   position: relative;
   cursor: pointer;
-  width: 200px;
+  width: fit-content;
   transition: all 0.3s ease-in-out;
   font-family: var(--font-schedule);
-}
-
-.tab:nth-child(1) {
-  --tab-color: var(--c-acc-lighter-dark-blue);
-}
-
-.tab:nth-child(2) {
-  --tab-color: var(--c-acc-violet);
-}
-
-.tab:nth-child(3) {
-  --tab-color: var(--c-acc-strong-pink);
-}
-
-.tab:nth-child(4) {
-  --tab-color: var(--c-acc-orange);
-}
-
-.tab:nth-child(5) {
-  --tab-color: var(--c-acc-yellow);
+  opacity: 0.3;
+  --tab-color: var(--color-jeec-blue);
 }
 
 .tab::before {
@@ -889,7 +825,7 @@ h1 {
   opacity: 0.3;
   background: radial-gradient(
     ellipse at top center,
-    var(--tab-color) 10%,
+    var(--tab-color) 1%,
     rgba(255, 255, 255, 0) 75%
   );
   z-index: -3;
@@ -897,7 +833,7 @@ h1 {
 
 .tab.active {
   opacity: 1;
-  transform: scale(1.06);
+  font-size: 0.75rem;
 }
 
 .tab:hover::before {
@@ -909,36 +845,40 @@ h1 {
 }
 
 .tab:first-child {
-  border-radius: 20px 0 0 0;
+  border-radius: 10px 0 0 0;
 }
 
 .tab:last-child {
-  border-radius: 0 20px 0 0;
+  border-radius: 0 10px 0 0;
 }
 
 .tab:not(:first-child):not(:last-child) {
   border-radius: 0;
 }
 
-/* Cores dos dias da semana */
-.tab:nth-child(1) {
-  border-top: 2px solid var(--c-acc-lighter-dark-blue);
+.tab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-jeec-blue) 0%, var(--color-magenta) 51%, var(--color-light-green) 100%);
+  border-radius: inherit;
+  background-size: calc(300% + 20px) 100%;
+  pointer-events: none;
 }
 
-.tab:nth-child(2) {
-  border-top: 2px solid var(--c-acc-violet);
+.tab:nth-child(1)::after {
+  background-position: 0% 0;
 }
 
-.tab:nth-child(3) {
-  border-top: 2px solid var(--c-acc-strong-pink);
+.tab:nth-child(2)::after {
+  background-position: 50% 0;
 }
 
-.tab:nth-child(4) {
-  border-top: 2px solid var(--c-acc-orange);
-}
-
-.tab:nth-child(5) {
-  border-top: 2px solid var(--c-acc-yellow);
+.tab:nth-child(3)::after {
+  background-position: 100% 0;
 }
 
 .timeline {
@@ -1246,8 +1186,9 @@ h1 {
 }
 
 .expanded-info h3 {
-  font-weight: 400;
-  letter-spacing: 0.1rem;
+  font-family: var(--font-schedule);
+  font-weight: 600;
+  letter-spacing: 0.05rem;
   font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
 }
 
@@ -1307,6 +1248,20 @@ h1 {
   letter-spacing: 0.1em;
   font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
 }
+.points-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.points-icon {
+  width: clamp(1.5rem, 1.5vw + 0.4rem, 1.4rem);
+  height: clamp(1.5rem, 1.5vw + 0.4rem, 1.4rem);
+  object-fit: contain;
+  align-content: center;
+}
+
 
 .eletrolink button {
   color: var(--color-magenta);
@@ -1472,62 +1427,13 @@ h1 {
 .mobile .tabs-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
   padding: 10px 0;
-  /* Espaço para os botões de navegação */
-}
-
-.mobile .tabs-wrapper {
-  width: 100%;
-  overflow: hidden;
-  margin: 0 auto;
 }
 
 .mobile .tabs {
   display: flex;
-  width: max-content;
   gap: 10px;
-  will-change: transform;
-}
-
-.mobile .tab {
-  text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  letter-spacing: 0.05em;
-  overflow: auto;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  position: relative;
-  cursor: pointer;
-  width: 200px;
-  transition: all 0.3s ease-in-out;
-  opacity: 0.7;
-  transform: scale(0.9);
-}
-
-.mobile .tab.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.mobile .nav-button {
-  display: none;
-  /* Remove completamente do layout */
-}
-
-.mobile .nav-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.mobile .nav-button.prev {
-  left: 10px;
-}
-
-.mobile .nav-button.next {
-  right: 10px;
+  gap: 10px;
 }
 
 /* Estilos específicos para mobile */
