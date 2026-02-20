@@ -1,6 +1,11 @@
 <template>
   <div class="desktop" v-if="!isMobile">
     <div class="view">
+      <section class="header">
+        <h1>SCHEDULE</h1>
+        <h3>Join activities and win prizes!</h3>
+        <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
+      </section>
       <section class="tabs">
         <div
           v-for="(day, index) in days"
@@ -12,10 +17,10 @@
           {{ day }}
         </div>
       </section>
-      <div class="loading-screen" v-if="loading">
+      <!-- <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
         <p>Loading Schedule...</p>
-      </div>
+      </div> -->
       <transition name="fade" mode="out-in">
         <section class="eletrolink" :key="activeDay" v-if="!loading">
           <div class="box">
@@ -120,6 +125,15 @@
                       <p class="act_description">{{ activity.description }}</p>
                       <h3>{{ activity.location }}</h3>
                       <p>{{ activity.date }}</p>
+                      <div v-if="activity.prize?.name" class="expanded-prize">
+                        <p class="prize-label">Participate in this activity and you'll may win:</p>
+                        <div class="prize-row">
+                          <p class="prize-name">{{ activity.prize.name }}</p>
+                          <div class="prize-image-container">
+                            <img v-if="activity.prize.image" :src="base_path + activity.prize.image" alt="Prize Image" class="prize-image"/>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </transition>
                   <div class="actions-row">
@@ -137,7 +151,7 @@
                       </button>
                       <transition name="expand-fade">
                         <div v-if="calendarMenuIndex === index" class="calendar-menu">
-                          <button @click="addToICalendar(activity)">iCalendar (.ics)</button>
+                          <button @click="addToICalendar(activity)">iCalendar</button>
                           <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
                         </div>
                       </transition>
@@ -209,6 +223,11 @@
 
   <div class="mobile" v-else>
     <div class="view">
+      <section class="header">
+        <h1>SCHEDULE</h1>
+        <h3>Join activities and win prizes!</h3>
+        <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
+      </section>
       <section class="tabs-container">
         <div class="tabs">
           <div
@@ -330,6 +349,15 @@
                       <p class="act_description">{{ activity.description }}</p>
                       <h3>{{ activity.location }}</h3>
                       <p>{{ activity.date }}</p>
+                      <div v-if="activity.prize?.name" class="expanded-prize">
+                        <p class="prize-label">Participate in this activity and you'll may win:</p>
+                        <div class="prize-row">
+                          <p class="prize-name">{{ activity.prize.name }}</p>
+                          <div class="prize-image-container">
+                            <img v-if="activity.prize.image" :src="base_path + activity.prize.image" alt="Prize Image" class="prize-image"/>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </transition>
                   <div class="actions-row">
@@ -347,7 +375,7 @@
                       </button>
                       <transition name="expand-fade">
                         <div v-if="calendarMenuIndex === index" class="calendar-menu">
-                          <button @click="addToICalendar(activity)">iCalendar (.ics)</button>
+                          <button @click="addToICalendar(activity)">iCalendar</button>
                           <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
                         </div>
                       </transition>
@@ -678,6 +706,7 @@ async function fetchData() {
           logo_company: speaker.logo_company || null,
         })) || [],
       logo_companies: activity.companies || [],
+      prize: activity.prize || {},
     }))
   } catch (error) {
     console.error('Erro ao buscar os dados:', error)
@@ -778,11 +807,37 @@ onUnmounted(() => {
 }
 
 h1 {
+  font-family: var(--font-schedule);
   text-align: center;
   text-shadow: 0px 0px 15px var(--acc-color);
   margin: 2rem auto;
   position: relative;
   width: min-content;
+}
+
+h3 {
+  font-family: var(--font-schedule);
+  text-align: center;
+  text-shadow: 0px 0px 15px var(--acc-color);
+  margin: 10px auto;
+  position: relative;
+  width: 100%;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
+.header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  overflow: hidden;
+  padding: 5px;
+  width: 100%;
+  height: min-content;
+  margin-bottom: 20px;
+  top: -10px;
 }
 
 .tabs {
@@ -1171,6 +1226,10 @@ h1 {
   background-color: var(--event-color, var(--c-acc-blue));
 }
 
+.logo-image {
+  object-fit: contain;
+}
+
 .logo-fade-enter-active,
 .logo-fade-leave-active {
   transition: opacity 0.5s ease;
@@ -1181,7 +1240,7 @@ h1 {
   opacity: 0;
 }
 
-.expanded-info p {
+.expanded-info{
   font-weight: 300;
   letter-spacing: 0.05rem;
   font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
@@ -1197,6 +1256,50 @@ h1 {
 .act_description {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.expanded-prize {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+
+.prize-label {
+  color: var(--event-color, var(--c-acc-blue));
+  font-size: clamp(0.8rem, 0.5vw + 0.28rem, 0.75em);
+  margin-bottom: 8px;
+}
+
+.prize-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.prize-name{
+  font-family: var(--font-schedule);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 0.55vw + 0.32rem, 0.95rem);
+  color: white;
+  max-width: 70%;
+  flex-shrink: 1;
+}
+
+.prize-image-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--event-color, var(--c-acc-blue));
+}
+
+.prize-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .no-events {
@@ -1555,7 +1658,6 @@ h1 {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  align-items: center;
   position: relative;
   margin-left: 5px;
   top: -5px;
@@ -1568,7 +1670,7 @@ h1 {
   display: flex;
   flex-shrink: 0;
   position: relative;
-  align-self: center;
+  align-self: flex-start;
   justify-content: flex-end;
   min-width: clamp(5.5rem, 25vw, 8.5rem);
 }
