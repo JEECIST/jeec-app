@@ -1,13 +1,15 @@
 <template>
   <div class="daily-prize-card">
     <template v-if="currentPrize">
+      <!-- Image positioned absolutely, outside card-body flow -->
+      <div class="prize-image-wrapper">
+        <Transition :name="slideDirection" mode="out-in">
+          <img :key="currentIndex" :src="currentPrize.image" :alt="currentPrize.name" class="prize-image" />
+        </Transition>
+      </div>
+
       <div class="card-body">
-        <div class="prize-image-wrapper">
-          <Transition :name="slideDirection" mode="out-in">
-            <img :key="currentIndex" :src="currentPrize.image" :alt="currentPrize.name" class="prize-image" />
-          </Transition>
-        </div>
-        <h2 class="prize-title">DAILY PRIZE</h2>
+        <h2 class="prize-title">{{ currentPrize.type }} PRIZE</h2>
         <Transition :name="slideDirection" mode="out-in">
           <p class="prize-name" :key="currentIndex">{{ currentPrize.name }}</p>
         </Transition>
@@ -73,10 +75,11 @@ function getDailyPrizes() {
     })
     .then((response) => {
       if (response.data && response.data.img_daily_prize) {
-        // API returns { img_daily_prize: "data:image/...", error: "" }
+        // API returns { img_daily_prize, name, type, error }
         prizes.value = [{
           image: response.data.img_daily_prize,
-          name: 'Ipad Air',
+          name: response.data.name,
+          type: response.data.type,
         }]
       } else {
         prizes.value = []
@@ -124,30 +127,33 @@ onMounted(() => {
   --border-background: var(--color-prizes-border);
 }
 
-.card-body {
-  position: relative;
-  z-index: 2;
-  padding: 1rem 1.5rem 1.2rem 1.5rem;
-  text-align: center;
-}
-
-/* Prize image sitting above the title in normal flow, pulled outside the card */
+/* Image wrapper positioned absolutely relative to card */
 .prize-image-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: -7rem;
-  margin-bottom: -0.5rem;
-  pointer-events: none;
-  position: relative;
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
   z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .prize-image {
-  width: 120px;
-  max-width: 35%;
-  height: auto;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+}
+
+.card-body {
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+  text-align: center;
 }
 
 /* Title with pink/purple neon glow */
