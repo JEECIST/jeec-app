@@ -16,7 +16,18 @@
           <p class="prize-name" :key="currentIndex">{{ currentPrize.name }}</p>
         </Transition>
 
-        <router-link to="/help" class="info-link">+ info</router-link>
+        <a href="#" @click.prevent="toggleInfo" class="info-link">{{ isExpanded ? '- info' : '+ info' }}</a>
+
+        <Transition name="expand">
+          <div v-if="isExpanded" class="prize-info-message">
+            <template v-if="currentPrize.activityName">
+              <p>You have a chance to win this prize by participating in the activity: <strong>{{ currentPrize.activityName }} - {{ currentPrize.activityType }}</strong></p>
+            </template>
+            <template v-else>
+              <p>You have more chances to win this prize by getting more daily points</p>
+            </template>
+          </div>
+        </Transition>
 
         <div class="view-all-row">
           <span class="line"></span>
@@ -64,8 +75,13 @@ const student = userStore.user
 
 const currentIndex = ref(0)
 const slideDirection = ref('slide-left')
+const isExpanded = ref(false)
 
 const prizes = ref([])
+
+function toggleInfo() {
+  isExpanded.value = !isExpanded.value
+}
 
 function getDailyPrizes() {
   axios
@@ -120,6 +136,7 @@ function nextPrize() {
   if (prizes.value.length > 1) {
     slideDirection.value = 'slide-left'
     currentIndex.value = (currentIndex.value + 1) % prizes.value.length
+    isExpanded.value = false
   }
 }
 
@@ -128,6 +145,7 @@ function prevPrize() {
     slideDirection.value = 'slide-right'
     currentIndex.value =
       (currentIndex.value - 1 + prizes.value.length) % prizes.value.length
+    isExpanded.value = false
   }
 }
 
@@ -142,6 +160,7 @@ onMounted(() => {
   position: relative;
   color: var(--color-font);
   overflow: visible;
+  transition: all 0.3s ease;
   
   --background: var(--color-prizes-background);
   --border-background: var(--color-prizes-border);
@@ -208,11 +227,34 @@ onMounted(() => {
   opacity: 0.6;
   transition: opacity 0.3s ease;
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: 0.6rem;
 }
 
 .info-link:hover {
   opacity: 1;
+}
+
+/* Expandable info message */
+.prize-info-message {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(0.9rem, 3vw, 1rem);
+  color: var(--color-font);
+  line-height: 1.6;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.prize-info-message p {
+  margin: 0;
+}
+
+.prize-info-message strong {
+  color: #fff;
+  font-weight: 700;
 }
 
 /* "view all" with lines on each side */
@@ -314,6 +356,28 @@ onMounted(() => {
 .slide-right-leave-to {
   opacity: 0;
   transform: translateX(40px);
+}
+
+/* Expand transition for info message */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  opacity: 1;
+  max-height: 500px;
 }
 
 @media screen and (max-width: 700px) {
