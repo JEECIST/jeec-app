@@ -58,5 +58,9 @@ import HomePrizes from '@/components/HomeCards/HomePrizes.vue'
   .card {
     width: 95%;
   }
+  
+  .prizes-card {
+    width: 80%;
+  }
 }
 </style>

@@ -9,7 +9,9 @@
       </div>
 
       <div class="card-body">
-        <h2 class="prize-title">{{ currentPrize.type }} PRIZE</h2>
+        <Transition :name="slideDirection" mode="out-in">
+          <h2 class="prize-title" :key="'title-' + currentIndex">{{ currentPrize.type }} PRIZE</h2>
+        </Transition>
         <Transition :name="slideDirection" mode="out-in">
           <p class="prize-name" :key="currentIndex">{{ currentPrize.name }}</p>
         </Transition>
@@ -74,16 +76,34 @@ function getDailyPrizes() {
       },
     })
     .then((response) => {
-      if (response.data && response.data.img_daily_prize) {
-        // API returns { img_daily_prize, name, type, error }
-        prizes.value = [{
-          image: response.data.img_daily_prize,
-          name: response.data.name,
-          type: response.data.type,
-        }]
-      } else {
-        prizes.value = []
+      const data = response.data
+      const allPrizes = []
+
+      // Add daily prize if available
+      if (data.dayly_prize && data.dayly_prize.image) {
+        allPrizes.push({
+          image: data.dayly_prize.image,
+          name: data.dayly_prize.name,
+          type: data.dayly_prize.type,
+        })
       }
+
+      // Add activity prizes if available
+      if (data.activity_prizes && Array.isArray(data.activity_prizes)) {
+        data.activity_prizes.forEach((activity) => {
+          if (activity.prize_image) {
+            allPrizes.push({
+              image: activity.prize_image,
+              name: activity.prize_name,
+              type: activity.prize_type,
+              activityName: activity.activity_name,
+              activityType: activity.activity_type,
+            })
+          }
+        })
+      }
+
+      prizes.value = allPrizes
     })
     .catch((error) => {
       console.error('Error fetching daily prizes:', error)
@@ -296,13 +316,31 @@ onMounted(() => {
   transform: translateX(40px);
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 700px) {
+  .arrow {
+    top: 35%;
+  }
+  
   .arrow-left {
-    left: -1.2rem;
+    left: -1.5rem;
   }
 
   .arrow-right {
-    right: -1.2rem;
+    right: -1.5rem;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .arrow {
+    top: 40%;
+  }
+  
+  .arrow-left {
+    left: -2.5rem;
+  }
+
+  .arrow-right {
+    right: -2.5rem;
   }
 }
 </style>
