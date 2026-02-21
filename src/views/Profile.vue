@@ -81,7 +81,7 @@
         </div>
       </div>
       <div v-else>
-        <Squad :squad="squad" @delete="fetchProfile" @notification="showNotification" />
+        <newSquad :squad="squad" @delete="fetchProfile" @notification="showNotification" />
       </div>
     </div>
 
@@ -199,6 +199,7 @@ import Invite from '@/components/Squads/Invite.vue'
 import SquadCreation from '@/components/Squads/SquadCreation.vue'
 import RankingsPodium from '@/components/RankingsPodium.vue'
 import User from '@/models/user'
+import newSquad from '@/components/Squads/newSquad.vue'
 
 // Variáveis de estado
 const loading_linkedin = ref(false)
@@ -454,6 +455,7 @@ const fetchProfile = () => {
   UserService.getUserSquad().then(
     (response) => {
       squad.value = response.data.data
+      console.log("Squad value", squad.value)
     },
     (error) => {
       console.log(error)

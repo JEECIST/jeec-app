@@ -17,7 +17,7 @@
             maxlength="25" minlength="2" placeholder="Your squad name" />
         </div>
 
-        <button class="create-btn" :disabled="loading || name.trim().length < 4" @click.stop="create_squad">
+        <button class="create-btn" :disabled="loading || name.trim().length < 4" @click="create_squad">
           Create Squad
         </button>
       </div>
@@ -43,7 +43,7 @@
               <div class="member-circle creator-circle">
                 <img v-if="slots[0] && slots[0].avatar" :src="slots[0].avatar" alt="" />
                 <span v-else-if="slots[0] && slots[0].name" class="creator-initials">{{ initials(slots[0].name)
-                  }}</span>
+                }}</span>
                 <span v-else class="plus">👤</span>
               </div>
               <div class="member-label creator-label">
@@ -230,7 +230,7 @@ export default {
       }
 
       this.loading = true
-      /*
+
       try {
         var formData = new FormData()
         formData.append('name', trimmedName)
@@ -257,7 +257,7 @@ export default {
         this.error = msg
       } finally {
         this.loading = false
-      }*/
+      }
 
       // fake success:
       this.squad = { id: 'local-' + Date.now(), name: trimmedName }
