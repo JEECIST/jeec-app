@@ -1,12 +1,14 @@
 <template>
   <div class="prizes-page">
-    <div class="background" v-if="showPopup">
-      <div class="prize-info-popup">
-        <h1>{{ prize_name }}</h1>
-        <p>{{ prize_description }}</p>
-        <button class="close-btn" @click="showPopup = false">&times;</button>
+    <Transition name="fade">
+      <div class="background" v-if="showPopup">
+        <div class="prize-info-popup">
+          <h1>{{ prize_name }}</h1>
+          <p>{{ prize_description }}</p>
+          <button class="close-btn" @click="showPopup = false">&times;</button>
+        </div>
       </div>
-    </div>
+    </Transition>
     <div class="prizes-content">
       <!-- Selector -->
       <div class="select-prizes">
@@ -14,6 +16,7 @@
         <button :class="{ activeBtn: jeecpot }" @click="selectJeecpot">JEECPOT</button>
       </div>
 
+      <Transition :name="transitionName" mode="out-in">
       <!-- DAILY -->
       <div class="selected-prizes" v-if="daily">
         <h2>SOLO PRIZES</h2>
@@ -50,7 +53,7 @@
       </div>
 
       <!-- JEECPOT -->
-      <div class="selected-prizes" v-if="jeecpot">
+      <div class="selected-prizes" v-else-if="jeecpot">
         <h2>SOLO PRIZES</h2>
         <div class="display-prizes">
           <Carousel :ref="carousels.jeecpotSolo" v-model="currentSlides.jeecpotSolo" :items-to-show="3" :wrap-around="true"
@@ -99,6 +102,7 @@
           </Carousel>
         </div>
       </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -161,15 +165,19 @@ const goTo = (type, index) => {
   }
 }
 
+const transitionName = ref('slide-left');
+
 const selectDaily = () => {
-  daily.value = true
-  jeecpot.value = false
-}
+  transitionName.value = 'slide-right';
+  daily.value = true;
+  jeecpot.value = false;
+};
 
 const selectJeecpot = () => {
-  daily.value = false
-  jeecpot.value = true
-}
+  transitionName.value = 'slide-left';
+  daily.value = false;
+  jeecpot.value = true;
+};
 
 const daily_solo_prizes = ref([])
 const daily_activities_prizes = ref([])
@@ -232,6 +240,27 @@ onMounted(() => {
   background: radial-gradient(circle at center, #001a1f, #000814);
   display: flex;
   justify-content: center;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from .prize-info-popup,
+.fade-leave-to .prize-info-popup {
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+.fade-enter-active .prize-info-popup,
+.fade-leave-active .prize-info-popup {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .background {
@@ -326,15 +355,54 @@ color: #B8A1FF;
   cursor: pointer;
   background: transparent;
   color: #aaa;
-  transition: all 0.3s ease;
+  white-space: nowrap;
+  transition: all 0.5s ease-in-out;
 }
 
 .select-prizes button:first-child.activeBtn {
-  background: #038B87;
+  background: linear-gradient(to bottom, 
+    rgba(0, 200, 150, 0.8) 0%, 
+    rgba(0, 200, 150, 0) 100%
+  );
+  color: white;
+  font-size: 20px;
 }
 
 .select-prizes button:last-child.activeBtn {
-  background: #B8A1FF;
+  background: linear-gradient(to bottom, 
+    rgba(241, 108, 229, 0.8) 0%, 
+    rgba(241, 108, 229, 0) 100%
+  );
+  color: white;
+  font-size: 20px;
+}
+
+/* --- Slide para a Esquerda (Avançar) --- */
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(50px);
+}
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+
+/* --- Slide para a Direita (Voltar) --- */
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(-50px);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translateX(50px);
+}
+
+/* --- Regras comuns para ambas --- */
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .selected-prizes {
