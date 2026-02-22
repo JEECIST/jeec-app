@@ -3,22 +3,23 @@
         <div class="member-slot creator-slot">
             <div class="member-circle creator-circle">
                 <img v-if="safeMembers[0] && safeMembers[0].photo" :src="safeMembers[0].photo" alt="" />
-                <span v-else-if="safeMembers[0] && safeMembers[0].name" class="creator-initials">{{ initials(safeMembers[0].name)
+                <span v-else-if="safeMembers[0] && safeMembers[0].name" class="creator-initials">{{
+                    initials(safeMembers[0].name)
                 }}</span>
                 <span v-else class="plus">👤</span>
             </div>
             <div class="member-label creator-label">
-                {{ safeMembers[0] && safeMembers[0].name ? safeMembers[0].name.split(' ')[0] : 'You' }}
+                <p>{{ safeMembers[0] && safeMembers[0].name ? safeMembers[0].name.split(' ')[0] : 'You' }}</p>
             </div>
         </div>
 
-        <button v-for="i in [1, 2, 3]" :key="i" class="member-slot" type="button" @click="openPicker(i)">
+        <button v-for="i in [1, 2, 3]" :key="i" class="member-slot" type="button" @click="openPicker()">
             <div class="member-circle">
                 <img v-if="safeMembers[i] && safeMembers[i].photo" :src="safeMembers[i].photo" alt="" />
                 <span v-else class="plus">+</span>
             </div>
             <div class="member-label">
-                {{ safeMembers[i] && safeMembers[i].name ? safeMembers[i].name : 'Add member' }}
+                <p>{{ safeMembers[i] && safeMembers[i].name ? safeMembers[i].name : 'Invite' }}</p>
             </div>
         </button>
     </div>
@@ -27,6 +28,8 @@
 <script setup>
 
 import { computed } from 'vue'
+
+const emit = defineEmits(['openPicker'])
 
 const props = defineProps({
     members: {
@@ -51,6 +54,10 @@ function initials(name) {
         .map(function (w) { return w[0] })
         .join('')
         .toUpperCase()
+}
+
+function openPicker() {
+    emit('openPicker')
 }
 
 </script>

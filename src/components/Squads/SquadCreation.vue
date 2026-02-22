@@ -6,7 +6,8 @@
       <div v-if="view === 'name'">
         <h1 class="title">Create a squad</h1>
         <button class="avatar" @click.stop="input_click" aria-label="Upload squad picture">
-          <img :src="currentImage" :alt="image_uploaded ? 'Squad' : 'Default squad'" />
+          <img :src="currentImage" :alt="image_uploaded ? 'Squad' : 'Default squad'"
+            :class="image_uploaded ? 'uploaded-img' : 'default-img'" />
           <span v-if="!image_uploaded" class="avatar-plus">+</span>
 
           <input type="file" accept="image/*" ref="image_input" @change="input_file" style="display: none" />
@@ -22,82 +23,12 @@
         </button>
       </div>
 
-      <!-- VIEW 2: squad card + circles + member names -->
-      <div v-else-if="view === 'slots'">
-        <p class="section-label">Your Squad</p>
-
-        <div class="squad-card">
-          <div class="squad-header">
-            <div class="squad-big-avatar">
-              <img :src="currentImage" alt="Squad" />
-            </div>
-
-            <div class="squad-name">
-              {{ (squad && squad.name) ? squad.name : name }}
-            </div>
-          </div>
-
-          <div class="member-grid">
-            <!-- Slot 0: creator (non-interactive) -->
-            <div class="member-slot creator-slot">
-              <div class="member-circle creator-circle">
-                <img v-if="slots[0] && slots[0].avatar" :src="slots[0].avatar" alt="" />
-                <span v-else-if="slots[0] && slots[0].name" class="creator-initials">{{ initials(slots[0].name)
-                }}</span>
-                <span v-else class="plus">👤</span>
-              </div>
-              <div class="member-label creator-label">
-                {{ slots[0] && slots[0].name ? slots[0].name.split(' ')[0] : 'You' }}
-              </div>
-            </div>
-
-            <!-- Slots 1, 2 & 3: add-member buttons -->
-            <button v-for="i in [1, 2, 3]" :key="i" class="member-slot" type="button" @click="openPicker(i)">
-              <div class="member-circle">
-                <img v-if="slots[i] && slots[i].avatar" :src="slots[i].avatar" alt="" />
-                <span v-else class="plus">+</span>
-              </div>
-              <div class="member-label">
-                {{ slots[i] && slots[i].name ? slots[i].name : 'Add member' }}
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIEW 3: members list -->
-      <div v-else-if="view === 'picker'">
-        <p class="section-label">Add members</p>
-
-        <div class="member-search">
-          <input class="member-search-input" type="text" v-model="memberQuery" placeholder="search name" autofocus />
-        </div>
-
-        <div class="member-list">
-          <div class="member-row" v-for="m in filteredMembers" :key="m.id">
-            <span class="member-name">{{ m.name }}</span>
-            <button class="member-add" type="button" @click="selectMember(m)">
-              Add member
-            </button>
-          </div>
-        </div>
-
-        <button class="create-btn" type="button" @click="backToSlots">
-          Back
-        </button>
-      </div>
-
       <p class="error-msg" v-if="error">{{ error }}</p>
     </div>
   </div>
 </template>
 
 <script>
-// SquadCreation.vue
-// Handles the full squad creation flow in three views:
-//   1. 'name'   – user sets squad name and optional cover image
-//   2. 'slots'  – shows squad card with creator + 3 add-member circles
-//   3. 'picker' – searchable list to pick a member for an open slot
 
 import UserService from '../../services/user.service'
 import jeec_mobile_white from '../../assets/jeec_mobile_white.svg'
@@ -105,52 +36,38 @@ import jeec_mobile_white from '../../assets/jeec_mobile_white.svg'
 export default {
   name: 'SquadCreation',
 
-  // 'back'         – emitted when the user cancels or finalises creation
-  // 'notification' – emitted with (message, type) to surface toast messages in the parent
   emits: ['back', 'notification'],
 
   data() {
     return {
-      // ── Image upload ──────────────────────────────────────────────────────
-      files: [],              // FileList from the file input
-      image_uploaded: false,  // true once the user has picked a custom image
-      currentImage: jeec_mobile_white, // preview src; defaults to JEEC logo
+      files: [],
+      image_uploaded: false,
+      currentImage: jeec_mobile_white,
 
-      // ── View state ───────────────────────────────────────────────────────
-      // Controls which step of the wizard is rendered
       view: 'name', // 'name' | 'slots' | 'picker'
 
-      // ── Squad data ───────────────────────────────────────────────────────
-      name: '',    // squad name typed by the user
-      squad: null, // squad object returned (or faked) after creation
 
-      // ── Member slots ─────────────────────────────────────────────────────
-      // slots[0] is always the creator (populated on mount from the API).
-      // slots[1–3] are the three add-member slots the user can fill.
+      name: '',
+      squad: null,
       slots: [null, null, null, null],
-      pickingIndex: null, // index of the slot currently being filled in 'picker' view
-      memberQuery: '',    // live search query in the picker
-      members: [],        // list of students fetched from the API for the picker
+      pickingIndex: null,
+      memberQuery: '',
+      members: [],
 
-      // ── Misc ─────────────────────────────────────────────────────────────
-      error: '',    // inline error message shown below the active view
+
+      error: '',
       loading: false,
-
-      // TODO: remove if unused once backend integration is complete
-      cry: '',
     }
   },
 
   computed: {
-    // True when all four member slots (creator + 3) are filled
+
     isSquadFull() {
       return this.slots.every(function (s) {
         return s !== null
       })
     },
 
-    // Returns the members list filtered by the current search query.
-    // Shows the full list when the query is empty.
     filteredMembers() {
       var q = this.memberQuery.trim().toLowerCase()
       if (!q) return this.members
@@ -162,28 +79,25 @@ export default {
   },
 
   mounted() {
-    // Populate slot 0 with the logged-in user's data so the creator circle
-    // is shown immediately when the 'slots' view is rendered.
+
     UserService.getUserStudent().then(
       (response) => {
         var s = response.data.data
         this.slots.splice(0, 1, {
           id: s.username || s.id || 0,
           name: s.name || 'You',
-          // Try multiple possible avatar field names from the API response
+
           avatar: s.photo || s.profile_picture || s.avatar || '',
         })
       },
       () => {
-        // Fallback: show a generic 'You' label if the request fails
         this.slots.splice(0, 1, { id: 0, name: 'You', avatar: '' })
       },
     )
   },
 
   methods: {
-    // Returns the first two initials of the given name in uppercase.
-    // Used as a text fallback when the user has no avatar image.
+
     initials(name) {
       if (!name) return '?'
       return name
@@ -194,17 +108,17 @@ export default {
         .toUpperCase()
     },
 
-    // Proxy to emit a toast notification to the parent (Profile.vue)
+
     showNotification(message, type) {
       this.$emit('notification', message, type)
     },
 
-    // Programmatically opens the hidden file input for the squad avatar
+
     input_click() {
       if (this.$refs.image_input) this.$refs.image_input.click()
     },
 
-    // Reads the selected image file and updates the avatar preview
+
     input_file(event) {
       this.files = (event && event.target && event.target.files) ? event.target.files : []
 
@@ -218,8 +132,7 @@ export default {
       }
     },
 
-    // Validates the squad name and calls the API to create the squad,
-    // then advances to the 'slots' view so the user can invite members.
+
     async create_squad() {
       this.error = ''
 
@@ -235,61 +148,48 @@ export default {
         var formData = new FormData()
         formData.append('name', trimmedName)
 
-        // Only send a file if the user actually uploaded one
+
         if (this.files && this.files.length > 0) {
           formData.append('file', this.files[0])
         }
 
-        await UserService.createSquad(formData)
+        const response = await UserService.createSquad(formData)
+
+        console.log("Response", response.data)
 
         this.squad = { name: trimmedName }
-        this.showNotification('Squad created successfully', 'success')
-        this.view = 'slots'
-      } catch (err) {
-        console.log('createSquad error:', err)
-        console.log('STATUS:', err && err.response && err.response.status)
-        console.log('DATA:', err && err.response && err.response.data)
 
-        var msg = 'Failed to create squad'
-        if (err && err.response && err.response.data) {
-          msg = err.response.data.error || err.response.data.message || msg
-        }
-        this.error = msg
+      } catch (err) {
+        alert("Could not create squad, please talk with our staff!")
       } finally {
         this.loading = false
       }
 
-      // fake success:
-      this.squad = { id: 'local-' + Date.now(), name: trimmedName }
-      this.showNotification('Squad created successfully (local)', 'success')
-      this.view = 'slots'
     },
 
-    // Opens the member picker for the given slot index.
-    // Slot 0 is the creator and cannot be replaced.
+
     openPicker(i) {
-      if (i === 0) return  // creator slot is locked
+      if (i === 0) return
       this.pickingIndex = i
       this.memberQuery = ''
       this.view = 'picker'
     },
 
-    // Called when the user taps 'Add member' next to a search result.
-    // Guards against adding the same person twice, then fills the slot.
+
     selectMember(m) {
       if (this.pickingIndex === null) return
 
-      // Prevent the same user from occupying more than one slot
+
       for (var k = 0; k < this.slots.length; k++) {
         var s = this.slots[k]
         if (s && s.id === m.id) return
       }
 
-      // Normalise to the slot shape used by the template
+
       var picked = {
         id: m.id,
         name: m.name,
-        // Try multiple possible avatar field names from the API response
+
         avatar: m.avatar || m.photo || m.image || m.profile_picture || ''
       }
 
@@ -298,19 +198,18 @@ export default {
       this.view = 'slots'
     },
 
-    // Cancels member picking and returns to the slots view
+
     backToSlots() {
       this.pickingIndex = null
       this.view = 'slots'
     },
 
-    // Confirms the completed squad and notifies the parent
+
     finalise_squad() {
       this.showNotification('Squad finalised', 'success')
       this.$emit('back')
     },
 
-    // Discards the creation flow and returns control to the parent
     cancel() {
       this.$emit('back')
     },
@@ -368,11 +267,27 @@ export default {
   margin-right: auto;
 }
 
+/* Base styles for the image regardless of state */
 .avatar img {
-  width: auto;
-  height: auto;
-  object-fit: contain;
+  display: block;
   box-sizing: border-box;
+}
+
+/* Styles specifically for the default JEEC logo (SVG fix) */
+.default-img {
+  width: 54px;
+  /* Strict width prevents the SVG from exploding */
+  height: 54px;
+  object-fit: contain;
+  /* No border-radius needed here since the logo just floats in the middle */
+}
+
+/* Styles specifically for user-uploaded photos */
+.uploaded-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .avatar-default {
@@ -415,6 +330,13 @@ export default {
   padding: 1.5rem 0 0.35rem;
 
   border-bottom: 1px solid rgba(25, 156, 255, 0.45);
+  font-family: inherit;
+}
+
+.name-input::placeholder {
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 300;
 }
 
 .section-label {
