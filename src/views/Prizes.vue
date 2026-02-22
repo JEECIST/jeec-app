@@ -16,8 +16,10 @@
             <Slide v-for="(prize, index) in daily_solo_prizes" :key="prize.day" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailySolo', index)">
                 <h3>{{ prize.day }}</h3>
-                <div class="img-div"></div>
-                <p>{{ prize.prize }}</p>
+                <div class="img-div">
+                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                </div>
+                <p>{{ prize.name }}</p>
               </div>
             </Slide>
           </Carousel>
@@ -30,8 +32,10 @@
             <Slide v-for="(prize, index) in daily_activities_prizes" :key="prize.activity" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailyAct', index)">
                 <h3>{{ prize.activity }}</h3>
-                <div class="img-div"></div>
-                <p>{{ prize.prize }}</p>
+                <div class="img-div">
+                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                </div>
+                <p>{{ prize.name }}</p>
               </div>
             </Slide>
           </Carousel>
@@ -40,20 +44,6 @@
 
       <!-- JEECPOT -->
       <div class="selected-prizes" v-if="jeecpot">
-        <h2>JEECPOT PRIZES</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpot" :items-to-show="3" :modelValue="1" :wrap-around="true" snap-align="center"
-            class="custom-carousel">
-            <Slide v-for="(prize, index) in jeecpot_prizes" :key="prize.rank" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpot', index)">
-                <h3>{{ prize.rank }}</h3>
-                <div class="img-div"></div>
-                <p>{{ prize.prize }}</p>
-              </div>
-            </Slide>
-          </Carousel>
-        </div>
-
         <h2>SOLO PRIZES</h2>
         <div class="display-prizes">
           <Carousel :ref="carousels.jeecpotSolo" :items-to-show="3" :modelValue="1" :wrap-around="true"
@@ -61,8 +51,10 @@
             <Slide v-for="(prize, index) in jeecpot_solo_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSolo', index)">
                 <h3>{{ prize.rank }}</h3>
-                <div class="img-div"></div>
-                <p>{{ prize.prize }}</p>
+                <div class="img-div">
+                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                </div>
+                <p>{{ prize.name }}</p>
               </div>
             </Slide>
           </Carousel>
@@ -75,8 +67,26 @@
             <Slide v-for="(prize, index) in jeecpot_squad_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSquad', index)">
                 <h3>{{ prize.rank }}</h3>
-                <div class="img-div"></div>
-                <p>{{ prize.prize }}</p>
+                <div class="img-div">
+                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                </div>
+                <p>{{ prize.name }}</p>
+              </div>
+            </Slide>
+          </Carousel>
+        </div>
+
+        <h2>CV PRIZE</h2>
+        <div class="display-prizes">
+          <Carousel :ref="carousels.jeecpot" :items-to-show="1" :modelValue="0" :wrap-around="true" snap-align="center"
+            class="custom-carousel">
+            <Slide v-for="(prize, index) in cv_prize" :key="prize.rank" v-slot="{ isActive }">
+              <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpot', index)">
+                <h3></h3>
+                <div class="img-div">
+                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                </div>
+                <p>{{ prize.name }}</p>
               </div>
             </Slide>
           </Carousel>
@@ -118,39 +128,11 @@ const selectJeecpot = () => {
   jeecpot.value = true
 }
 
-const daily_solo_prizes = ref([
-  { day: 'Monday', prize: 'Ipad' },
-  { day: 'Tuesday', prize: 'Smartphone' },
-  { day: 'Wednesday', prize: 'Headphones' },
-  { day: 'Thursday', prize: 'Smartwatch' },
-  { day: 'Friday', prize: 'Gaming Console' }
-])
-
-const daily_activities_prizes = ref([
-  { activity: 'Activity 1', prize: 'Gift Card' },
-  { activity: 'Activity 2', prize: 'BLT Speaker' },
-  { activity: 'Activity 3', prize: 'Fit Tracker' },
-  { activity: 'Activity 4', prize: 'E-Reader' },
-  { activity: 'Activity 5', prize: 'VR Headset' }
-])
-
-const jeecpot_prizes = ref([
-  { rank: '2nd Place', prize: 'BMW i3' },
-  { rank: '1st Place', prize: 'Tesla Model 3' },
-  { rank: '3rd Place', prize: 'Audi e-tron' }
-])
-
-const jeecpot_solo_prizes = ref([
-  { rank: '2nd Place', prize: 'Dell XPS' },
-  { rank: '1st Place', prize: 'MacBook Pro' },
-  { rank: '3rd Place', prize: 'Lenovo ThinkPad' }
-])
-
-const jeecpot_squad_prizes = ref([
-  { rank: '2nd Place', prize: 'BBBBB' },
-  { rank: '1st Place', prize: 'AAAAA' },
-  { rank: '3rd Place', prize: 'CCCCC' }
-])
+const daily_solo_prizes = ref([])
+const daily_activities_prizes = ref([])
+const jeecpot_solo_prizes = ref([])
+const jeecpot_squad_prizes = ref([])
+const cv_prize = ref([])
 
 async function fetchPrizes() {
   const response = await axios.get(
@@ -162,6 +144,36 @@ async function fetchPrizes() {
 
   console.log(response.data)
 
+  daily_solo_prizes.value = response.data.Daily;
+  daily_solo_prizes.value[0].day = 'Monday'
+  daily_solo_prizes.value[1].day = 'Tuesday'
+  daily_solo_prizes.value[2].day = 'Wednesday'
+
+  daily_activities_prizes.value = response.data.Activity;
+  daily_activities_prizes.value[0].activity = 'Activity 1'
+  daily_activities_prizes.value[1].activity = 'Activity 2'
+  daily_activities_prizes.value[2].activity = 'Activity 3'
+  daily_activities_prizes.value[3].activity = 'Activity 4'
+
+  jeecpot_solo_prizes.value = response.data.Individual;
+  jeecpot_solo_prizes.value[0].rank = '1st Place'
+  jeecpot_solo_prizes.value[1].rank = '2nd Place'
+  jeecpot_solo_prizes.value[2].rank = '3rd Place'
+
+  let temp = jeecpot_solo_prizes.value[0];
+  jeecpot_solo_prizes.value[0] = jeecpot_solo_prizes.value[1];
+  jeecpot_solo_prizes.value[1] = temp;
+
+  jeecpot_squad_prizes.value = response.data.Squad;
+  jeecpot_squad_prizes.value[0].rank = '1st Place'
+  jeecpot_squad_prizes.value[1].rank = '2nd Place'
+  jeecpot_squad_prizes.value[2].rank = '3rd Place'
+
+  temp = jeecpot_squad_prizes.value[0];
+  jeecpot_squad_prizes.value[0] = jeecpot_squad_prizes.value[1];
+  jeecpot_squad_prizes.value[1] = temp;
+
+  cv_prize.value = response.data.CV;
 }
 
 onMounted(() => {
@@ -274,13 +286,23 @@ h2 {
 .prize-card .img-div {
   width: 150px;
   height: 150px;
-  object-fit: cover;
   border-radius: 25px;
   background: rgba(0, 255, 255, 0.05);
-  /* fundo escuro semi-transparente */
   border: 2px solid #1e90ff;
   box-shadow: 0 0 20px 2px #1e90ff;
   transition: all 0.5s ease;
+  margin-top: 10px;
+  padding: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prize-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .prize-card p {
@@ -289,6 +311,8 @@ h2 {
   font-weight: bold;
   color: white;
   width: 100%;
+  text-align: center;
+  height: 2.5rem;
 }
 
 .prize-card h3 {
