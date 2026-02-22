@@ -1,5 +1,12 @@
 <template>
   <div class="prizes-page">
+    <div class="background" v-if="showPopup">
+      <div class="prize-info-popup">
+        <h1>{{ prize_name }}</h1>
+        <p>{{ prize_description }}</p>
+        <button class="close-btn" @click="showPopup = false">&times;</button>
+      </div>
+    </div>
     <div class="prizes-content">
       <!-- Selector -->
       <div class="select-prizes">
@@ -11,12 +18,12 @@
       <div class="selected-prizes" v-if="daily">
         <h2>SOLO PRIZES</h2>
         <div class="display-prizes">
-          <Carousel :ref="carousels.dailySolo" :items-to-show="3" :wrap-around="true" snap-align="center"
+          <Carousel :ref="carousels.dailySolo" v-model="currentSlides.dailySolo" :items-to-show="3" :wrap-around="true" snap-align="center"
             class="custom-carousel">
             <Slide v-for="(prize, index) in daily_solo_prizes" :key="prize.day" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailySolo', index)">
                 <h3>{{ prize.day }}</h3>
-                <div class="img-div">
+                <div class="img-div" id="daily-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
                 <p>{{ prize.name }}</p>
@@ -27,12 +34,12 @@
 
         <h2>ACTIVITIES PRIZES</h2>
         <div class="display-prizes">
-          <Carousel :ref="carousels.dailyAct" :items-to-show="3" :wrap-around="true" snap-align="center"
+          <Carousel :ref="carousels.dailyAct" v-model="currentSlides.dailyAct" :items-to-show="3" :wrap-around="true" snap-align="center"
             class="custom-carousel">
             <Slide v-for="(prize, index) in daily_activities_prizes" :key="prize.activity" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailyAct', index)">
-                <h3>{{ prize.activity }}</h3>
-                <div class="img-div">
+                <h3></h3>
+                <div class="img-div" id="activities-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
                 <p>{{ prize.name }}</p>
@@ -46,12 +53,12 @@
       <div class="selected-prizes" v-if="jeecpot">
         <h2>SOLO PRIZES</h2>
         <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpotSolo" :items-to-show="3" :modelValue="1" :wrap-around="true"
+          <Carousel :ref="carousels.jeecpotSolo" v-model="currentSlides.jeecpotSolo" :items-to-show="3" :wrap-around="true"
             snap-align="center" class="custom-carousel">
             <Slide v-for="(prize, index) in jeecpot_solo_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSolo', index)">
                 <h3>{{ prize.rank }}</h3>
-                <div class="img-div">
+                <div class="img-div" id="solo-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
                 <p>{{ prize.name }}</p>
@@ -62,12 +69,12 @@
 
         <h2>SQUAD PRIZES</h2>
         <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpotSquad" :items-to-show="3" :modelValue="1" :wrap-around="true"
+          <Carousel :ref="carousels.jeecpotSquad" v-model="currentSlides.jeecpotSquad" :items-to-show="3" :wrap-around="true"
             snap-align="center" class="custom-carousel">
             <Slide v-for="(prize, index) in jeecpot_squad_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSquad', index)">
                 <h3>{{ prize.rank }}</h3>
-                <div class="img-div">
+                <div class="img-div" id="squad-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
                 <p>{{ prize.name }}</p>
@@ -78,12 +85,12 @@
 
         <h2>CV PRIZE</h2>
         <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpot" :items-to-show="1" :modelValue="0" :wrap-around="true" snap-align="center"
-            class="custom-carousel">
+          <Carousel :ref="carousels.cv" v-model="currentSlides.cv" :items-to-show="1" :wrap-around="true"
+            snap-align="center" class="custom-carousel">
             <Slide v-for="(prize, index) in cv_prize" :key="prize.rank" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpot', index)">
+              <div class="prize-card" :class="{ active: isActive }" @click="goTo('cv', index)">
                 <h3></h3>
-                <div class="img-div">
+                <div class="img-div" id="cv-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
                 <p>{{ prize.name }}</p>
@@ -106,16 +113,52 @@ import authHeader from '@/services/auth-header'
 const daily = ref(true)
 const jeecpot = ref(false)
 
+const showPopup = ref(false)
+const prize_name = ref('Teste')
+const prize_description = ref('O sol poente pintava o horizonte com tons de âmbar e violeta, enquanto a brisa fresca soprava entre as árvores antigas. No silêncio da montanha, cada passo ressoava como um segredo partilhado com a terra. O tempo parecia parar, permitindo que a mente divagasse por caminhos nunca antes explorados.')
+
+
 const carousels = {
   dailySolo: ref(null),
   dailyAct: ref(null),
-  jeecpot: ref(null),
   jeecpotSolo: ref(null),
-  jeecpotSquad: ref(null)
+  jeecpotSquad: ref(null),
+    cv: ref(null)
 }
 
+const currentSlides = ref({
+  dailySolo: 0,
+  dailyAct: 0,
+  jeecpotSolo: 1,
+  jeecpotSquad: 1,
+  cv: 0,
+})
+
 const goTo = (type, index) => {
-  carousels[type].value?.slideTo(index)
+  // O valor atual está agora na nossa variável reativa!
+  const currentActiveIndex = currentSlides.value[type];
+
+  console.log("Slide Atual:", currentActiveIndex, "Index Clicado:", index);
+
+  if (currentActiveIndex === index) {
+    // Abrir popup
+    const prizeList = {
+      dailySolo: daily_solo_prizes,
+      dailyAct: daily_activities_prizes,
+      jeecpotSolo: jeecpot_solo_prizes,
+      jeecpotSquad: jeecpot_squad_prizes,
+      cv: cv_prize
+    };
+
+    const selected = prizeList[type].value[index];
+    if (selected) {
+      prize_name.value = selected.name;
+      showPopup.value = true;
+    }
+  } else {
+    // Se não for o atual, o v-model atualiza-se sozinho se usares slideTo
+    carousels[type].value?.slideTo(index);
+  }
 }
 
 const selectDaily = () => {
@@ -189,6 +232,62 @@ onMounted(() => {
   background: radial-gradient(circle at center, #001a1f, #000814);
   display: flex;
   justify-content: center;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7); /* Escurece o fundo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99; /* Um abaixo do popup */
+  backdrop-filter: blur(5px); /* Efeito de desfoque luxuoso */
+}
+
+.prize-info-popup {
+  position: relative; /* Mudado de fixed para relative porque o pai já é fixed */
+  background: #000814;
+  border: 2px solid #1e90ff;
+  box-shadow: 0 0 20px 2px #1e90ff;
+  border-radius: 25px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.prize-info-popup h1 {
+  color: #1e90ff;
+  margin-bottom: 20px;
+}
+
+.prize-info-popup p {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.close-btn {
+position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #1e90ff;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+color: #B8A1FF;
+  transform: scale(1.2);
 }
 
 .prizes-content {
@@ -284,8 +383,12 @@ h2 {
 }
 
 .prize-card .img-div {
-  width: 150px;
-  height: 150px;
+  max-width: 200px;
+  max-height: 200px;
+
+  width: 33vw;
+  height: 33vw;
+
   border-radius: 25px;
   background: rgba(0, 255, 255, 0.05);
   border: 2px solid #1e90ff;
@@ -297,6 +400,16 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#activities-img-div {
+  border-color: #B8A1FF;
+  box-shadow: 0 0 20px 2px #B8A1FF;
+}
+
+#squad-img-div {
+  border-color: #00ffff;
+  box-shadow: 0 0 20px 2px #00ffff;
 }
 
 .prize-card img {
@@ -312,11 +425,20 @@ h2 {
   color: white;
   width: 100%;
   text-align: center;
-  height: 2.5rem;
+
+  /* font-size: 3vw; 
+  font-size: clamp(12px, 3vw, 18px);
+  height: 3.2rem; */
+
+  height: 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .prize-card h3 {
-  font-size: 18px;
   color: #ccc;
+  text-align: center;
+    white-space: nowrap;
 }
 </style>
