@@ -77,7 +77,6 @@ const routes = [
     component: () => import('@/views/ConnectionsView.vue'),
   },
   {
-    path: '/:pathMatch(.*)*',
     path: '/wordle',
     name: 'Wordle',
     component: () => import('@/views/Wordle.vue'),
