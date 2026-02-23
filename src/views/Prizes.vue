@@ -60,7 +60,6 @@
             snap-align="center" class="custom-carousel">
             <Slide v-for="(prize, index) in jeecpot_solo_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSolo', index)">
-                <h3>{{ prize.rank }}</h3>
                 <div class="img-div" id="solo-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
@@ -76,7 +75,6 @@
             snap-align="center" class="custom-carousel">
             <Slide v-for="(prize, index) in jeecpot_squad_prizes" :key="prize.rank" v-slot="{ isActive }">
               <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSquad', index)">
-                <h3>{{ prize.rank }}</h3>
                 <div class="img-div" id="squad-img-div">
                   <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
                 </div>
@@ -201,29 +199,8 @@ async function fetchPrizes() {
   daily_solo_prizes.value[2].day = 'Wednesday'
 
   daily_activities_prizes.value = response.data.Activity;
-  daily_activities_prizes.value[0].activity = 'Activity 1'
-  daily_activities_prizes.value[1].activity = 'Activity 2'
-  daily_activities_prizes.value[2].activity = 'Activity 3'
-  daily_activities_prizes.value[3].activity = 'Activity 4'
-
   jeecpot_solo_prizes.value = response.data.Individual;
-  jeecpot_solo_prizes.value[0].rank = '1st Place'
-  jeecpot_solo_prizes.value[1].rank = '2nd Place'
-  jeecpot_solo_prizes.value[2].rank = '3rd Place'
-
-  let temp = jeecpot_solo_prizes.value[0];
-  jeecpot_solo_prizes.value[0] = jeecpot_solo_prizes.value[1];
-  jeecpot_solo_prizes.value[1] = temp;
-
   jeecpot_squad_prizes.value = response.data.Squad;
-  jeecpot_squad_prizes.value[0].rank = '1st Place'
-  jeecpot_squad_prizes.value[1].rank = '2nd Place'
-  jeecpot_squad_prizes.value[2].rank = '3rd Place'
-
-  temp = jeecpot_squad_prizes.value[0];
-  jeecpot_squad_prizes.value[0] = jeecpot_squad_prizes.value[1];
-  jeecpot_squad_prizes.value[1] = temp;
-
   cv_prize.value = response.data.CV;
 }
 
@@ -237,7 +214,7 @@ onMounted(() => {
 .prizes-page {
   width: 100%;
   min-height: 100vh;
-  background: radial-gradient(circle at center, #001a1f, #000814);
+  /*background: radial-gradient(circle at center, #001a1f, #000814);*/
   display: flex;
   justify-content: center;
 }
@@ -450,6 +427,10 @@ h2 {
   /* o central fica à frente */
 }
 
+.prize-card.active p {
+  font-size: 1rem;
+}
+
 .prize-card .img-div {
   max-width: 200px;
   max-height: 200px;
@@ -491,17 +472,15 @@ h2 {
   font-size: 14px;
   font-weight: bold;
   color: white;
-  width: 100%;
+  width: 100vw;
   text-align: center;
 
-  /* font-size: 3vw; 
-  font-size: clamp(12px, 3vw, 18px);
+  font-size: 0.8rem; 
+  /* font-size: clamp(12px, 3vw, 18px);
   height: 3.2rem; */
 
   height: 1.5rem;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .prize-card h3 {
