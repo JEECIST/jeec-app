@@ -5,7 +5,7 @@
                 <img v-if="safeMembers[0] && safeMembers[0].photo" :src="safeMembers[0].photo" alt="" />
                 <span v-else-if="safeMembers[0] && safeMembers[0].name" class="creator-initials">{{
                     initials(safeMembers[0].name)
-                }}</span>
+                    }}</span>
                 <span v-else class="plus">👤</span>
             </div>
             <div class="member-label creator-label">
@@ -19,7 +19,7 @@
                 <span v-else class="plus">+</span>
             </div>
             <div class="member-label">
-                <p>{{ safeMembers[i] && safeMembers[i].name ? safeMembers[i].name : 'Invite' }}</p>
+                <p>{{ safeMembers[i] && safeMembers[i].name ? safeMembers[i].name.split(' ')[0] : 'Invite' }}</p>
             </div>
         </button>
     </div>
@@ -38,12 +38,33 @@ const props = defineProps({
     }
 })
 
-// Create a safe array that checks if the data is wrapped in an object
 const safeMembers = computed(() => {
+    let dataArray = [];
     if (props.members && props.members.data && Array.isArray(props.members.data)) {
-        return props.members.data;
+        dataArray = props.members.data;
+    } else if (Array.isArray(props.members)) {
+        dataArray = props.members;
     }
-    return Array.isArray(props.members) ? props.members : [null, null, null, null];
+
+    const captain = dataArray.find(m => m && m.is_captain === true);
+    const regularMembers = dataArray.filter(m => m && m.is_captain !== true);
+
+    const finalSlots = [null, null, null, null];
+
+    if (captain) {
+        finalSlots[0] = captain;
+    }
+
+    let nextAvailableSlot = captain ? 1 : 0;
+
+    for (const member of regularMembers) {
+        if (nextAvailableSlot < 4) {
+            finalSlots[nextAvailableSlot] = member;
+            nextAvailableSlot++;
+        }
+    }
+
+    return finalSlots;
 });
 
 function initials(name) {
@@ -129,5 +150,13 @@ function openPicker() {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 600;
+}
+
+.member-label p {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 </style>

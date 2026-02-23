@@ -2,8 +2,7 @@
   <div class="create-squad">
     <div class="create-modal">
 
-      <!-- VIEW 1: name + avatar -->
-      <div v-if="view === 'name'">
+      <div>
         <h1 class="title">Create a squad</h1>
         <button class="avatar" @click.stop="input_click" aria-label="Upload squad picture">
           <img :src="currentImage" :alt="image_uploaded ? 'Squad' : 'Default squad'"
@@ -44,9 +43,6 @@ export default {
       image_uploaded: false,
       currentImage: jeec_mobile_white,
 
-      view: 'name', // 'name' | 'slots' | 'picker'
-
-
       name: '',
       squad: null,
       slots: [null, null, null, null],
@@ -62,20 +58,6 @@ export default {
 
   computed: {
 
-    isSquadFull() {
-      return this.slots.every(function (s) {
-        return s !== null
-      })
-    },
-
-    filteredMembers() {
-      var q = this.memberQuery.trim().toLowerCase()
-      if (!q) return this.members
-
-      return this.members.filter(function (m) {
-        return (m.name || '').toLowerCase().includes(q)
-      })
-    },
   },
 
   mounted() {
@@ -98,21 +80,9 @@ export default {
 
   methods: {
 
-    initials(name) {
-      if (!name) return '?'
-      return name
-        .split(' ')
-        .slice(0, 2)
-        .map(function (w) { return w[0] })
-        .join('')
-        .toUpperCase()
-    },
-
-
     showNotification(message, type) {
       this.$emit('notification', message, type)
     },
-
 
     input_click() {
       if (this.$refs.image_input) this.$refs.image_input.click()
@@ -155,9 +125,9 @@ export default {
 
         const response = await UserService.createSquad(formData)
 
-        console.log("Response", response.data)
-
         this.squad = { name: trimmedName }
+
+        this.finalise_squad()
 
       } catch (err) {
         alert("Could not create squad, please talk with our staff!")
@@ -167,50 +137,8 @@ export default {
 
     },
 
-
-    openPicker(i) {
-      if (i === 0) return
-      this.pickingIndex = i
-      this.memberQuery = ''
-      this.view = 'picker'
-    },
-
-
-    selectMember(m) {
-      if (this.pickingIndex === null) return
-
-
-      for (var k = 0; k < this.slots.length; k++) {
-        var s = this.slots[k]
-        if (s && s.id === m.id) return
-      }
-
-
-      var picked = {
-        id: m.id,
-        name: m.name,
-
-        avatar: m.avatar || m.photo || m.image || m.profile_picture || ''
-      }
-
-      this.slots.splice(this.pickingIndex, 1, picked)
-      this.pickingIndex = null
-      this.view = 'slots'
-    },
-
-
-    backToSlots() {
-      this.pickingIndex = null
-      this.view = 'slots'
-    },
-
-
     finalise_squad() {
-      this.showNotification('Squad finalised', 'success')
-      this.$emit('back')
-    },
-
-    cancel() {
+      // this.showNotification('Squad finalised', 'success')
       this.$emit('back')
     },
   },

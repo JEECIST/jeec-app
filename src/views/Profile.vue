@@ -413,7 +413,6 @@ const fetchProfile = () => {
   UserService.getUserSquad().then(
     (response) => {
       squad.value = response.data.data
-      console.log("Squad value", squad.value)
     },
     (error) => {
       console.log(error)

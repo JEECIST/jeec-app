@@ -11,6 +11,7 @@
       <div class="button_wrapper">
         <GoogleLogin :callback="callback" />
         <button @click="loginDev">Login DEV</button>
+        <button @click="loginDev_2">Login DEV 2</button>
         <p>v3.0</p>
       </div>
     </div>
@@ -42,6 +43,22 @@ function loginDev() {
   const userData = {
     email: 'jose.paradela@tecnico.ulisboa.pt',
     name: 'Paradela',
+    picture:
+      'https://lh3.googleusercontent.com/a/ACg8ocKjA1Qo1DFfQJiC7jvDb4u59lYIIXfx2JszEa-SsfQRCijyiQ=s96-c',
+  }
+
+  axios
+    .post(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/redirecturigoogle', userData)
+    .then((response) => {
+      const jwt = decrypt(response.data)
+      userStore.authUser(jwt)
+    })
+}
+
+function loginDev_2() {
+  const userData = {
+    email: 'markurto2@gmail.com',
+    name: 'Curtorepe',
     picture:
       'https://lh3.googleusercontent.com/a/ACg8ocKjA1Qo1DFfQJiC7jvDb4u59lYIIXfx2JszEa-SsfQRCijyiQ=s96-c',
   }

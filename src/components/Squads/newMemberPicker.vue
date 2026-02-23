@@ -7,14 +7,16 @@
                 autofocus />
         </div>
 
-        <div class="member-list">
+        <TransitionGroup name="list" tag="div" class="member-list">
             <div class="member-row" v-for="m in filteredMembers" :key="m">
-                <span class="member-name">{{ m }}</span>
-                <button class="member-add" type="button" @click="selectMember(m)">
+                <span class="member-name">
+                    <p>{{ m }}</p>
+                </span>
+                <button class="member-add" type="button" @click="inviteMember(m)">
                     Invite
                 </button>
             </div>
-        </div>
+        </TransitionGroup>
 
         <button class="create-btn" type="button" @click="backToSlots">
             Back
@@ -23,8 +25,10 @@
 </template>
 
 <script setup>
-
-import { ref, computed } from 'vue'
+import UserService from '@/services/user.service'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
+import authHeader from '@/services/auth-header'
 
 const emit = defineEmits(['closePicker'])
 
@@ -45,7 +49,7 @@ const usernames = [
 ]
 
 const memberQuery = ref("")
-const members = ref(usernames)
+const members = ref([])
 
 // Transform this into a computed property for real-time reactivity
 const filteredMembers = computed(() => {
@@ -58,18 +62,55 @@ const filteredMembers = computed(() => {
         .slice(0, 4)
 })
 
-function selectMember(m) {
-    // Send post to send invite
-    console.log(m)
+async function inviteMember(m) {
+    const response = await UserService.inviteSquad(m)
+
+    console.log(response.data)
 }
 
 function backToSlots() {
     emit("closePicker")
 }
 
+onMounted(async () => {
+    const response = await axios.get(
+        import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/get-all-usernames',
+        {
+            headers: authHeader(),
+        },
+    )
+    if (response.data) {
+        members.value = response.data.usernames
+    }
+})
+
 </script>
 
 <style scoped>
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.25s ease-out;
+    overflow: hidden;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
+    min-height: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-color: transparent;
+}
+
+.list-enter-to,
+.list-leave-from {
+    max-height: 50px;
+}
+
 .section-label {
     width: 100%;
     max-width: 21rem;
@@ -91,6 +132,7 @@ function backToSlots() {
 
     display: flex;
     align-items: center;
+    font-family: inherit;
 }
 
 .member-search-input {
@@ -103,10 +145,12 @@ function backToSlots() {
     font-size: 0.95rem;
     font-weight: 500;
     color: #EBE9F7;
+    font-family: inherit;
 }
 
 .member-search-input::placeholder {
     color: rgba(235, 233, 247, 0.5);
+    font-family: inherit;
 }
 
 .member-list {

@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import UserService from '../../services/user.service'
+import UserService from '@/services/user.service'
 import { onMounted, ref } from 'vue'
 
 import newMember from '@/components/Squads/newMember.vue'
