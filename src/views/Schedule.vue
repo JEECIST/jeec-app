@@ -738,16 +738,6 @@ h1 {
   width: min-content;
 }
 
-/* h3 {
-  font-family: var(--font-schedule);
-  text-align: center;
-  text-shadow: 0px 0px 15px var(--acc-color);
-  margin: 10px auto;
-  position: relative;
-  width: 100%;
-  font-weight: normal;
-  font-size: 1rem;
-} */
 
 .header {
   position: relative;
@@ -763,9 +753,18 @@ h1 {
   top: -10px;
 }
 
+.header h1 {
+  font-size: clamp(2.3rem, 3vw + 1rem, 4rem);
+  font-weight: 900;
+  color: var(--color-header-blue);
+  text-shadow: 0px 0px 20px var(--color-jeec-blue);
+  margin: 1rem auto;
+}
+
 .header h3 {
   font-family: var(--font-schedule);
   text-shadow: 0px 0px 15px var(--acc-color);
+  text-align: center;
   margin: 10px auto;
   position: relative;
   width: 100%;
@@ -779,7 +778,7 @@ h1 {
   justify-content: center;
   overflow: hidden;
   gap: 10px;
-  padding: 5px;
+  padding: 3px;
   width: 100%;
   top: -10px;
 }
@@ -822,6 +821,7 @@ h1 {
 .tab.active {
   opacity: 1;
   font-size: 0.75rem;
+  transform: scale(1.05);
 }
 
 .tab:hover::before {
@@ -1025,7 +1025,7 @@ h1 {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: clamp(0.7rem, 0.5vw + 0.3rem, 0.75rem);
+  font-size: clamp(0.8rem, 0.5vw + 0.3rem, 0.75rem);
   letter-spacing: 0.05em;
   text-decoration: underline;
   font-weight: 300;
@@ -1197,7 +1197,7 @@ h1 {
 
 .prize-label {
   color: var(--event-color, var(--c-acc-blue));
-  font-size: clamp(0.8rem, 0.5vw + 0.28rem, 0.75em);
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
@@ -1637,7 +1637,7 @@ h1 {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: clamp(0.7rem, 1.5vw + 0.2rem, 0.9rem);
+  font-size: clamp(0.75rem, 1.5vw + 0.2rem, 0.9rem);
   text-decoration: underline;
   font-weight: 300;
 }
@@ -1650,11 +1650,11 @@ h1 {
 }
 
 .mobile .expanded-info p {
-  font-size: clamp(0.55rem, 1.5vw + 0.2rem, 0.7rem);
+  font-size: clamp(0.7rem, 1.5vw + 0.2rem, 0.7rem);
 }
 
 .mobile .expanded-info h3 {
-  font-size: clamp(0.55rem, 1.5vw + 0.2rem, 0.7rem);
+  font-size: clamp(0.75rem, 1.5vw + 0.2rem, 0.7rem);
 }
 
 .mobile .act_description {
