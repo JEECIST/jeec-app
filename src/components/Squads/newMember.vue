@@ -5,7 +5,7 @@
                 <img v-if="safeMembers[0] && safeMembers[0].photo" :src="safeMembers[0].photo" alt="" />
                 <span v-else-if="safeMembers[0] && safeMembers[0].name" class="creator-initials">{{
                     initials(safeMembers[0].name)
-                    }}</span>
+                }}</span>
                 <span v-else class="plus">👤</span>
             </div>
             <div class="member-label creator-label">
@@ -13,11 +13,22 @@
             </div>
         </div>
 
-        <button v-for="i in [1, 2, 3]" :key="i" class="member-slot" type="button" @click="openPicker()">
+        <button v-for="i in [1, 2, 3]" :key="i" class="member-slot" type="button"
+            :style="{ cursor: safeMembers[i] ? 'default' : 'pointer' }" @click="openPicker(safeMembers[i])">
+
             <div class="member-circle">
-                <img v-if="safeMembers[i] && safeMembers[i].photo" :src="safeMembers[i].photo" alt="" />
+                <div class="avatar-wrapper" v-if="safeMembers[i]">
+                    <img class="avatar-img" v-if="safeMembers[i].photo" :src="safeMembers[i].photo" alt="" />
+                    <span v-else class="creator-initials">{{ initials(safeMembers[i].name) }}</span>
+                    <button v-if="userStore.user.username === captain_username" class="kick-cross"
+                        @click.stop="kickMember(safeMembers[i])">
+                        <img :src="cross">
+                    </button>
+                </div>
+
                 <span v-else class="plus">+</span>
             </div>
+
             <div class="member-label">
                 <p>{{ safeMembers[i] && safeMembers[i].name ? safeMembers[i].name.split(' ')[0] : 'Invite' }}</p>
             </div>
@@ -27,9 +38,16 @@
 
 <script setup>
 
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { useUserStore } from '@/stores/UserStore';
+import cross from '@/assets/cross.svg';
+import UserService from '@/services/user.service';
 
-const emit = defineEmits(['openPicker'])
+const userStore = useUserStore()
+
+const captain_username = ref("")
+
+const emit = defineEmits(['openPicker', 'kicked'])
 
 const props = defineProps({
     members: {
@@ -53,6 +71,7 @@ const safeMembers = computed(() => {
 
     if (captain) {
         finalSlots[0] = captain;
+        captain_username.value = captain.username;
     }
 
     let nextAvailableSlot = captain ? 1 : 0;
@@ -77,8 +96,22 @@ function initials(name) {
         .toUpperCase()
 }
 
-function openPicker() {
-    emit('openPicker')
+function openPicker(safeMember) {
+    if (!safeMember) {
+        emit('openPicker')
+    }
+}
+
+async function kickMember(safeMember) {
+    if (safeMember) {
+        if (userStore.user.username === captain_username.value) {
+            if (confirm(`Are you sure you want to kick ${safeMember.username} from your squad?`)) {
+                const response = await UserService.kickMember(safeMember.username)
+                emit('kicked')
+            }
+        }
+        return;
+    }
 }
 
 </script>
@@ -108,6 +141,9 @@ function openPicker() {
     display: grid;
     place-items: center;
     margin: 0 auto;
+
+    position: relative;
+    /* REQUIRED for the cross to overlap correctly */
 }
 
 .member-circle img {
@@ -116,6 +152,57 @@ function openPicker() {
     border-radius: 999px;
     object-fit: cover;
     display: block;
+}
+
+/* Delete the generic .member-circle img { ... } that was here! */
+
+.member-circle .avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Creates a safe zone for the image and cross to overlap */
+.avatar-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Pins the cross to the top right corner of the avatar */
+/* Styles the invisible button wrapper */
+.kick-cross {
+    position: absolute !important;
+    width: 22px !important;
+    height: 22px !important;
+
+    /* Pin to top right corner of the circle */
+    top: -2px !important;
+    right: -2px !important;
+
+    /* Remove default button background and padding */
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    cursor: pointer;
+
+    z-index: 10 !important;
+}
+
+/* Styles the actual SVG image inside the button */
+.kick-cross img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.6));
+    /* Brings the shadow back to the cross! */
 }
 
 .member-circle .plus {

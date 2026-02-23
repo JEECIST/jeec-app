@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <newMember @openPicker="openMemberPicker" :members="squad.members?.data"></newMember>
+            <newMember @kicked="kickedMember" @openPicker="openMemberPicker" :members="squad.members?.data"></newMember>
 
         </div>
     </div>
@@ -65,6 +65,10 @@ async function leaveSquad() {
     const response = await UserService.leaveSquad()
     console.log("Response leave squad:", response.data)
 
+    emit("delete")
+}
+
+function kickedMember() {
     emit("delete")
 }
 </script>
