@@ -386,7 +386,7 @@ color: #B8A1FF;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
   overflow: visible;
 }
@@ -395,6 +395,7 @@ color: #B8A1FF;
   width: 100%;
   overflow: visible;
   z-index: 0;
+  margin-bottom: 20px;
 }
 
 h2 {
@@ -441,9 +442,9 @@ h2 {
   border-radius: 25px;
   background: rgba(0, 255, 255, 0.05);
   border: 2px solid #1e90ff;
-  box-shadow: 0 0 20px 2px #1e90ff;
+  box-shadow: 0 0 15px 2px #1e90ff;
   transition: all 0.5s ease;
-  margin-top: 10px;
+  margin-top: 15px;
   padding: 10px;
 
   display: flex;
@@ -453,12 +454,12 @@ h2 {
 
 #activities-img-div {
   border-color: #B8A1FF;
-  box-shadow: 0 0 20px 2px #B8A1FF;
+  box-shadow: 0 0 15px 2px #B8A1FF;
 }
 
 #squad-img-div {
   border-color: #00ffff;
-  box-shadow: 0 0 20px 2px #00ffff;
+  box-shadow: 0 0 15px 2px #00ffff;
 }
 
 .prize-card img {
