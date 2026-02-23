@@ -299,7 +299,7 @@ color: #B8A1FF;
 .prizes-content {
   width: 100%;
   max-width: 600px;
-  padding: 40px 20px 200px 20px;
+  padding: 40px 20px 150px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
