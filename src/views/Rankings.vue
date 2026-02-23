@@ -15,6 +15,7 @@
       >
         SQUAD
       </button>
+      <div class="underline" :class="{ right: !daily }"></div>
     </div>
 
     <div class="spacing"></div>
@@ -31,6 +32,7 @@
           :user_points="userdata_individual.daily_points"
           :identity="'You'"
           :flag="true"
+          :extend="false"
           :type="'Student'"
         >
         </RankingsPodium>
@@ -49,6 +51,7 @@
           :user_points="userdata_individual.total_points"
           :identity="'You'"
           :flag="true"
+          :extend="true"
           :type="'Student'"
         >
         </RankingsPodium>
@@ -66,6 +69,7 @@
           :user_points="userdata_squad.daily_points"
           :identity="identityy"
           :flag="user_squad_flag"
+          :extend="true"
           :type="'Squad'"
         >
         </RankingsPodium>
@@ -84,6 +88,7 @@
           :user_points="userdata_squad.total_points"
           :identity="identityy"
           :flag="user_squad_flag"
+          :extend="true"
           :type="'Squad'"
         >
         </RankingsPodium>
@@ -208,7 +213,7 @@ export default {
 
 <style scoped>
 .spacing {
-  height: 5vh;
+  height: 3vh;
 }
 
 .center {
@@ -219,48 +224,70 @@ export default {
 .main-button-container {
   display: flex;
   justify-content: space-around;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   margin: 0 auto;
   gap: 10px;
+  position: relative; /* necessário */
+}
+
+.main-button-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-jeec-blue),
+    transparent
+  );
 }
 
 .main-button {
   width: 100%;
   font-size: 1.3rem;
-  padding: 0.3rem;
+  letter-spacing: 1px;
+  padding: 0.2rem;
   border: none;
   cursor: pointer;
-  --background: none;
-  --border-width: 2px 0 0 0;
-}
-
-.main-button:first-of-type {
-  --border-background: linear-gradient(100deg, #4cc9f0, #7209b7);
-  --border-radius: 20px 0 0 0;
-}
-
-.main-button:last-of-type {
-  --border-background: linear-gradient(100deg, #7209b7, #f72585);
-  --border-radius: 0 20px 0 0;
+  background: none;
 }
 
 .main-button.active {
-  font-size: 1.4rem;
-  font-weight: 700;
-  --background: radial-gradient(ellipse 60% 120% at 50% 0, #4ccaf032, #7109b70e 90%, #7109b700);
+  background: none;
+  border: 1px solid var(--color-jeec-blue);
+  border-radius: 15px 15px 0 0;
+  box-shadow: inset 0 0 8px var(--color-jeec-blue); /* sombra interna */
 }
 
-.main-button::before {
-  content: '';
+/* 🔥 underline animado */
+.underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-jeec-blue),
+    transparent
+  );
+  transition: transform 0.35s ease;
+}
+
+.underline.right {
+  transform: translateX(100%);
 }
 
 .prize-title {
   text-align: center;
-  padding-bottom: 10px;
   font-size: 30px;
   font-weight: bold;
-  letter-spacing: 5px;
 }
 
 .weekly {
