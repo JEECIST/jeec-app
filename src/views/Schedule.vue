@@ -7,13 +7,8 @@
         <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
       </section>
       <section class="tabs">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          class="tab"
-          :class="{ active: activeDay === index }"
-          @click="setActiveDay(index)"
-        >
+        <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+          @click="setActiveDay(index)">
           {{ day }}
         </div>
       </section>
@@ -32,11 +27,7 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="!showEletrolinkInfo" class="row">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrocomp"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrocomp">
                     <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                   </div>
                 </div>
@@ -54,11 +45,7 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="showEletrolinkInfo" class="eletrolink-content-grid">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrolink-grid-row"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrolink-grid-row">
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
@@ -112,12 +99,8 @@
                 <div class="column">
                   <div class="type">
                     <span>{{ activity.type }}</span>
-                    <img
-                      v-if="getActivityIcon(activity.type)"
-                      :src="getActivityIcon(activity.type)"
-                      alt="Activity Type Icon"
-                      class="type-icon"
-                    />
+                    <img v-if="getActivityIcon(activity.type)" :src="getActivityIcon(activity.type)"
+                      alt="Activity Type Icon" class="type-icon" />
                   </div>
                   <div class="title">{{ activity.title }}</div>
                   <transition name="expand-fade">
@@ -130,23 +113,23 @@
                         <div class="prize-row">
                           <p class="prize-name">{{ activity.prize.name }}</p>
                           <div class="prize-image-container">
-                            <img v-if="activity.prize.image" :src="base_path + activity.prize.image" alt="Prize Image" class="prize-image"/>
+                            <img v-if="activity.prize.image" :src="activity.prize.image" alt="Prize Image"
+                              class="prize-image" />
                           </div>
                         </div>
                       </div>
                     </div>
                   </transition>
                   <div class="actions-row">
-                    <button
-                      class="info"
-                      @click="toggleActivityInfo(index)"
-                    >
+                    <button class="info" @click="toggleActivityInfo(index)">
                       {{ isExpanded(index) ? '-info' : '+info' }}
                     </button>
                     <div class="calendar-dropdown">
                       <button class="calendar-btn" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
                         <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z" fill="currentColor"/>
+                          <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z"
+                            fill="currentColor" />
                         </svg>
                       </button>
                       <transition name="expand-fade">
@@ -160,51 +143,29 @@
                 </div>
                 <div class="logos">
                   <!-- Container fixo para o company logo -->
-                  <div
-                    v-if="activity?.speakers?.length > 0"
-                    class="logo-container company-logo-container"
-                  >
+                  <div v-if="activity?.speakers?.length > 0" class="logo-container company-logo-container">
                     <transition name="logo-fade" mode="out-in">
-                      <img
-                        v-if="
-                          activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
-                        "
-                        :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                        :src="
-                          base_path +
-                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
-                        "
-                        class="logo-image"
-                      />
+                      <img v-if="
+                        activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
+                      " :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                        activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
+                        " class="logo-image" />
                     </transition>
                   </div>
 
-                  <div
-                    class="logo-container speaker-logo-container"
-                  >
+                  <div class="logo-container speaker-logo-container">
                     <transition name="logo-fade" mode="out-in">
                       <template v-if="activity?.speakers?.length > 0">
-                        <img
-                          v-if="
-                            activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
-                          "
-                          :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path +
-                            activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="
+                          activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
+                        " :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
+                          " class="logo-image" />
                       </template>
                       <template v-else-if="activity?.logo_companies?.length > 0">
-                        <img
-                          v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
-                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
+                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
+                            " class="logo-image" />
                       </template>
                       <template v-else>
                         <div class="logo-default"></div>
@@ -230,13 +191,8 @@
       </section>
       <section class="tabs-container">
         <div class="tabs">
-          <div
-            v-for="(day, index) in days"
-            :key="index"
-            class="tab"
-            :class="{ active: activeDay === index }"
-            @click="setActiveDay(index)"
-          >
+          <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+            @click="setActiveDay(index)">
             {{ day }}
           </div>
         </div>
@@ -254,13 +210,9 @@
             </div>
             <p>Today's companies:</p>
             <template v-if="filteredEletrocomps.length">
-              <transition name="eletrolink-toggle" >
+              <transition name="eletrolink-toggle">
                 <div v-if="!showEletrolinkInfo" class="row">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps.slice(0, 2)"
-                    :key="index"
-                    class="eletrocomp"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps.slice(0, 2)" :key="index" class="eletrocomp">
                     <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                   </div>
                   <div v-if="filteredEletrocomps.length > 2" class="eletrocomp more-indicator">
@@ -268,7 +220,8 @@
                   </div>
                 </div>
               </transition>
-              <p class="points-info">Sign up in advance and get <b>50</b><img :src="pointsIcon" alt="Points Icon" class="points-icon" /></p>
+              <p class="points-info">Sign up in advance and get <b>50</b><img :src="pointsIcon" alt="Points Icon"
+                  class="points-icon" /></p>
             </template>
 
             <!-- Sem transição para o "NO COMPANIES" -->
@@ -282,11 +235,7 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="showEletrolinkInfo" class="eletrolink-content-grid">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrolink-grid-row"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrolink-grid-row">
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
@@ -336,12 +285,8 @@
                 <div class="column-mobile">
                   <div class="type">
                     <span>{{ activity.type }}</span>
-                    <img
-                      v-if="getActivityIcon(activity.type)"
-                      :src="getActivityIcon(activity.type)"
-                      alt="Activity Type Icon"
-                      class="type-icon"
-                    />
+                    <img v-if="getActivityIcon(activity.type)" :src="getActivityIcon(activity.type)"
+                      alt="Activity Type Icon" class="type-icon" />
                   </div>
                   <div class="title">{{ activity.title }}</div>
                   <transition name="expand-fade">
@@ -354,23 +299,23 @@
                         <div class="prize-row">
                           <p class="prize-name">{{ activity.prize.name }}</p>
                           <div class="prize-image-container">
-                            <img v-if="activity.prize.image" :src="base_path + activity.prize.image" alt="Prize Image" class="prize-image"/>
+                            <img v-if="activity.prize.image" :src="activity.prize.image" alt="Prize Image"
+                              class="prize-image" />
                           </div>
                         </div>
                       </div>
                     </div>
                   </transition>
                   <div class="actions-row">
-                    <button
-                      class="info-mobile"
-                      @click="toggleActivityInfo(index)"
-                    >
+                    <button class="info-mobile" @click="toggleActivityInfo(index)">
                       {{ isExpanded(index) ? '-info' : '+info' }}
                     </button>
                     <div class="calendar-dropdown">
                       <button class="calendar-btn" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
                         <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd" clip-rule="evenodd" d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z" fill="currentColor"/>
+                          <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z"
+                            fill="currentColor" />
                         </svg>
                       </button>
                       <transition name="expand-fade">
@@ -384,52 +329,30 @@
                 </div>
                 <div class="logos-mobile">
                   <!-- Container para company logo (só aparece se existir speaker) -->
-                  <div
-                    v-if="activity?.speakers.length > 0"
-                    class="logo-container company-logo-container"
-                  >
+                  <div v-if="activity?.speakers.length > 0" class="logo-container company-logo-container">
                     <transition name="logo-fade" mode="out-in">
-                      <img
-                        v-if="
-                          activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
-                        "
-                        :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                        :src="
-                          base_path +
-                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
-                        "
-                        class="logo-image"
-                      />
+                      <img v-if="
+                        activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
+                      " :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                        activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
+                        " class="logo-image" />
                     </transition>
                   </div>
                   <!-- Container principal para speaker logo ou fallbacks -->
-                  <div
-                    class="logo-container speaker-logo-container"
-                  >
+                  <div class="logo-container speaker-logo-container">
                     <transition name="logo-fade" mode="out-in">
                       <!-- 1. Prioridade: logos_speakers -->
                       <template v-if="activity?.speakers?.length > 0">
-                        <img
-                          v-if="
-                            activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
-                          "
-                          :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path +
-                            activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="
+                          activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
+                        " :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
+                          " class="logo-image" />
                       </template>
                       <template v-else-if="activity?.logo_companies?.length > 0">
-                        <img
-                          v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
-                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
+                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
+                            " class="logo-image" />
                       </template>
                       <template v-else>
                         <div class="logo-default"></div>
@@ -815,7 +738,7 @@ h1 {
   width: min-content;
 }
 
-h3 {
+/* h3 {
   font-family: var(--font-schedule);
   text-align: center;
   text-shadow: 0px 0px 15px var(--acc-color);
@@ -824,7 +747,7 @@ h3 {
   width: 100%;
   font-weight: normal;
   font-size: 1rem;
-}
+} */
 
 .header {
   position: relative;
@@ -838,6 +761,16 @@ h3 {
   height: min-content;
   margin-bottom: 20px;
   top: -10px;
+}
+
+.header h3 {
+  font-family: var(--font-schedule);
+  text-shadow: 0px 0px 15px var(--acc-color);
+  margin: 10px auto;
+  position: relative;
+  width: 100%;
+  font-weight: normal;
+  font-size: 1rem;
 }
 
 .tabs {
@@ -880,11 +813,9 @@ h3 {
   transform: translateX(-50%);
   transition: opacity 0.1s ease-in-out;
   opacity: 0.3;
-  background: radial-gradient(
-    ellipse at top center,
-    var(--tab-color) 1%,
-    rgba(255, 255, 255, 0) 75%
-  );
+  background: radial-gradient(ellipse at top center,
+      var(--tab-color) 1%,
+      rgba(255, 255, 255, 0) 75%);
   z-index: -3;
 }
 
@@ -988,7 +919,7 @@ h3 {
   flex-direction: column;
   align-items: center;
   width: 20%;
-  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem) ;
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
 }
 
 .start {
@@ -1240,7 +1171,7 @@ h3 {
   opacity: 0;
 }
 
-.expanded-info{
+.expanded-info {
   font-weight: 300;
   letter-spacing: 0.05rem;
   font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
@@ -1279,7 +1210,7 @@ h3 {
   margin-bottom: 15px;
 }
 
-.prize-name{
+.prize-name {
   font-family: var(--font-schedule);
   font-weight: 700;
   font-size: clamp(0.75rem, 0.55vw + 0.32rem, 0.95rem);
@@ -1353,6 +1284,7 @@ h3 {
   letter-spacing: 0.1em;
   font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
 }
+
 .points-info {
   display: flex;
   align-items: center;
@@ -1418,7 +1350,7 @@ h3 {
   opacity: 0.85;
 }
 
-.eletrocomp-text{
+.eletrocomp-text {
   display: flex;
   flex-direction: column;
   justify-content: center;
