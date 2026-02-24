@@ -134,7 +134,8 @@ const closeInsufficientPointsPopup = () => {
 
 const buyPrize = async (prize) => {
   // Check if user has enough points
-  if (userStore.userPoints.current_points < prize.price / 2) {
+  // if (userStore.userPoints.current_points < prize.price / 2) {
+  if (userStore.userPoints.current_points < prize.price) {
     showInsufficientPointsPopup.value = true
     showPopup.value = false
     return
@@ -210,7 +211,7 @@ onMounted(() => {
 <template>
   <div class="view">
     <!-- FALTA VER A LOGICA DO BOUGHT :TODO -->
-    <!-- SECTION DOS PARAGRAFOS -->
+    <!-- SECTION DOS PARAGRAFOS
     <section class="info-section">
       <p>Earn points by participating in JEEC!</p>
       <p>
@@ -218,17 +219,17 @@ onMounted(() => {
         points to redeem prizes below!
       </p>
       <p class="small">(maximum of one of each type per day)</p>
-    </section>
+    </section> -->
 
-    <!-- SECTION DO BUY DOS TICKETS PARA O DAILY DRAW -->
+    <!-- SECTION DO BUY DOS TICKETS PARA O DAILY DRAW
     <section class="ticket-section">
       <div class="daily-ticket-container">
-        <!-- Loading state for daily prize -->
+        Loading state for daily prize
         <div v-if="dailyPrizeLoading" class="daily-prize-circle loading-circle">
           <div class="loading-spinner-small"></div>
         </div>
 
-        <!-- Error state for daily prize -->
+        Error state for daily prize
         <div
           v-else-if="dailyPrizeError"
           class="daily-prize-circle error-circle"
@@ -237,7 +238,7 @@ onMounted(() => {
           <span class="error-icon">!</span>
         </div>
 
-        <!-- Daily prize display when loaded -->
+        Daily prize display when loaded
         <div v-else class="daily-prize-circle">
           <img
             v-if="dailyPrize?.imageData"
@@ -291,7 +292,7 @@ onMounted(() => {
           </div>
         </a>
       </div>
-    </section>
+    </section> -->
 
     <!-- SECTION PARA COMPRAREM OS PRIZES DA SHOP  -->
     <section class="shop-section">
@@ -321,12 +322,18 @@ onMounted(() => {
             <div v-else class="no-image-placeholder">?</div>
           </div>
           <div class="price">
+            <!-- Discount hidden
             <div class="item-price" v-if="!item.bought">
               <p class="coin">{{ item.price }}</p>
               <img src="@/assets/icons/flash_home.svg" alt="credits" />
             </div>
             <div class="item-price" v-if="!item.bought">
               <p class="coin-new">{{ item.price / 2 }}</p>
+              <img src="@/assets/icons/flash_home.svg" alt="credits" />
+            </div>
+            -->
+            <div class="item-price" v-if="!item.bought">
+              <p style="display: inline-flex; align-items: center; gap: 0.2ch">{{ item.price }}</p>
               <img src="@/assets/icons/flash_home.svg" alt="credits" />
             </div>
             <span v-else class="bought-text">Bought</span>
@@ -336,14 +343,19 @@ onMounted(() => {
     </section>
 
     <!-- Prize Popup -->
-    <div v-if="showPopup && selectedPrize" class="popup-overlay">
-      <div class="prize-popup">
-        <div class="popup-header">
-          <h2>{{ selectedPrize.name }}</h2>
-          <button class="close-button" @click="closePopup">✕</button>
-        </div>
-        <div class="popup-body">
-          <div class="prize-circle">
+    <div v-if="showPopup && selectedPrize" class="qrcode-wrapper">
+      <div class="qrcode-backdrop" @click="closePopup"></div>
+
+      <div class="qrcode-card">
+        <button class="close-popup-btn" @click="closePopup" aria-label="Close prize popup">
+          <div></div>
+          <div></div>
+        </button>
+
+        <h2>{{ selectedPrize.name }}</h2>
+
+        <div class="scan invisible-scan">
+          <div class="prize-circle full-square">
             <img
               v-if="selectedPrize.imageData"
               :src="selectedPrize.imageData"
@@ -352,21 +364,23 @@ onMounted(() => {
             />
             <div v-else class="no-image-placeholder">?</div>
           </div>
-          <p class="prize-description">{{ selectedPrize.description }}</p>
-          <button
-            class="buy-button"
-            @click="buyPrize(selectedPrize)"
-            :disabled="selectedPrize.bought"
-          >
-            <div class="item-price">
-              BUY PRIZE
-              <p class="price-tag coin-new">{{ selectedPrize.price / 2 }}</p>
-              <img src="@/assets/icons/flash_home_white.svg" alt="credits" class="white" />
-            </div>
-          </button>
         </div>
+
+        <p class="prize-description">{{ selectedPrize.description }}</p>
+
+        <button
+          class="prize-buy-button"
+          @click="buyPrize(selectedPrize)"
+          :disabled="selectedPrize.bought"
+        >
+          <span class="buy-text">BUY PRIZE</span>
+          <!-- <span class="price-text">{{ selectedPrize.price / 2 }}</span> -->
+          <span class="price-text">{{ selectedPrize.price }}</span>
+          <img src="@/assets/icons/flash_home_white.svg" alt="credits" class="button-icon" />
+        </button>
       </div>
     </div>
+
 
     <!-- Ticket Popup -->
     <div v-if="showTicketPopup" class="popup-overlay">
@@ -399,19 +413,36 @@ onMounted(() => {
     </div>
 
     <!-- Insufficient Points Popup -->
-    <div v-if="showInsufficientPointsPopup" class="popup-overlay">
-      <div class="prize-popup insufficient-points-popup">
-        <div class="popup-header">
-          <h2>Insufficient Points</h2>
-          <button class="close-button" @click="closeInsufficientPointsPopup">✕</button>
-        </div>
-        <div class="popup-body">
-          <div class="insufficient-points-icon">
-            <img src="@/assets/icons/flash_home.svg" alt="flash" />
+    <div v-if="showInsufficientPointsPopup" class="qrcode-wrapper">
+      <div class="qrcode-backdrop" @click="closeInsufficientPointsPopup"></div>
+
+      <div class="qrcode-card">
+        <button
+          class="close-popup-btn"
+          @click="closeInsufficientPointsPopup"
+          aria-label="Close popup"
+        >
+          <div></div>
+          <div></div>
+        </button>
+
+        <h2>Insufficient Points</h2>
+
+        <div class="scan invisible-scan">
+          <div class="prize-circle full-square">
+            <img
+              src="@/assets/sad-shuba-shuba.gif"
+              alt="Sad Duck"
+              class="popup-prize-image"
+            />
           </div>
-          <p class="insufficient-points-message">You don't have enough points to buy this prize.</p>
-          <button class="ok-button" @click="closeInsufficientPointsPopup">OK, GOT IT!</button>
         </div>
+
+        <p class="insufficient-points-message">
+          You don't have enough points to buy this prize.
+        </p>
+
+        <button class="ok-button" @click="closeInsufficientPointsPopup">OK, GOT IT!</button>
       </div>
     </div>
   </div>
@@ -554,7 +585,7 @@ onMounted(() => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 50px;
   padding: 10px;
 }
 
@@ -567,11 +598,12 @@ onMounted(() => {
 }
 
 .circle {
-  width: 70px;
-  height: 70px;
-  border: 2px solid var(--c-acc-violet);
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: white;
+  border: none;
+  background: rgba(184, 161, 255, 0.21);
+  box-shadow: 0 -8px 20px 4px rgba(184, 161, 255, 0.9);
   transition: all 0.2s ease;
   display: flex;
   justify-content: center;
@@ -579,20 +611,10 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.white-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: white;
-}
-
-.white {
-  object-fit: contain;
-}
-
 .circle.bought {
-  background: grey;
-  border: 2px solid grey;
+  background: rgba(184, 161, 255, 0.12);
+  box-shadow: 0 -8px 20px 4px rgba(184, 161, 255, 0.4);
+  filter: brightness(0.7);
 }
 
 .prize-image {
@@ -656,73 +678,120 @@ onMounted(() => {
 }
 
 /* Popup Styles */
-.popup-overlay {
+.qrcode-wrapper {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.prize-popup {
-  background-color: rgba(163, 0, 255, 0.2);
-  width: 90%;
-  max-width: 320px;
-  border-radius: 16px;
+  z-index: 200;
+  inset: 0;
+  width: 100%;
+  height: 100svh;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  border: solid var(--c-acc-violet);
-  backdrop-filter: blur(5px);
+  overscroll-behavior: contain;
 }
 
-.popup-header {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
+.qrcode-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
 }
 
-.popup-header h2 {
-  text-align: center;
-  flex: 1;
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
+.qrcode-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(92vw, 520px);
+  padding: 22px 22px 26px;
+  border-radius: 34px;
 
-.close-button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
-}
+  background: linear-gradient(
+    180deg,
+    rgba(8, 14, 22, 0.96) 0%,
+    rgba(5, 10, 16, 0.96) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid #b8a1ff;
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
-.popup-body {
-  padding: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
+  color: white;
+}
+
+.qrcode-card > .close-popup-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  opacity: 0.9;
+}
+
+.qrcode-card > .close-popup-btn:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.qrcode-card > .close-popup-btn > div {
+  height: 3px;
+  width: 70%;
+  background-color: rgba(255, 255, 255, 0.9);
+  position: absolute;
+  border-radius: 3px;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+}
+
+.qrcode-card > .close-popup-btn > div:first-child {
+  rotate: 45deg;
+}
+
+.qrcode-card > .close-popup-btn > div:last-child {
+  rotate: -45deg;
+}
+
+.qrcode-card > h2 {
+  width: 100%;
+  margin: 0;
+  padding: 18px 52px 0 32px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+}
+
+.scan {
+  width: min(320px, 74vw);
+  aspect-ratio: 1;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .prize-circle {
-  width: 100px;
-  height: 100px;
-  background: transparent;
+  width: 70%;
+  height: 70%;
   border-radius: 50%;
-  margin-bottom: 16px;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
 .popup-prize-image {
@@ -736,6 +805,39 @@ onMounted(() => {
   text-align: center;
   margin-bottom: 20px;
   font-size: 14px;
+}
+
+.prize-buy-button {
+  margin-top: 12px;
+  padding: 12px 20px;
+  width: 80%;
+  max-width: 260px;
+  border-radius: 999px;
+  border: none;
+  background-color: #b8a1ff;
+  color: white;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.prize-buy-button .buy-text {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.prize-buy-button .price-text {
+  font-weight: 800;
+  color: #ffca28; /* Yellow/Gold color for price */
+}
+
+.prize-buy-button .button-icon {
+  width: 27px;
+  height: 27px;
 }
 
 /* Loading and error states */
@@ -781,19 +883,6 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.buy-button {
-  background-color: #199cff;
-  color: white;
-  border: none;
-  border-radius: 24px;
-  padding: 12px 24px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 .buy-button:disabled {
   background-color: grey;
@@ -805,48 +894,46 @@ onMounted(() => {
 }
 
 /* Insufficient Points Popup Styles */
-.insufficient-points-popup {
-  background-color: #4a1075;
+.full-square {
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.insufficient-points-icon {
-  width: 80px;
-  height: 80px;
-  background: #4a1075;
-  border-radius: 50%;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 3px solid white;
-}
-
-.insufficient-points-icon img {
-  height: 50px;
-  width: 50px;
-}
-
-.insufficient-points-icon span {
-  font-size: 36px;
+.invisible-scan {
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 .insufficient-points-message {
   color: white;
   text-align: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   font-size: 16px;
+  padding: 0 10px;
 }
 
+
+
 .ok-button {
-  background-color: #2196f3;
+  background-color: #b8a1ff;
   color: white;
   border: none;
-  border-radius: 24px;
+  border-radius: 999px; /* Rounded pill shape */
   padding: 12px 24px;
-  font-weight: bold;
+  font-weight: 800;
+  font-size: 0.95rem;
   cursor: pointer;
-  width: 100%;
-  margin-top: 8px;
+  width: 80%;
+  max-width: 260px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease;
+}
+
+.ok-button:active {
+  transform: scale(0.98);
 }
 
 .item-price {
@@ -866,17 +953,53 @@ onMounted(() => {
 /* Responsive adjustments */
 @media (min-width: 768px) {
   .shop-container {
-    max-width: 800px;
+    max-width: 890px;
     margin: 0 auto;
   }
 
   .circle-container {
-    width: 100px;
+    width: 110px;
   }
 
   .circle {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
+  }
+}
+@media (min-width: 1024px) {
+  .qrcode-card {
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .scan {
+    width: 220px;
+    margin: 0 auto;
+  }
+
+  .qrcode-card > h2 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .prize-description,
+  .insufficient-points-message {
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .prize-buy-button,
+  .ok-button {
+    width: 100%;
+    margin-top: 10px;
   }
 }
 </style>
