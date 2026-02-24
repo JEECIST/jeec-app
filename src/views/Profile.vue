@@ -54,11 +54,9 @@
 
     <div class="rankings-section">
       <h2 class="ranking-title">RANKING</h2>
-      <RankingsPodium v-if="rankingsData.length > 0" :other_rankingdata="rankingsData" :user_ranking="userRanking"
-        :user_points="student?.current_points || 0" :identity="student?.name || 'You'" :flag="true" :type="'Squad'" />
-      <div v-else class="rankings-placeholder">
-        <p>Rankings coming soon...</p>
-      </div>
+      <RankingsPodium :other_rankingdata="students_weekly" :user_ranking="userdata_individual.ranking_weekly"
+        :user_points="userdata_individual.total_points" :identity="'You'" :flag="true" :extend="true" :type="'Student'">
+      </RankingsPodium>
       <div class="view-all-link">
         <span class="view-all-link-line"></span>
         <a href="/rankings">view all</a>
@@ -187,8 +185,9 @@ const linkedin_url = ref('')
 
 const user = ref({}) // Tornar user reativo
 const invites = ref([])
-const rankingsData = ref([])
-const userRanking = ref(0)
+
+const students_weekly = ref([])
+const userdata_individual = ref([])
 
 // Computed properties
 const isInSquad = () => {
@@ -431,6 +430,14 @@ const fetchProfile = () => {
   } else {
     console.log('Already in a squad')
   }
+
+  getRankingPodium()
+}
+
+async function getRankingPodium() {
+  const response = await UserService.getAllRanking()
+  students_weekly.value = response.data.individual_top10_weekly
+  userdata_individual.value = response.data.individual_ranking
 }
 
 onMounted(fetchProfile)

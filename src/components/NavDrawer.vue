@@ -3,19 +3,10 @@
     :inert="!stateStore.navOpen">
     <div class="nav-backdrop" @click="stateStore.navOpen = false"></div>
     <div id="nav-drawer">
-      <button
-        class="nav-close"
-        aria-label="Close navigation"
-        @click="stateStore.navOpen = false"
-        >
-        <img
-          src="@/assets/cross.svg"
-          alt=""
-          class="nav-close-icon"
-          aria-hidden="true"
-        />
+      <button class="nav-close" aria-label="Close navigation" @click="stateStore.navOpen = false">
+        <img src="@/assets/cross.svg" alt="" class="nav-close-icon" aria-hidden="true" />
       </button>
-      <TheUserInfo variant="nav"></TheUserInfo>
+      <!-- <TheUserInfo variant="nav"></TheUserInfo> -->
       <nav>
         <ul>
           <li>
@@ -25,33 +16,13 @@
             <router-link to="/shop">Store</router-link>
           </li>
           <li>
-            <router-link to="/draw">Prizes</router-link>
+            <router-link to="/prizes">Prizes</router-link>
           </li>
           <li>
             <router-link to="/schedule">Schedule</router-link>
           </li>
           <li>
-            <router-link to="/eletrolink">Eletrolink</router-link>
-          </li>
-          <li>
-            <router-link to="/shop">shop</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/rankings">rankings</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/map">map</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/prizes">prizes</router-link>
-            <div class="link-underline"></div>
-          </li>
-          <li>
-            <router-link to="/wordle">wordle</router-link>
-            <div class="link-underline"></div>
+            <router-link to="/rankings">Rankings</router-link>
           </li>
         </ul>
         <div class="help-info">
@@ -256,5 +227,4 @@ li a.active-link::before {
   outline: 2px solid #178ee9;
   outline-offset: 2px;
 }
-
 </style>

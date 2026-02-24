@@ -2,13 +2,8 @@
   <div class="desktop" v-if="!isMobile">
     <div class="view">
       <section class="tabs">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          class="tab"
-          :class="{ active: activeDay === index }"
-          @click="setActiveDay(index)"
-        >
+        <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+          @click="setActiveDay(index)">
           {{ day.label }}
         </div>
       </section>
@@ -23,13 +18,8 @@
       <section class="tabs-container">
         <div class="tabs-wrapper">
           <div class="tabs" :style="tabsStyle">
-            <div
-              v-for="(day, index) in days"
-              :key="index"
-              class="tab"
-              :class="{ active: activeDay === index }"
-              @click="setActiveDay(index)"
-            >
+            <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+              @click="setActiveDay(index)">
               {{ day.label }}
             </div>
           </div>
@@ -37,11 +27,7 @@
         <button class="nav-button prev" @click="scrollPrev" :disabled="activeDay === 0">
           &lt;
         </button>
-        <button
-          class="nav-button next"
-          @click="scrollNext"
-          :disabled="activeDay === days.length - 1"
-        >
+        <button class="nav-button next" @click="scrollNext" :disabled="activeDay === days.length - 1">
           &gt;
         </button>
       </section>
@@ -68,11 +54,9 @@ const days = ref([
   { label: 'MONDAY', image: new URL('@/assets/Planta05.png', import.meta.url).href },
   { label: 'TUESDAY', image: new URL('@/assets/Planta06.png', import.meta.url).href },
   { label: 'WEDNESDAY', image: new URL('@/assets/Planta07.png', import.meta.url).href },
-  { label: 'THURSDAY', image: new URL('@/assets/Planta08.png', import.meta.url).href },
-  { label: 'FRIDAY', image: new URL('@/assets/Planta09.png', import.meta.url).href },
 ])
 
-const event_days = ['2025-05-05', '2025-05-06', '2025-05-07', '2025-05-08', '2025-05-09']
+const event_days = ['2026-03-02', '2026-03-03', '2026-03-04']
 
 function updateIsMobile() {
   isMobile.value = window.innerWidth <= 800
@@ -152,6 +136,7 @@ img {
   margin: 0 auto;
   display: block;
 }
+
 h1 {
   text-align: center;
   text-shadow: 0px 0px 15px var(--acc-color);
@@ -219,11 +204,9 @@ h1 {
   transform: translateX(-50%);
   transition: opacity 0.1s ease-in-out;
   opacity: 0.3;
-  background: radial-gradient(
-    ellipse at top center,
-    var(--tab-color) 10%,
-    rgba(255, 255, 255, 0) 75%
-  );
+  background: radial-gradient(ellipse at top center,
+      var(--tab-color) 10%,
+      rgba(255, 255, 255, 0) 75%);
   z-index: -3;
 }
 

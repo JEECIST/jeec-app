@@ -24,7 +24,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  height: 75vh;
+  height: 60vh;
   width: 100%;
 }
 

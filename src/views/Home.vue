@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HomePopup></HomePopup>
+    <!-- <HomePopup></HomePopup> -->
     <HomeActivities class="card radient-border-passthrough"></HomeActivities>
     <HomePrizes class="card radient-border-passthrough prizes-card"></HomePrizes>
   </div>
@@ -31,6 +31,7 @@ import HomePrizes from '@/components/HomeCards/HomePrizes.vue'
 
   font-family: 'Lexend Exa';
 }
+
 .card::before {
   content: '';
 }
@@ -58,7 +59,7 @@ import HomePrizes from '@/components/HomeCards/HomePrizes.vue'
   .card {
     width: 95%;
   }
-  
+
   .prizes-card {
     width: 80%;
   }

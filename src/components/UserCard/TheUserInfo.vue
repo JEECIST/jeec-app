@@ -20,30 +20,23 @@
     <div class="points-wrapper">
       <JEECPOT :variant="variant"></JEECPOT>
     </div>
-    <button
-      v-if="variant === 'home'"
-      class="notif-wrapper"
-      type="button"
-      aria-label="Notifications"
-      :aria-expanded="stateStore.notificationsOpen"
-      aria-controls="notifications-drawer"
-      @click="openNotifications"
-    >
+
+    <button v-if="variant === 'home'" class="notif-wrapper" type="button" aria-label="Notifications"
+      :aria-expanded="stateStore.notificationsOpen" aria-controls="notifications-drawer" @click="openNotifications">
       <span class="notif-dot" :class="{
-    green: stateStore.notificationsSubscribed === true,
-    red: stateStore.notificationsSubscribed === false,
-  }" aria-hidden="true"></span>
+        green: stateStore.notificationsSubscribed === true,
+        red: stateStore.notificationsSubscribed === false,
+      }" aria-hidden="true"></span>
       <svg class="notif-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path
           d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2Zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"
-          fill="currentColor"
-        />
+          fill="currentColor" />
       </svg>
     </button>
 
     <NotificationsDrawer v-if="variant === 'home'" />
 
-    <div class="user-wrapper" v-else>
+    <div class="notif-wrapper" v-else>
       <UserImage :image="userStore.user.picture" :variant="variant"></UserImage>
     </div>
 
@@ -89,7 +82,7 @@ async function openNotifications() {
 
 defineProps({
   variant: {
-    default: 'nav',
+    default: 'home',
   },
 })
 </script>
@@ -124,21 +117,21 @@ defineProps({
   gap: 0px 10px;
 }
 
-.user-card.home > .name-wrapper {
+.user-card.home>.name-wrapper {
   grid-area: name;
   text-align: left;
   align-self: start;
   justify-self: start;
 }
 
-.user-card.home > .name-wrapper p {
+.user-card.home>.name-wrapper p {
   font-family: "Lexend Exa";
   font-weight: 400;
   letter-spacing: 1px;
   font-size: 1.5rem;
   line-height: 1.1;
   margin: 0;
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.92);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -165,7 +158,7 @@ defineProps({
   font-weight: 700;
   letter-spacing: 1px;
   font-size: 2rem;
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.92);
   line-height: 1;
   white-space: nowrap;
 }
@@ -174,7 +167,7 @@ defineProps({
   color: #1a9cd8;
 }
 
-.user-card.home > .tickets-wrapper {
+.user-card.home>.tickets-wrapper {
   grid-area: tickets;
   display: flex;
   align-items: center;
@@ -184,13 +177,13 @@ defineProps({
   padding: 0;
 }
 
-.user-card.home > .tickets-wrapper :deep(*) {
+.user-card.home>.tickets-wrapper :deep(*) {
   border-radius: 999px;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
 
-.user-card.home > .points-wrapper {
+.user-card.home>.points-wrapper {
   grid-area: points;
   display: flex;
   align-items: center;
@@ -204,7 +197,7 @@ defineProps({
   max-width: none;
 }
 
-.user-card.home > .points-wrapper :deep(*) {
+.user-card.home>.points-wrapper :deep(*) {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
@@ -220,11 +213,14 @@ defineProps({
   width: 56px;
   height: 56px;
   border-radius: 999px;
-  border:transparent;
+  border: transparent;
   box-shadow:
-    inset 2px 2px 4px rgba(255,255,255,0.40),   /* top-left mais forte */
-    inset -2px -2px 4px rgba(255, 255, 255, 0.25),       /* bottom-right */
-    inset 1px 1px 2px rgba(0, 0, 0, 0.15),   /* cantos restantes mais suave */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.40),
+    /* top-left mais forte */
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),
+    /* bottom-right */
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15),
+    /* cantos restantes mais suave */
     inset -1px -1px 2px rgba(0, 0, 0, 0.1);
   display: grid;
   place-items: center;
@@ -247,7 +243,7 @@ defineProps({
   height: 10px;
   border-radius: 999px;
   background: #33e08a;
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35);
 }
 
 .notif-dot {
@@ -258,8 +254,9 @@ defineProps({
   height: 10px;
   border-radius: 999px;
 
-  background: #ff3b3b; /* default quando ainda não sabes */
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
+  background: #ff3b3b;
+  /* default quando ainda não sabes */
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35);
 }
 
 .notif-dot.green {
@@ -269,6 +266,7 @@ defineProps({
 .notif-dot.red {
   background: #ff3b3b;
 }
+
 @media screen and (max-width: 850px) {
   .user-card.home {
     left: 50%;

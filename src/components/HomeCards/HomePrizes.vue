@@ -21,7 +21,8 @@
         <Transition name="expand">
           <div v-if="isExpanded" class="prize-info-message">
             <template v-if="currentPrize.activityName">
-              <p>You have a chance to win this prize by participating in the activity: <strong>{{ currentPrize.activityName }} - {{ currentPrize.activityType }}</strong></p>
+              <p>You have a chance to win this prize by participating in the activity: <strong>{{
+                currentPrize.activityName }} - {{ currentPrize.activityType }}</strong></p>
             </template>
             <template v-else>
               <p>You have more chances to win this prize by getting more daily points</p>
@@ -31,28 +32,22 @@
 
         <div class="view-all-row">
           <span class="line"></span>
-          <router-link to="/draw" class="view-all-link">view all</router-link>
+          <router-link to="/prizes" class="view-all-link">view all</router-link>
           <span class="line"></span>
         </div>
       </div>
 
       <!-- Carousel arrows -->
-      <button
-        v-if="prizes.length > 1"
-        class="arrow arrow-left"
-        @click="prevPrize"
-      >
+      <button v-if="prizes.length > 1" class="arrow arrow-left" @click="prevPrize">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </button>
-      <button
-        v-if="prizes.length > 1"
-        class="arrow arrow-right"
-        @click="nextPrize"
-      >
+      <button v-if="prizes.length > 1" class="arrow arrow-right" @click="nextPrize">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </button>
     </template>
@@ -161,7 +156,7 @@ onMounted(() => {
   color: var(--color-font);
   overflow: visible;
   transition: all 0.3s ease;
-  
+
   --background: var(--color-prizes-background);
   --border-background: var(--color-prizes-border);
 }
@@ -384,7 +379,7 @@ onMounted(() => {
   .arrow {
     top: 35%;
   }
-  
+
   .arrow-left {
     left: -1.5rem;
   }
@@ -398,7 +393,7 @@ onMounted(() => {
   .arrow {
     top: 40%;
   }
-  
+
   .arrow-left {
     left: -2.5rem;
   }

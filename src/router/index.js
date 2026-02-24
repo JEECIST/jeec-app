@@ -42,9 +42,9 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
-    meta: {
-      userPopup: false,
-    },
+    // meta: {
+    //   userPopup: false,
+    // },
   },
   {
     path: '/rankings',
@@ -60,11 +60,6 @@ const routes = [
     path: '/help',
     name: 'Help',
     component: () => import('@/views/Rules.vue'),
-  },
-  {
-    path: '/draw',
-    name: 'Draw',
-    component: () => import('@/views/Draw.vue'),
   },
   {
     path: '/shop',
@@ -85,12 +80,9 @@ const routes = [
     path: '/wordle',
     name: 'Wordle',
     component: () => import('@/views/Wordle.vue'),
-    // meta: {
-    //   userPopup: false,
-    // },
-  }, 
+  },
   {
-      path: '/:pathMatch(.*)*',
+    path: '/:pathMatch(.*)*',
     redirect: '/home',
   },
 ]
@@ -102,24 +94,24 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  // const userStore = useUserStore()
+  const userStore = useUserStore()
 
-  // if (userStore.loggedInState != true) {
-  //   userStore.isLoggedIn()
-  //   userStore.loggedInState = true
+  if (userStore.loggedInState != true) {
+    userStore.isLoggedIn()
+    userStore.loggedInState = true
 
-  //   if (userStore.loggedIn !== true) {
-  //     router.push('/')
-  //   }
-  // } else {
-  //   if (userStore.loggedIn == true) {
-  //     userStore.getPoints()
-  //   }
-  // }
+    if (userStore.loggedIn !== true) {
+      router.push('/')
+    }
+  } else {
+    if (userStore.loggedIn == true) {
+      userStore.getPoints()
+    }
+  }
 
-  // if (to.name == 'login' && userStore.loggedIn == true) {
-  //   router.push('/home')
-  // }
+  if (to.name == 'login' && userStore.loggedIn == true) {
+    router.push('/home')
+  }
 })
 
 export default router
