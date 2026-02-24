@@ -1,44 +1,11 @@
 <template>
   <div class="profile">
-    <div class="user-card">
-      <div class="top-section">
-        <div class="left-section">
-          <h2 class="user-name">{{ student.name || 'First Last' }}</h2>
-          <p class="user-username">{{ student.username || 'username' }}</p>
-          <div class="user-stats">
-            <span class="ticket">
-              <span class="ticket-text" :style="{ opacity: hasTicket ? '0' : '1' }">No Ticket</span>
-              <img
-                v-if="hasTicket"
-                src="@/assets/icons/daily_ticket.svg"
-                alt="Ticket"
-                class="ticket-icon"
-              />
-            </span>
-            <span class="points">
-              {{ student.current_points || 0 }}
-              <img src="@/assets/icons/flash_home.svg" alt="Energy" />
-            </span>
-          </div>
-        </div>
-
-        <div class="user-wrapper">
-          <UserImage :image="student.photo" variant="profile" />
-        </div>
-      </div>
-
-      <div class="text-points-wrapper">
-        <JEECPOT variant="profile" />
-      </div>
-    </div>
-
     <div class="profile-buttons-jeec">
       <button class="linkedin-button" @click="toggleModal">
-        <img class="icon" src="@/assets/linkedin_button_img.svg" alt="LinkedIn" />
         <div class="button-text">
           <div class="button-text">
-            <p v-if="student.linkedin_url == '' || student.linkedin_url == null">
-              Submit<br />LinkedIn
+            <p v-if="student?.linkedin_url == '' || student?.linkedin_url == null">
+              SUBMIT<br />LinkedIn
             </p>
             <p v-else>LinkedIn<br />Submitted</p>
           </div>
@@ -46,36 +13,34 @@
       </button>
 
       <button class="cv-button" @click.stop="toggleModal2">
-        <img class="icon" src="@/assets/cv_button_img.svg" alt="CV" />
         <div class="button-text">
           <div class="button-text">
-            <p v-if="!student.uploaded_cv">Upload<br />your CV</p>
-            <p v-else-if="student.approved_cv">CV<br />Approved</p>
+            <p v-if="!student?.uploaded_cv">UPLOAD CV</p>
+            <p v-else-if="student?.approved_cv">CV<br />Approved</p>
             <p v-else>CV<br />Uploaded</p>
           </div>
         </div>
       </button>
     </div>
 
+    <div class="what-can-win-divider">
+      <span class="divider-line"></span>
+      <span class="divider-text">What I can Win?</span>
+      <span class="divider-line"></span>
+    </div>
+
     <div class="squad-section">
-      <h2 class="squad-title">SQUAD</h2>
-      <!-- <div v-if="!isInSquad"> -->
       <div v-if="!isInSquad()">
         <div v-if="!isCreatingSquad">
           <div class="profile-buttons-jeec">
             <button @click="change_Create" class="create-squad-button">
-              <p>CREATE SQUAD</p>
+              <p>CREATE A SQUAD</p>
             </button>
           </div>
 
           <div class="invites">
-            <Invite
-              v-for="invite in invites"
-              :key="invite.id"
-              :invite="invite"
-              @accept="handleAcceptInvite"
-              @reject="handleRejectInvite"
-            />
+            <Invite v-for="invite in invites" :key="invite.id" :invite="invite" @accept="handleAcceptInvite"
+              @reject="handleRejectInvite" />
           </div>
         </div>
         <div v-else>
@@ -83,19 +48,32 @@
         </div>
       </div>
       <div v-else>
-        <Squad :squad="squad" @delete="fetchProfile" @notification="showNotification" />
+        <newSquad :squad="squad" @delete="fetchProfile" @notification="showNotification" />
+      </div>
+    </div>
+
+    <div class="rankings-section">
+      <h2 class="ranking-title">RANKING</h2>
+      <RankingsPodium v-if="rankingsData.length > 0" :other_rankingdata="rankingsData" :user_ranking="userRanking"
+        :user_points="student?.current_points || 0" :identity="student?.name || 'You'" :flag="true" :type="'Squad'" />
+      <div v-else class="rankings-placeholder">
+        <p>Rankings coming soon...</p>
+      </div>
+      <div class="view-all-link">
+        <span class="view-all-link-line"></span>
+        <a href="/rankings">view all</a>
+        <span class="view-all-link-line"></span>
       </div>
     </div>
 
     <div style="position: absolute">
-      <!-- LinkedIn Modal -->
       <div class="modal" v-if="modalVisible == true">
         <div class="modal-backdrop" @click="toggleModal"></div>
         <div class="modal-content custom-modal">
           <div class="modal-header">
             <h2 class="modal-title">
               {{
-                student.linkedin_url == '' || student.linkedin_url == null
+                student?.linkedin_url == '' || student?.linkedin_url == null
                   ? 'Add LinkedIn'
                   : 'Edit LinkedIn'
               }}
@@ -104,19 +82,15 @@
           </div>
           <form @submit="add_linkedin">
             <div class="modal-body">
-              <input
-                type="url"
-                v-model="linkedin_url"
-                class="modal-input"
+              <input type="url" v-model="linkedin_url" class="modal-input"
                 placeholder="https://www.linkedin.com/in/XXXXX/"
                 pattern="^https?://((www|\\w\\w)\\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\\w|\\d)+/?){3}))$"
-                autofocus
-              />
+                autofocus />
             </div>
             <div class="modal-submit center-submit">
               <button class="invite-button" type="submit">
                 {{
-                  student.linkedin_url == '' || student.linkedin_url == null ? 'Confirm' : 'Edit'
+                  student?.linkedin_url == '' || student?.linkedin_url == null ? 'Confirm' : 'Edit'
                 }}
               </button>
             </div>
@@ -130,7 +104,7 @@
         <div class="modal-content custom-modal">
           <div class="modal-header">
             <h2 class="modal-title">
-              {{ student.uploaded_cv ? 'Update Uploaded CV' : 'Add CV' }}
+              {{ student?.uploaded_cv ? 'Update Uploaded CV' : 'Add CV' }}
             </h2>
             <button class="modal-close" @click="toggleModal2">&times;</button>
           </div>
@@ -151,12 +125,7 @@
               </div>
               <div class="modal-spacer"></div>
               <p>Your level of education:</p>
-              <select
-                class="modal-input"
-                v-model="educationLevel"
-                placeholder="Your level of education"
-                required
-              >
+              <select class="modal-input" v-model="educationLevel" placeholder="Your level of education" required>
                 <option value="BSc">BSc</option>
                 <option value="MSc">MSc</option>
                 <option value="Other">Other</option>
@@ -164,14 +133,7 @@
               <div class="modal-spacer"></div>
               <p>Your CV:</p>
               <label class="upload-cv-button" for="cvInput">Upload your CV</label>
-              <input
-                id="cvInput"
-                hidden
-                type="file"
-                accept="application/pdf"
-                ref="cvInput"
-                @change="add_cv_novo"
-              />
+              <input id="cvInput" hidden type="file" accept="application/pdf" ref="cvInput" @change="add_cv_novo" />
             </div>
             <div class="modal-submit center-submit">
               <button class="invite-button" type="submit">Confirm</button>
@@ -183,12 +145,7 @@
   </div>
 
   <div>
-    <ToastNotification
-      :message="toastMessage"
-      :type="toastType"
-      :visible="showToast"
-      @close="showToast = false"
-    />
+    <ToastNotification :message="toastMessage" :type="toastType" :visible="showToast" @close="showToast = false" />
   </div>
 </template>
 
@@ -199,44 +156,39 @@ import axios from 'axios'
 import UserService from '../services/user.service'
 import authHeader from '../services/auth-header'
 
-// Importação de componentes
-import TheUserInfo from '@/components/UserCard/TheUserInfo.vue'
-import JEECPOT from '@/components/UserCard/JEECPOT.vue'
-import UserImage from '@/components/UserCard/UserImage.vue'
-import Squad from '@/components/Squads/Squad.vue'
 import ToastNotification from '@/components/Squads/ToastNotification.vue'
 import Invite from '@/components/Squads/Invite.vue'
 import SquadCreation from '@/components/Squads/SquadCreation.vue'
-import User from '@/models/user'
+import RankingsPodium from '@/components/RankingsPodium.vue'
+import newSquad from '@/components/Squads/newSquad.vue'
 
 // Variáveis de estado
 const loading_linkedin = ref(false)
 const modalVisible = ref(false)
 const modalVisible2 = ref(false)
-const code = ref('')
+
 const dialog = ref(false)
-const prev_length = ref(0)
-const points = ref(0)
+
 const squad = ref({})
-const error = ref('')
+
 const create_squad = ref(false)
 const hasTicket = ref(true)
-const loading_redeem = ref(false)
-const loading_squad = ref(true)
+
 const student = ref({})
 const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 const isFromTecnico = ref(false)
 const educationLevel = ref('Other')
-const get_cv_files = ref('')
+
 const formData = ref(null)
-const cv_url = ref('')
-const cv = ref(null)
+
 const linkedin_url = ref('')
-const percentage = ref(50)
+
 const user = ref({}) // Tornar user reativo
 const invites = ref([])
+const rankingsData = ref([])
+const userRanking = ref(0)
 
 // Computed properties
 const isInSquad = () => {
@@ -485,181 +437,162 @@ onMounted(fetchProfile)
 </script>
 
 <style scoped>
-.user-card {
-  background-color: #199cff1a;
-  border: 1.5px solid #199cff;
-  border-radius: 20px 60px 20px 20px;
-  padding: 1rem 1.5rem;
-  width: 90%;
-  max-width: 650px;
-  margin: 1.5rem auto;
+.what-can-win-divider {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem auto;
+  max-width: 680px;
+  padding: 0 1rem;
 }
 
-.top-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-.left-section {
+.divider-line {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-right: 20px;
+  height: .3px;
+  max-width: 50px;
+  background: #fff;
 }
 
-.text-points-wrapper {
-  width: 100%;
-  margin-top: 0.5rem;
-}
-
-.user-name {
-  font-size: 1.7rem;
+.divider-text {
   color: white;
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.rankings-section {
+  margin: 3rem auto 5rem;
+  max-width: 650px;
+  padding: 0 1rem;
+}
+
+.ranking-title {
+  font-family: 'Lexend Exa', sans-serif;
   font-weight: 700;
-  font-family: 'Lexend Exa', sans-serif;
-  margin: 0;
+  font-size: 2rem;
+  text-align: center;
+  background: linear-gradient(90deg, #B8A1FF 1000%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
 }
 
-.user-username {
-  padding-bottom: 0.5rem;
+.rankings-placeholder {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  font-family: 'Lexend', sans-serif;
 }
 
-.user-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-
-.ticket,
-.points {
-  border: 2px solid #199cff;
-  padding: 0.3rem 0.6rem;
-  border-radius: 25px;
-  font-size: 0.8rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 100;
+.view-all-link {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  position: relative;
-  overflow: visible;
-  /* permite que o conteúdo ultrapasse os limites */
+  justify-content: center;
+  gap: 14px;
+
+  margin-top: 1.5rem;
+  width: 100%;
 }
 
-.ticket-text {
-  font-size: 0.8rem;
+.view-all-link-line {
+  flex: 1;
+  height: 1px;
+  max-width: 50px;
+  background: #fff;
+}
+
+.view-all-link a {
+  color: rgba(255, 255, 255, .7);
   font-family: 'Lexend Exa', sans-serif;
-  font-weight: 100;
-  display: flex;
-  align-items: center;
-}
-
-.ticket-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.points img {
-  height: 0.9rem;
-  vertical-align: middle;
-}
-
-.user-wrapper {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
+  font-size: .9rem;
+  text-decoration: none;
+  transition: color .2s ease;
 }
 
 .profile-buttons-jeec {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5rem;
-  max-width: 680px;
-  margin-left: auto;
-  margin-right: auto;
-  gap: 0.7rem;
-  padding: 0 1rem;
-}
-
-.profile-buttons-jeec button.linkedin-button,
-.profile-buttons-jeec button.cv-button {
-  flex: 1;
-  min-width: 0;
-  max-width: 100%;
+  gap: .75rem;
+  padding: 1rem 1rem;
 }
 
 .profile-buttons-jeec button {
+  position: relative;
+  flex: 1;
+
+  cursor: pointer;
+  overflow: hidden;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
-  background-color: #199cff;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  padding: 0.6rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 550;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  text-align: left;
-  flex: none;
-  letter-spacing: 0.1em;
+
+  background: transparent;
+  transition: transform .18s ease, filter .18s ease;
+}
+
+.profile-buttons-jeec button::before {
+  content: "";
+  border-radius: inherit;
+
+  background: var(--btn-border);
+  z-index: 0;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.profile-buttons-jeec button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.profile-buttons-jeec .linkedin-button {
+  border-radius: 45px;
+  border: .5px solid #199CFF;
+  width: 160px;
+  height: 42px;
+
+  background: linear-gradient(180deg, rgba(25, 156, 255, .35) 0%, #072A3F 100%);
+  box-shadow: inset 0 0 0 .5px #199CFF, 0 0 18px rgba(25, 156, 255, .35);
+}
+
+.profile-buttons-jeec .cv-button {
+  border-radius: 45px;
+  border: .5px solid #7209B7;
+  width: 160px;
+  height: 42px;
+
+  background: linear-gradient(180deg, rgba(138, 45, 255, .35) 0%, #120A26 100%);
+  box-shadow: inset 0 0 0 .5px #8A2DFF, 0 0 18px rgba(138, 45, 255, .35);
 }
 
 .profile-buttons-jeec button:hover {
   transform: scale(1.02);
+  filter: brightness(1.05);
 }
 
-.profile-buttons-jeec .icon {
-  height: 1.8rem;
-  width: auto;
+.profile-buttons-jeec button:active {
+  transform: scale(.99);
 }
 
 .button-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
+  font-family: 'Lexend Exa', sans-serif;
   line-height: 1.1rem;
-}
-
-.section-title {
-  color: white;
-  text-align: center;
-  font-size: 2rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 700;
-  text-shadow: 0 0 10px #199cff;
-  margin-top: 3rem;
-}
-
-.create-squad-button {
-  background-color: #199cff;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  padding: 0.5rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  font-size: 13;
+  font-weight: bolder;
+  letter-spacing: .03rem;
   text-transform: uppercase;
-  width: auto;
-}
-
-.create-squad-button:hover {
-  transform: scale(1.02);
 }
 
 .squad-section {
@@ -667,41 +600,50 @@ onMounted(fetchProfile)
   margin-top: 2rem;
 }
 
-.squad-title {
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  color: white;
-  text-shadow: 0 0 10px #199cff;
-  margin-bottom: 1rem;
-}
+.profile-buttons-jeec .create-squad-button {
+  width: 100%;
+  max-width: 250px;
+  height: 64px;
+  border-radius: 25px;
+  border: 2px solid rgba(0, 255, 235, .75);
+  background:
+    radial-gradient(140% 120% at 50% 0%, rgba(0, 255, 235, .18), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(180deg, rgba(8, 30, 40, .92), rgba(5, 14, 22, .94));
+  box-shadow:
+    0 0 10px rgba(0, 255, 235, .35),
+    0 0 28px rgba(0, 255, 235, .18),
+    inset 0 1px 0 rgba(255, 255, 255, .06),
+    inset 0 -22px 30px rgba(0, 0, 0, .55);
 
-.create-squad-button {
-  background-color: #199cff;
-  border: none;
-  border-radius: 15px;
-  color: white;
-  padding: 0.8rem 1rem;
-  font-family: 'Lexend Exa', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  width: 182px;
   margin: 0 auto;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font: 800 1.05rem "Lexend Exa", sans-serif;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: rgba(235, 220, 242, .92);
+  text-shadow: 0 0 12px rgba(0, 255, 230, .10);
+
+  transition: transform 140ms ease, filter 140ms ease;
 }
 
-.create-squad-button:hover {
-  transform: scale(1.02);
+.profile-buttons-jeec .create-squad-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.profile-buttons-jeec .create-squad-button:active {
+  transform: scale(.99);
 }
 
 .modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: auto;
   height: 100%;
   z-index: 999;
   display: flex;
@@ -714,7 +656,7 @@ onMounted(fetchProfile)
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   height: 100%;
-  width: 100%;
+  width: auto;
   top: 0;
   left: 0;
   z-index: -1;
@@ -727,7 +669,7 @@ onMounted(fetchProfile)
   width: 90%;
   max-width: 500px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  font-family: 'Lexend Exa', sans-serif;
+  font-family: 'Lexend Exa Light', sans-serif;
   color: white;
 }
 
@@ -745,7 +687,7 @@ onMounted(fetchProfile)
   letter-spacing: 0.1rem;
   color: white;
   text-align: center;
-  font-family: 'Lexend', sans-serif;
+  font-family: 'Lexend Exa', sans-serif;
 }
 
 .modal-close {
@@ -769,14 +711,14 @@ onMounted(fetchProfile)
   margin-bottom: 1.5rem;
 }
 
-.modal-body > p {
+.modal-body>p {
   font-size: 1.05rem;
   font-weight: 500;
   color: white;
 }
 
 .modal-input {
-  width: 100%;
+  width: auto;
   padding: 0.5rem 0.7rem;
   border-radius: 12px;
   border: 2px solid #199cff;
@@ -831,7 +773,7 @@ onMounted(fetchProfile)
   font-size: 0.95rem;
 }
 
-.inline-radio-group > p {
+.inline-radio-group>p {
   font-size: 1.05rem;
   font-weight: 500;
   color: white;
@@ -841,34 +783,13 @@ onMounted(fetchProfile)
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  width: 100%;
-  justify-content: flex-start;
+  width: 90%;
+  justify-content: center;
 }
 
 .inline-radio-group label {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  white-space: nowrap;
-}
-
-.upload-cv-button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-  border: 2px solid #199cff;
-  background-color: transparent;
-  font-family: 'Lexend Exa', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: white;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.upload-cv-button:hover {
-  border-color: #42b5ff;
 }
 </style>
