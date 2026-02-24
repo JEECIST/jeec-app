@@ -6,12 +6,13 @@
         <h3>Join activities and win prizes!</h3>
         <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
       </section>
-      <section class="tabs">
+      <!-- <section class="tabs">
         <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
           @click="setActiveDay(index)">
           {{ day }}
         </div>
-      </section>
+      </section> -->
+      <TabsSelection :tabs="days" :activeTab="activeDay" @tab="setActiveDay"></TabsSelection>
       <!-- <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
         <p>Loading Schedule...</p>
@@ -189,14 +190,7 @@
         <h3>Join activities and win prizes!</h3>
         <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
       </section>
-      <section class="tabs-container">
-        <div class="tabs">
-          <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
-            @click="setActiveDay(index)">
-            {{ day }}
-          </div>
-        </div>
-      </section>
+      <TabsSelection :tabs="days" :activeTab="activeDay" @tab="setActiveDay"></TabsSelection>
       <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
         <p>Loading Schedule...</p>
@@ -382,6 +376,8 @@ import fifteenIcon from '@/assets/icons/15_15_icon.svg'
 import insideTalkIcon from '@/assets/icons/inside_talk_icon.svg'
 import eletrolinkIcon from '@/assets/icons/eletrolink-icon.svg'
 import pointsIcon from '@/assets/icons/flash_home22.svg'
+
+import TabsSelection from '@/components/TabsSelection.vue'
 
 const isMobile = ref(false)
 const base_path = ref(null)

@@ -1,6 +1,6 @@
 <template>
   <div v-if="ready" class="rankings">
-    <div class="main-button-container">
+    <!-- <div class="main-button-container">
       <button
         @click.stop="click_daily()"
         class="main-button radient-border-passthrough"
@@ -16,7 +16,9 @@
         SQUAD
       </button>
       <div class="underline" :class="{ right: !daily }"></div>
-    </div>
+    </div> -->
+
+    <TabsSelection :tabs="tabs" :activeTab="activeTab" @tab="setActiveTab"></TabsSelection>
 
     <div class="spacing"></div>
 
@@ -26,15 +28,9 @@
 
         <div class="spacing"></div>
 
-        <RankingsPodium
-          :other_rankingdata="students_daily"
-          :user_ranking="userdata_individual.ranking_daily"
-          :user_points="userdata_individual.daily_points"
-          :identity="'You'"
-          :flag="true"
-          :extend="false"
-          :type="'Student'"
-        >
+        <RankingsPodium :other_rankingdata="students_daily" :user_ranking="userdata_individual.ranking_daily"
+          :user_points="userdata_individual.daily_points" :identity="'You'" :flag="true" :extend="false"
+          :type="'Student'">
         </RankingsPodium>
 
         <div class="spacing"></div>
@@ -45,15 +41,9 @@
 
         <div class="spacing"></div>
 
-        <RankingsPodium
-          :other_rankingdata="students_weekly"
-          :user_ranking="userdata_individual.ranking_weekly"
-          :user_points="userdata_individual.total_points"
-          :identity="'You'"
-          :flag="true"
-          :extend="true"
-          :type="'Student'"
-        >
+        <RankingsPodium :other_rankingdata="students_weekly" :user_ranking="userdata_individual.ranking_weekly"
+          :user_points="userdata_individual.total_points" :identity="'You'" :flag="true" :extend="true"
+          :type="'Student'">
         </RankingsPodium>
       </div>
     </div>
@@ -63,15 +53,9 @@
 
         <div class="spacing"></div>
 
-        <RankingsPodium
-          :other_rankingdata="squads_daily"
-          :user_ranking="userdata_squad.ranking_daily"
-          :user_points="userdata_squad.daily_points"
-          :identity="identityy"
-          :flag="user_squad_flag"
-          :extend="true"
-          :type="'Squad'"
-        >
+        <RankingsPodium :other_rankingdata="squads_daily" :user_ranking="userdata_squad.ranking_daily"
+          :user_points="userdata_squad.daily_points" :identity="identityy" :flag="user_squad_flag" :extend="true"
+          :type="'Squad'">
         </RankingsPodium>
 
         <div class="spacing"></div>
@@ -82,15 +66,9 @@
 
         <div class="spacing"></div>
 
-        <RankingsPodium
-          :other_rankingdata="squads_weekly"
-          :user_ranking="userdata_squad.ranking_weekly"
-          :user_points="userdata_squad.total_points"
-          :identity="identityy"
-          :flag="user_squad_flag"
-          :extend="true"
-          :type="'Squad'"
-        >
+        <RankingsPodium :other_rankingdata="squads_weekly" :user_ranking="userdata_squad.ranking_weekly"
+          :user_points="userdata_squad.total_points" :identity="identityy" :flag="user_squad_flag" :extend="true"
+          :type="'Squad'">
         </RankingsPodium>
       </div>
     </div>
@@ -105,10 +83,13 @@ import { useUserStore } from '@/stores/UserStore'
 import { mapState } from 'pinia'
 import arrow from '../assets/chevron-compact-down.svg'
 
+import TabsSelection from '@/components/TabsSelection.vue'
+
 export default {
   name: 'Rankings',
   components: {
     RankingsPodium,
+    TabsSelection,
   },
   computed: {
     ...mapState(useUserStore, ['user']),
@@ -122,6 +103,8 @@ export default {
       userdata_squad: [],
       squads_weekly: [],
       squads_daily: [],
+      tabs: ["Solo", "Squad"],
+      activeTab: 0,
       jeec_brain_url: import.meta.env.VITE_APP_JEEC_BRAIN_URL,
       arrow: arrow,
       show: false,
@@ -133,7 +116,7 @@ export default {
     }
   },
   methods: {
-    nameArray() {},
+    nameArray() { },
     Personal() {
       this.personal = true
       this.squad = false
@@ -152,6 +135,14 @@ export default {
     click_week() {
       this.daily = false
     },
+    setActiveTab(index) {
+      this.activeTab = index;
+      if (index === 0) {
+        this.daily = true
+      } else {
+        this.daily = false
+      }
+    }
   },
   created() {
     if (!this.user) {
@@ -228,7 +219,8 @@ export default {
   max-width: 500px;
   margin: 0 auto;
   gap: 10px;
-  position: relative; /* necessário */
+  position: relative;
+  /* necessário */
 }
 
 .main-button-container::after {
@@ -239,12 +231,10 @@ export default {
   width: 100%;
   height: 1px;
 
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-jeec-blue),
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      var(--color-jeec-blue),
+      transparent);
 }
 
 .main-button {
@@ -261,7 +251,8 @@ export default {
   background: none;
   border: 1px solid var(--color-jeec-blue);
   border-radius: 15px 15px 0 0;
-  box-shadow: inset 0 0 8px var(--color-jeec-blue); /* sombra interna */
+  box-shadow: inset 0 0 8px var(--color-jeec-blue);
+  /* sombra interna */
 }
 
 /* 🔥 underline animado */
@@ -271,12 +262,10 @@ export default {
   left: 0;
   width: 50%;
   height: 2px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-jeec-blue),
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      var(--color-jeec-blue),
+      transparent);
   transition: transform 0.35s ease;
 }
 

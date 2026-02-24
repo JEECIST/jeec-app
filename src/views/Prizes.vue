@@ -11,95 +11,97 @@
     </Transition>
     <div class="prizes-content">
       <!-- Selector -->
-      <div class="select-prizes">
+      <!-- <div class="select-prizes">
         <button :class="{ activeBtn: daily }" @click="selectDaily">Daily</button>
         <button :class="{ activeBtn: jeecpot }" @click="selectJeecpot">JEECPOT</button>
-      </div>
+      </div> -->
+
+      <TabsSelection :tabs="tabs" :activeTab="activeTab" @tab="setActiveTab"></TabsSelection>
 
       <Transition :name="transitionName" mode="out-in">
-      <!-- DAILY -->
-      <div class="selected-prizes" v-if="daily">
-        <h2>SOLO PRIZES</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.dailySolo" v-model="currentSlides.dailySolo" :items-to-show="3" :wrap-around="true" snap-align="center"
-            class="custom-carousel">
-            <Slide v-for="(prize, index) in daily_solo_prizes" :key="prize.day" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailySolo', index)">
-                <h3>{{ prize.day }}</h3>
-                <div class="img-div" id="daily-img-div">
-                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+        <!-- DAILY -->
+        <div class="selected-prizes" v-if="daily">
+          <h2>SOLO PRIZES</h2>
+          <div class="display-prizes">
+            <Carousel :ref="carousels.dailySolo" v-model="currentSlides.dailySolo" :items-to-show="3"
+              :wrap-around="true" snap-align="center" class="custom-carousel">
+              <Slide v-for="(prize, index) in daily_solo_prizes" :key="prize.day" v-slot="{ isActive }">
+                <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailySolo', index)">
+                  <h3>{{ prize.day }}</h3>
+                  <div class="img-div" id="daily-img-div">
+                    <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                  </div>
+                  <p>{{ prize.name }}</p>
                 </div>
-                <p>{{ prize.name }}</p>
-              </div>
-            </Slide>
-          </Carousel>
+              </Slide>
+            </Carousel>
+          </div>
+
+          <h2>ACTIVITIES PRIZES</h2>
+          <div class="display-prizes">
+            <Carousel :ref="carousels.dailyAct" v-model="currentSlides.dailyAct" :items-to-show="3" :wrap-around="true"
+              snap-align="center" class="custom-carousel">
+              <Slide v-for="(prize, index) in daily_activities_prizes" :key="prize.activity" v-slot="{ isActive }">
+                <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailyAct', index)">
+                  <h3></h3>
+                  <div class="img-div" id="activities-img-div">
+                    <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                  </div>
+                  <p>{{ prize.name }}</p>
+                </div>
+              </Slide>
+            </Carousel>
+          </div>
         </div>
 
-        <h2>ACTIVITIES PRIZES</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.dailyAct" v-model="currentSlides.dailyAct" :items-to-show="3" :wrap-around="true" snap-align="center"
-            class="custom-carousel">
-            <Slide v-for="(prize, index) in daily_activities_prizes" :key="prize.activity" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('dailyAct', index)">
-                <h3></h3>
-                <div class="img-div" id="activities-img-div">
-                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+        <!-- JEECPOT -->
+        <div class="selected-prizes" v-else-if="jeecpot">
+          <h2>SOLO PRIZES</h2>
+          <div class="display-prizes">
+            <Carousel :ref="carousels.jeecpotSolo" v-model="currentSlides.jeecpotSolo" :items-to-show="3"
+              :wrap-around="true" snap-align="center" class="custom-carousel">
+              <Slide v-for="(prize, index) in jeecpot_solo_prizes" :key="prize.rank" v-slot="{ isActive }">
+                <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSolo', index)">
+                  <div class="img-div" id="solo-img-div">
+                    <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                  </div>
+                  <p>{{ prize.name }}</p>
                 </div>
-                <p>{{ prize.name }}</p>
-              </div>
-            </Slide>
-          </Carousel>
-        </div>
-      </div>
+              </Slide>
+            </Carousel>
+          </div>
 
-      <!-- JEECPOT -->
-      <div class="selected-prizes" v-else-if="jeecpot">
-        <h2>SOLO PRIZES</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpotSolo" v-model="currentSlides.jeecpotSolo" :items-to-show="3" :wrap-around="true"
-            snap-align="center" class="custom-carousel">
-            <Slide v-for="(prize, index) in jeecpot_solo_prizes" :key="prize.rank" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSolo', index)">
-                <div class="img-div" id="solo-img-div">
-                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+          <h2>SQUAD PRIZES</h2>
+          <div class="display-prizes">
+            <Carousel :ref="carousels.jeecpotSquad" v-model="currentSlides.jeecpotSquad" :items-to-show="3"
+              :wrap-around="true" snap-align="center" class="custom-carousel">
+              <Slide v-for="(prize, index) in jeecpot_squad_prizes" :key="prize.rank" v-slot="{ isActive }">
+                <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSquad', index)">
+                  <div class="img-div" id="squad-img-div">
+                    <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                  </div>
+                  <p>{{ prize.name }}</p>
                 </div>
-                <p>{{ prize.name }}</p>
-              </div>
-            </Slide>
-          </Carousel>
-        </div>
+              </Slide>
+            </Carousel>
+          </div>
 
-        <h2>SQUAD PRIZES</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.jeecpotSquad" v-model="currentSlides.jeecpotSquad" :items-to-show="3" :wrap-around="true"
-            snap-align="center" class="custom-carousel">
-            <Slide v-for="(prize, index) in jeecpot_squad_prizes" :key="prize.rank" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('jeecpotSquad', index)">
-                <div class="img-div" id="squad-img-div">
-                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+          <h2>CV PRIZE</h2>
+          <div class="display-prizes">
+            <Carousel :ref="carousels.cv" v-model="currentSlides.cv" :items-to-show="1" :wrap-around="true"
+              snap-align="center" class="custom-carousel">
+              <Slide v-for="(prize, index) in cv_prize" :key="prize.rank" v-slot="{ isActive }">
+                <div class="prize-card" :class="{ active: isActive }" @click="goTo('cv', index)">
+                  <h3></h3>
+                  <div class="img-div" id="cv-img-div">
+                    <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
+                  </div>
+                  <p>{{ prize.name }}</p>
                 </div>
-                <p>{{ prize.name }}</p>
-              </div>
-            </Slide>
-          </Carousel>
+              </Slide>
+            </Carousel>
+          </div>
         </div>
-
-        <h2>CV PRIZE</h2>
-        <div class="display-prizes">
-          <Carousel :ref="carousels.cv" v-model="currentSlides.cv" :items-to-show="1" :wrap-around="true"
-            snap-align="center" class="custom-carousel">
-            <Slide v-for="(prize, index) in cv_prize" :key="prize.rank" v-slot="{ isActive }">
-              <div class="prize-card" :class="{ active: isActive }" @click="goTo('cv', index)">
-                <h3></h3>
-                <div class="img-div" id="cv-img-div">
-                  <img :src="'data:image/png;base64,' + prize.image_url" alt="Prize Image" />
-                </div>
-                <p>{{ prize.name }}</p>
-              </div>
-            </Slide>
-          </Carousel>
-        </div>
-      </div>
       </Transition>
     </div>
   </div>
@@ -111,6 +113,12 @@ import { Carousel, Slide } from 'vue3-carousel'
 import 'vue3-carousel/dist/carousel.css'
 import axios from 'axios'
 import authHeader from '@/services/auth-header'
+
+import TabsSelection from '@/components/TabsSelection.vue'
+
+const tabs = ref(["Daily", "JEECPOT"])
+
+const activeTab = ref(0)
 
 const daily = ref(true)
 const jeecpot = ref(false)
@@ -125,7 +133,7 @@ const carousels = {
   dailyAct: ref(null),
   jeecpotSolo: ref(null),
   jeecpotSquad: ref(null),
-    cv: ref(null)
+  cv: ref(null)
 }
 
 const currentSlides = ref({
@@ -165,17 +173,30 @@ const goTo = (type, index) => {
 
 const transitionName = ref('slide-left');
 
-const selectDaily = () => {
-  transitionName.value = 'slide-right';
-  daily.value = true;
-  jeecpot.value = false;
-};
+// const selectDaily = () => {
+//   transitionName.value = 'slide-right';
+//   daily.value = true;
+//   jeecpot.value = false;
+// };
 
-const selectJeecpot = () => {
-  transitionName.value = 'slide-left';
-  daily.value = false;
-  jeecpot.value = true;
-};
+// const selectJeecpot = () => {
+//   transitionName.value = 'slide-left';
+//   daily.value = false;
+//   jeecpot.value = true;
+// };
+
+function setActiveTab(index) {
+  activeTab.value = index
+  if (index === 0) {
+    transitionName.value = 'slide-right';
+    daily.value = true;
+    jeecpot.value = false;
+  } else {
+    transitionName.value = 'slide-left';
+    daily.value = false;
+    jeecpot.value = true;
+  }
+}
 
 const daily_solo_prizes = ref([])
 const daily_activities_prizes = ref([])
@@ -246,16 +267,20 @@ onMounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.7); /* Escurece o fundo */
+  background: rgba(0, 0, 0, 0.7);
+  /* Escurece o fundo */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99; /* Um abaixo do popup */
-  backdrop-filter: blur(5px); /* Efeito de desfoque luxuoso */
+  z-index: 99;
+  /* Um abaixo do popup */
+  backdrop-filter: blur(5px);
+  /* Efeito de desfoque luxuoso */
 }
 
 .prize-info-popup {
-  position: relative; /* Mudado de fixed para relative porque o pai já é fixed */
+  position: relative;
+  /* Mudado de fixed para relative porque o pai já é fixed */
   background: #000814;
   border: 2px solid #1e90ff;
   box-shadow: 0 0 20px 2px #1e90ff;
@@ -278,7 +303,7 @@ onMounted(() => {
 }
 
 .close-btn {
-position: absolute;
+  position: absolute;
   top: 15px;
   right: 20px;
   background: none;
@@ -292,7 +317,7 @@ position: absolute;
 }
 
 .close-btn:hover {
-color: #B8A1FF;
+  color: #B8A1FF;
   transform: scale(1.2);
 }
 
@@ -337,19 +362,17 @@ color: #B8A1FF;
 }
 
 .select-prizes button:first-child.activeBtn {
-  background: linear-gradient(to bottom, 
-    rgba(0, 200, 150, 0.8) 0%, 
-    rgba(0, 200, 150, 0) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 200, 150, 0.8) 0%,
+      rgba(0, 200, 150, 0) 100%);
   color: white;
   font-size: 20px;
 }
 
 .select-prizes button:last-child.activeBtn {
-  background: linear-gradient(to bottom, 
-    rgba(241, 108, 229, 0.8) 0%, 
-    rgba(241, 108, 229, 0) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(241, 108, 229, 0.8) 0%,
+      rgba(241, 108, 229, 0) 100%);
   color: white;
   font-size: 20px;
 }
@@ -359,6 +382,7 @@ color: #B8A1FF;
   opacity: 0;
   transform: translateX(50px);
 }
+
 .slide-left-leave-to {
   opacity: 0;
   transform: translateX(-50px);
@@ -369,6 +393,7 @@ color: #B8A1FF;
   opacity: 0;
   transform: translateX(-50px);
 }
+
 .slide-right-leave-to {
   opacity: 0;
   transform: translateX(50px);
@@ -476,7 +501,7 @@ h2 {
   width: 100vw;
   text-align: center;
 
-  font-size: 0.8rem; 
+  font-size: 0.8rem;
   /* font-size: clamp(12px, 3vw, 18px);
   height: 3.2rem; */
 
@@ -487,6 +512,6 @@ h2 {
 .prize-card h3 {
   color: #ccc;
   text-align: center;
-    white-space: nowrap;
+  white-space: nowrap;
 }
 </style>
