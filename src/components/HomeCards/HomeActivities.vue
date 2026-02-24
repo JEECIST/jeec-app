@@ -1,68 +1,45 @@
 <template>
   <div
-    class="next-activity"
+    class="schedule-card"
     :style="{
-      '--background': backgroundColorWithTransparency,
       '--border-background': currentActivityStyle.color,
+      '--accent-color': currentActivityStyle.color,
     }"
   >
     <template v-if="nextActivity.name != ''">
-      <div class="activity-container">
-        <h2>Up Next</h2>
-        <div class="activity">
-          <div class="activity-info">
-            <div class="activity-type">
-              <h3 :style="{ color: currentActivityStyle.color }">
-                {{ nextActivity.activity_type }}
-              </h3>
-              <div class="activity-type-icon">
-                <img :src="currentActivityStyle.icon" alt="Activity Type Icon" />
-              </div>
-            </div>
-            <h4>
-              {{ nextActivity.name }}
-            </h4>
-            <h5>
-              {{ nextActivity.location }}
-            </h5>
-            <p>
-              {{ nextActivity.day }} | {{ nextActivity.start_time }} - {{ nextActivity.end_time }}
-            </p>
-          </div>
-          <div
-            class="activity-image radient-border-passthrough"
-            :class="{ 'single-image': nextActivity.images.length < 2 }"
-            :style="{
-              '--background': 'transparent',
-              '--border-background': currentActivityStyle.color,
-            }"
-          >
-            <div
-              class="circle circle-1 radient-border-passthrough"
-              :style="{
-                '--background': 'transparent',
-                '--border-background': currentActivityStyle.color,
-              }"
-            >
-              <img class="image" :src="nextActivity.images[0]" />
-            </div>
-            <div
-              v-if="nextActivity.images.length > 1"
-              class="circle circle-2 radient-border-passthrough"
-              :style="{
-                '--background': 'transparent',
-                '--border-background': currentActivityStyle.color,
-              }"
-            >
-              <img class="image" :src="nextActivity.images[1]" />
+      <div class="event-content">
+        <div class="left-section">
+          <div class="left-accent" :style="{ backgroundColor: currentActivityStyle.color }"></div>
+          <div class="event-info">
+            <h3 class="event-type">
+              {{ nextActivity.activity_type }}
+            </h3>
+            <h4 class="event-title">{{ nextActivity.name }}</h4>
+            <div class="event-date">
+              {{ nextActivity.day }}
             </div>
           </div>
         </div>
+
+        <div class="event-time">
+          <div class="time-start">
+            <span class="time-value">{{ formatTimeValue(nextActivity.start_time) }}</span>
+            <span class="time-period">{{ formatTimePeriod(nextActivity.start_time) }}</span>
+          </div>
+          <span class="time-end">{{ formatTimeValue(nextActivity.end_time) }}</span>
+        </div>
+      </div>
+
+      <div class="event-venue">
+        <span class="venue-label">Venue</span>
+        <span class="venue-name" :style="{ color: currentActivityStyle.color }">
+          {{ nextActivity.location }}
+        </span>
       </div>
     </template>
     <template v-else>
       <div class="no-activity">
-        <h2>There are no more activities scheduled</h2>
+        <h2>No more activities scheduled</h2>
       </div>
     </template>
   </div>
@@ -130,6 +107,29 @@ const backgroundColorWithTransparency = computed(() => {
   return (currentActivityStyle.value.color || '#199CFF') + '1A'
 })
 
+function parseTime(time) {
+  if (!time) return { value: '', period: '' }
+  // If already has AM/PM, split it
+  if (time.includes('PM') || time.includes('AM')) {
+    const parts = time.trim().split(' ')
+    return { value: parts[0], period: parts[1] || '' }
+  }
+  // Convert 24h to 12h
+  const [hours, minutes] = time.split(':')
+  const hour = parseInt(hours)
+  const period = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 || 12
+  return { value: `${hour12}:${minutes}`, period }
+}
+
+function formatTimeValue(time) {
+  return parseTime(time).value
+}
+
+function formatTimePeriod(time) {
+  return parseTime(time).period
+}
+
 function getNextActivity() {
   axios
     .get(import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/next_activity', {
@@ -154,162 +154,204 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.activity-container {
-  padding: 0.5rem 0 0.9rem 0;
+.schedule-card {
+  background: linear-gradient(180deg,
+    rgba(100, 140, 255, 0.70) 0%,
+    rgba(46, 85, 255, 0.45) 20%,
+    rgba(46, 85, 255, 0.18) 50%,
+    rgba(46, 85, 255, 0.04) 80%,
+    rgba(46, 85, 255, 0.01) 100%
+  );
+  border-radius: 20px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
-.activity-container h2 {
-  font-size: clamp(1.4rem, 3.1vw, 1.8rem);
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  font-family: 'Lexend Exa';
-  text-transform: uppercase;
+.schedule-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%), 
+    radial-gradient(circle at 50% 0%, #3262F1 0%, #030712 75%);
+  border-top: 1px solid rgba(100, 150, 255, 0.4);
+  box-shadow: inset 0px 15px 25px -10px rgba(50, 100, 255, 0.6);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.activity {
+.event-content {
+  position: relative;
+  z-index: 1;
   display: flex;
-  justify-content: space-around;
-  gap: 1rem;
-  padding-top: 0.5rem;
+  justify-content: space-between;
+  padding: 1.3rem 1.5rem 1rem 1.2rem;
 }
 
-.activity-info {
-  text-align: start;
+.left-section {
+  display: flex;
+  align-items: stretch;
+  gap: 0.9rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.left-accent {
+  width: 3.5px;
+  flex-shrink: 0;
+  border-radius: 3px;
+  background-color: var(--accent-color, #2e55ff);
+  align-self: stretch;
+}
+
+.event-info {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  padding: 0 0 0.5rem 0.5rem;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.25rem;
+  text-align: left;
+  min-width: 0;
 }
 
-.activity-info h3 {
-  font-family: 'Lexend Exa';
-  font-size: clamp(1rem, 3.2vw, 1.1rem);
+.event-type {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
   font-weight: 700;
-  overflow: hidden;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
+  margin: 0;
+  color: var(--color-font);
+  text-transform: capitalize;
+  line-height: 1.2;
 }
 
-.activity-type {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.activity-type-icon {
-  width: clamp(0.8rem, 3.2vw, 1.1rem);
-  height: clamp(0.8rem, 3.2vw, 1.1rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.activity-info h4 {
-  font-family: 'Lexend Exa';
-  font-size: clamp(1.1rem, 3.7vw, 1.3rem);
+.event-title {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(0.95rem, 3vw, 1.15rem);
   font-weight: 400;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
+  margin: 0;
+  color: var(--color-font);
+  opacity: 0.9;
+  line-height: 1.3;
 }
 
-.activity-info h5 {
-  font-family: 'Lexend Exa';
-  font-size: clamp(0.8rem, 3.1vw, 1.2rem);
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+.event-date {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(0.85rem, 2.8vw, 1rem);
+  color: var(--color-font);
+  opacity: 0.6;
+  margin-top: 0.15rem;
 }
 
-.activity-info p {
+.event-time {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: flex-start;
-  font-family: 'Lexend Exa';
-  font-size: clamp(0.9rem, 3.1vw, 0.8em);
+  font-family: 'Lexend Exa', sans-serif;
+  flex-shrink: 0;
+  padding-top: 0.1rem;
 }
 
-.activity-image {
-  width: 100%;
-  min-width: 60px;
-  max-width: 80px;
-  position: relative;
-  align-self: center;
-  aspect-ratio: 1;
+.time-start {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-
-  --border-radius: 50%;
+  align-items: flex-start;
+  gap: 0.15rem;
 }
 
-.activity-image::before {
+.time-value {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 600;
+  color: var(--color-font);
+  line-height: 1;
+}
+
+.time-period {
+  font-size: clamp(0.65rem, 2vw, 0.8rem);
+  font-weight: 500;
+  color: var(--color-font);
+  opacity: 0.85;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.time-end {
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  font-weight: 500;
+  color: var(--color-font);
+  opacity: 0.85;
+  line-height: 1;
+  margin-top: 0.15rem;
+}
+
+.event-venue {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.5rem 1.1rem 1.2rem;
+  margin-top: 0;
+}
+
+.event-venue::before {
   content: '';
-}
-
-.activity-image .image {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  /* Add shadow */
-}
-
-.single-image {
-  width: 100%;
-  max-width: 100px;
-  /* Adjust as needed */
-  aspect-ratio: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.single-image .circle-1 {
-  transform: translate(0, 0);
-  /* Center the image */
-  width: 100%;
-  height: 100%;
-}
-
-.single-image .circle-2 {
-  display: none;
-  /* Hide the second circle */
-}
-
-.circle {
-  width: 55%;
-  height: 55%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: absolute;
-  --border-width: 2px;
-  --border-radius: 50%;
+  top: 0;
+  left: 1.2rem;
+  right: 1.2rem;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.circle::before {
-  content: '';
+.venue-label {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(0.9rem, 3vw, 1.05rem);
+  color: var(--color-font);
+  opacity: 0.6;
 }
 
-.circle-1 {
-  transform: translate(-30%, -30%);
-  overflow: hidden;
-}
-
-.circle-2 {
-  transform: translate(30%, 30%);
-  overflow: hidden;
+.venue-name {
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(1rem, 3.2vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .no-activity {
-  padding: 3rem 0.3rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
 }
 
 .no-activity h2 {
-  font-family: 'Lexend Exa';
-  font-size: clamp(1.2rem, 3.1vw, 1.8rem);
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   text-transform: uppercase;
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  text-align: center;
+  color: var(--color-font);
+}
+
+@media screen and (max-width: 450px) {
+  .event-content {
+    padding: 1rem 1rem 0.8rem 1rem;
+  }
+
+  .event-venue {
+    padding: 0.7rem 1rem 1rem 1rem;
+  }
+
+  .event-venue::before {
+    left: 1rem;
+    right: 1rem;
+  }
 }
 </style>
