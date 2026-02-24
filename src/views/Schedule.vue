@@ -1,25 +1,25 @@
 <template>
   <div class="desktop" v-if="!isMobile">
     <div class="view">
+      <section class="header">
+        <h1>SCHEDULE</h1>
+        <h3>Join activities and win prizes!</h3>
+        <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
+      </section>
       <section class="tabs">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          class="tab"
-          :class="{ active: activeDay === index }"
-          @click="setActiveDay(index)"
-        >
+        <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+          @click="setActiveDay(index)">
           {{ day }}
         </div>
       </section>
-      <div class="loading-screen" v-if="loading">
+      <!-- <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
         <p>Loading Schedule...</p>
-      </div>
+      </div> -->
       <transition name="fade" mode="out-in">
         <section class="eletrolink" :key="activeDay" v-if="!loading">
           <div class="box">
-            <h3>Eletrolink</h3>
+            <h3>Eletrolink <img :src="pointsIcon" alt="Points Icon" class="points-icon" /></h3>
             <div class="eletrolink-description" v-if="showEletrolinkInfo">
               {{ eletrolink_description }}
             </div>
@@ -27,11 +27,7 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="!showEletrolinkInfo" class="row">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrocomp"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrocomp">
                     <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                   </div>
                 </div>
@@ -49,15 +45,11 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="showEletrolinkInfo" class="eletrolink-content-grid">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrolink-grid-row"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrolink-grid-row">
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
-                    <div>
+                    <div class="eletrocomp-text">
                       <div class="eletrocomp-title">
                         <p>{{ eletrocomp.title }}</p>
                       </div>
@@ -68,6 +60,7 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
+                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -80,7 +73,7 @@
               </transition>
             </template>
             <button class="info" @click="toggleEletrolinkInfo">
-              {{ showEletrolinkInfo ? '−info' : '+info' }}
+              {{ showEletrolinkInfo ? '-info' : '+info' }}
             </button>
           </div>
         </section>
@@ -102,11 +95,12 @@
                 </div>
               </div>
               <div v-if="filteredActivities.length != 0" class="line"></div>
-              <div class="content" :class="className(activity.type)">
+              <div class="content" :style="eventStyle(activity.type)">
                 <div class="column">
                   <div class="type">
-                    <span :class="className(activity.type, '-type')">{{ activity.type }}</span>
-                    <!-- <span class="icon">{{ activity.icon }}</span> -->
+                    <span>{{ activity.type }}</span>
+                    <img v-if="getActivityIcon(activity.type)" :src="getActivityIcon(activity.type)"
+                      alt="Activity Type Icon" class="type-icon" />
                   </div>
                   <div class="title">{{ activity.title }}</div>
                   <transition name="expand-fade">
@@ -114,64 +108,64 @@
                       <p class="act_description">{{ activity.description }}</p>
                       <h3>{{ activity.location }}</h3>
                       <p>{{ activity.date }}</p>
+                      <div v-if="activity.prize?.name" class="expanded-prize">
+                        <p class="prize-label">Participate in this activity and you'll may win:</p>
+                        <div class="prize-row">
+                          <p class="prize-name">{{ activity.prize.name }}</p>
+                          <div class="prize-image-container">
+                            <img v-if="activity.prize.image" :src="activity.prize.image" alt="Prize Image"
+                              class="prize-image" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </transition>
-                  <button
-                    :class="['info', className(activity.type, '-info')]"
-                    @click="toggleActivityInfo(index)"
-                  >
-                    {{ isExpanded(index) ? '−info' : '+info' }}
-                  </button>
+                  <div class="actions-row">
+                    <button class="info" @click="toggleActivityInfo(index)">
+                      {{ isExpanded(index) ? '-info' : '+info' }}
+                    </button>
+                    <div class="calendar-dropdown">
+                      <button class="calendar-btn" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
+                        <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z"
+                            fill="currentColor" />
+                        </svg>
+                      </button>
+                      <transition name="expand-fade">
+                        <div v-if="calendarMenuIndex === index" class="calendar-menu">
+                          <button @click="addToICalendar(activity)">iCalendar</button>
+                          <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
                 </div>
                 <div class="logos">
                   <!-- Container fixo para o company logo -->
-                  <div
-                    v-if="activity?.speakers?.length > 0"
-                    class="logo-container company-logo-container"
-                    :class="className(activity.type, '-logo')"
-                  >
+                  <div v-if="activity?.speakers?.length > 0" class="logo-container company-logo-container">
                     <transition name="logo-fade" mode="out-in">
-                      <img
-                        v-if="
-                          activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
-                        "
-                        :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                        :src="
-                          base_path +
-                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
-                        "
-                        class="logo-image"
-                      />
+                      <img v-if="
+                        activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
+                      " :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                        activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
+                        " class="logo-image" />
                     </transition>
                   </div>
 
-                  <div
-                    class="logo-container speaker-logo-container"
-                    :class="className(activity.type, '-logo')"
-                  >
+                  <div class="logo-container speaker-logo-container">
                     <transition name="logo-fade" mode="out-in">
                       <template v-if="activity?.speakers?.length > 0">
-                        <img
-                          v-if="
-                            activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
-                          "
-                          :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path +
-                            activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="
+                          activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
+                        " :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
+                          " class="logo-image" />
                       </template>
                       <template v-else-if="activity?.logo_companies?.length > 0">
-                        <img
-                          v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
-                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
+                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
+                            " class="logo-image" />
                       </template>
                       <template v-else>
                         <div class="logo-default"></div>
@@ -190,30 +184,18 @@
 
   <div class="mobile" v-else>
     <div class="view">
+      <section class="header">
+        <h1>SCHEDULE</h1>
+        <h3>Join activities and win prizes!</h3>
+        <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
+      </section>
       <section class="tabs-container">
-        <div class="tabs-wrapper">
-          <div class="tabs" :style="tabsStyle">
-            <div
-              v-for="(day, index) in days"
-              :key="index"
-              class="tab"
-              :class="{ active: activeDay === index }"
-              @click="setActiveDay(index)"
-            >
-              {{ day }}
-            </div>
+        <div class="tabs">
+          <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
+            @click="setActiveDay(index)">
+            {{ day }}
           </div>
         </div>
-        <button class="nav-button prev" @click="scrollPrev" :disabled="activeDay === 0">
-          &lt;
-        </button>
-        <button
-          class="nav-button next"
-          @click="scrollNext"
-          :disabled="activeDay === days.length - 1"
-        >
-          &gt;
-        </button>
       </section>
       <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>
@@ -222,7 +204,7 @@
       <transition name="fade" mode="out-in">
         <section class="eletrolink" :key="activeDay" v-if="!loading">
           <div class="box">
-            <h3>Eletrolink</h3>
+            <h3>Eletrolink <img :src="eletrolinkIcon" alt="Eletrolink Icon" class="eletrolink-icon" /></h3>
             <div class="eletrolink-description" v-if="showEletrolinkInfo">
               {{ eletrolink_description }}
             </div>
@@ -230,11 +212,7 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="!showEletrolinkInfo" class="row">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps.slice(0, 2)"
-                    :key="index"
-                    class="eletrocomp"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps.slice(0, 2)" :key="index" class="eletrocomp">
                     <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                   </div>
                   <div v-if="filteredEletrocomps.length > 2" class="eletrocomp more-indicator">
@@ -242,6 +220,8 @@
                   </div>
                 </div>
               </transition>
+              <p class="points-info">Sign up in advance and get <b>50</b><img :src="pointsIcon" alt="Points Icon"
+                  class="points-icon" /></p>
             </template>
 
             <!-- Sem transição para o "NO COMPANIES" -->
@@ -255,15 +235,11 @@
             <template v-if="filteredEletrocomps.length">
               <transition name="eletrolink-toggle">
                 <div v-if="showEletrolinkInfo" class="eletrolink-content-grid">
-                  <div
-                    v-for="(eletrocomp, index) in filteredEletrocomps"
-                    :key="index"
-                    class="eletrolink-grid-row"
-                  >
+                  <div v-for="(eletrocomp, index) in filteredEletrocomps" :key="index" class="eletrolink-grid-row">
                     <div class="eletrocomp">
                       <img :src="base_path + eletrocomp.logo_companies" alt="Eletrocomp Logo" />
                     </div>
-                    <div>
+                    <div class="eletrocomp-text">
                       <div class="eletrocomp-title">
                         <p>{{ eletrocomp.title }}</p>
                       </div>
@@ -274,6 +250,7 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
+                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -286,7 +263,7 @@
               </transition>
             </template>
             <button class="info" @click="toggleEletrolinkInfo">
-              {{ showEletrolinkInfo ? '−info' : '+info' }}
+              {{ showEletrolinkInfo ? '-info' : '+info' }}
             </button>
           </div>
         </section>
@@ -304,10 +281,12 @@
                 <div class="circle-start-mobile"></div>
                 <div class="start-time-mobile">{{ activity.time }}</div>
               </div>
-              <div class="content-mobile" :class="className(activity.type)">
+              <div class="content-mobile" :style="eventStyle(activity.type)">
                 <div class="column-mobile">
                   <div class="type">
-                    <span :class="className(activity.type, '-type')">{{ activity.type }}</span>
+                    <span>{{ activity.type }}</span>
+                    <img v-if="getActivityIcon(activity.type)" :src="getActivityIcon(activity.type)"
+                      alt="Activity Type Icon" class="type-icon" />
                   </div>
                   <div class="title">{{ activity.title }}</div>
                   <transition name="expand-fade">
@@ -315,65 +294,65 @@
                       <p class="act_description">{{ activity.description }}</p>
                       <h3>{{ activity.location }}</h3>
                       <p>{{ activity.date }}</p>
+                      <div v-if="activity.prize?.name" class="expanded-prize">
+                        <p class="prize-label">Participate in this activity and you'll may win:</p>
+                        <div class="prize-row">
+                          <p class="prize-name">{{ activity.prize.name }}</p>
+                          <div class="prize-image-container">
+                            <img v-if="activity.prize.image" :src="activity.prize.image" alt="Prize Image"
+                              class="prize-image" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </transition>
-                  <button
-                    :class="['info-mobile', className(activity.type, '-info')]"
-                    @click="toggleActivityInfo(index)"
-                  >
-                    {{ isExpanded(index) ? '−info' : '+info' }}
-                  </button>
+                  <div class="actions-row">
+                    <button class="info-mobile" @click="toggleActivityInfo(index)">
+                      {{ isExpanded(index) ? '-info' : '+info' }}
+                    </button>
+                    <div class="calendar-dropdown">
+                      <button class="calendar-btn" @click.stop="toggleCalendarMenu(index)" title="Add to calendar">
+                        <svg class="calendar-icon" viewBox="0 0 14.2237 14.2237" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M3.11144 0C3.22932 0 3.34238 0.0468 3.42574 0.1302C3.5091 0.2135 3.55593 0.3266 3.55593 0.4445V0.889H10.6678V0.4445C10.6678 0.3266 10.7146 0.2135 10.798 0.1302C10.8813 0.0468 10.9944 0 11.1123 0C11.2302 0 11.3432 0.0468 11.4266 0.1302C11.5099 0.2135 11.5568 0.3266 11.5568 0.4445V0.889H12.4457C12.9173 0.889 13.3695 1.0763 13.703 1.4097C14.0364 1.7432 14.2237 2.1954 14.2237 2.667V12.4457C14.2237 12.9173 14.0364 13.3695 13.703 13.703C13.3695 14.0364 12.9173 14.2237 12.4457 14.2237H1.778C1.3064 14.2237 0.8542 14.0364 0.5208 13.703C0.1873 13.3695 0 12.9173 0 12.4457V2.667C0 2.1954 0.1873 1.7432 0.5208 1.4097C0.8542 1.0763 1.3064 0.889 1.778 0.889H2.667V0.4445C2.667 0.3266 2.7138 0.2135 2.7971 0.1302C2.8805 0.0468 2.9936 0 3.1114 0ZM1.778 3.1114C1.778 2.8661 1.9949 2.667 2.2625 2.667H11.9613C12.2279 2.667 12.4457 2.8661 12.4457 3.1114V4.0004C12.4457 4.2458 12.2288 4.4449 11.9604 4.4449H2.2625C1.9958 4.4449 1.778 4.2458 1.778 4.0004V3.1114ZM7.5564 7.5564C7.5564 7.4385 7.5095 7.3254 7.4262 7.242C7.3428 7.1587 7.2297 7.1119 7.1119 7.1119C6.994 7.1119 6.8809 7.1587 6.7976 7.242C6.7142 7.3254 6.6674 7.4385 6.6674 7.5564V8.8898H5.3339C5.216 8.8898 5.103 8.9367 5.0196 9.02C4.9362 9.1034 4.8894 9.2164 4.8894 9.3343C4.8894 9.4522 4.9362 9.5653 5.0196 9.6486C5.103 9.732 5.216 9.7788 5.3339 9.7788H6.6674V11.1123C6.6674 11.2302 6.7142 11.3432 6.7976 11.4266C6.8809 11.5099 6.994 11.5568 7.1119 11.5568C7.2297 11.5568 7.3428 11.5099 7.4262 11.4266C7.5095 11.3432 7.5564 11.2302 7.5564 11.1123V9.7788H8.8898C9.0077 9.7788 9.1208 9.732 9.2041 9.6486C9.2875 9.5653 9.3343 9.4522 9.3343 9.3343C9.3343 9.2164 9.2875 9.1034 9.2041 9.02C9.1208 8.9367 9.0077 8.8898 8.8898 8.8898H7.5564V7.5564Z"
+                            fill="currentColor" />
+                        </svg>
+                      </button>
+                      <transition name="expand-fade">
+                        <div v-if="calendarMenuIndex === index" class="calendar-menu">
+                          <button @click="addToICalendar(activity)">iCalendar</button>
+                          <button @click="addToGoogleCalendar(activity)">Google Calendar</button>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
                 </div>
                 <div class="logos-mobile">
                   <!-- Container para company logo (só aparece se existir speaker) -->
-                  <div
-                    v-if="activity?.speakers.length > 0"
-                    class="logo-container company-logo-container"
-                    :class="className(activity.type, '-logo')"
-                  >
+                  <div v-if="activity?.speakers.length > 0" class="logo-container company-logo-container">
                     <transition name="logo-fade" mode="out-in">
-                      <img
-                        v-if="
-                          activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
-                        "
-                        :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                        :src="
-                          base_path +
-                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
-                        "
-                        class="logo-image"
-                      />
+                      <img v-if="
+                        activity?.speakers?.[currentLogoIndex?.[activity.id] ?? 0]?.logo_company
+                      " :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                        activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_company
+                        " class="logo-image" />
                     </transition>
                   </div>
                   <!-- Container principal para speaker logo ou fallbacks -->
-                  <div
-                    class="logo-container speaker-logo-container"
-                    :class="className(activity.type, '-logo')"
-                  >
+                  <div class="logo-container speaker-logo-container">
                     <transition name="logo-fade" mode="out-in">
                       <!-- 1. Prioridade: logos_speakers -->
                       <template v-if="activity?.speakers?.length > 0">
-                        <img
-                          v-if="
-                            activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
-                          "
-                          :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path +
-                            activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="
+                          activity.speakers[currentLogoIndex?.[activity.id] ?? 0]?.logo_speaker
+                        " :key="'speaker-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path +
+                          activity.speakers[currentLogoIndex[activity.id] ?? 0].logo_speaker
+                          " class="logo-image" />
                       </template>
                       <template v-else-if="activity?.logo_companies?.length > 0">
-                        <img
-                          v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
-                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)"
-                          :src="
-                            base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
-                          "
-                          class="logo-image"
-                        />
+                        <img v-if="activity.logo_companies[currentLogoIndex?.[activity.id] ?? 0]"
+                          :key="'company-' + (currentLogoIndex?.[activity.id] ?? 0)" :src="base_path + activity.logo_companies[currentLogoIndex[activity.id] ?? 0]
+                            " class="logo-image" />
                       </template>
                       <template v-else>
                         <div class="logo-default"></div>
@@ -396,9 +375,15 @@ import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import axios from 'axios'
 import authHeader from '../services/auth-header'
 
+import panelIcon from '@/assets/icons/panel_icon.svg'
+import workshopIcon from '@/assets/icons/workshop_icon.svg'
+import keynoteIcon from '@/assets/icons/keynote_icon.svg'
+import fifteenIcon from '@/assets/icons/15_15_icon.svg'
+import insideTalkIcon from '@/assets/icons/inside_talk_icon.svg'
+import eletrolinkIcon from '@/assets/icons/eletrolink-icon.svg'
+import pointsIcon from '@/assets/icons/flash_home22.svg'
+
 const isMobile = ref(false)
-const tabWidth = ref(250)
-const tabsStyle = ref({ transform: 'translateX(0)' })
 const base_path = ref(null)
 
 const activeDay = ref(0)
@@ -406,6 +391,7 @@ const expandedEvent = ref(null)
 const showEletrolinkInfo = ref(false)
 const loading = ref(false)
 const currentLogoIndex = ref({})
+const calendarMenuIndex = ref(null)
 let globalInterval = null
 
 const db_activities = ref([
@@ -424,8 +410,8 @@ const db_activities = ref([
   },
 ])
 
-const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY']
-const event_days = ['2025-05-05', '2025-05-06', '2025-05-07', '2025-05-08', '2025-05-09']
+const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY']
+const event_days = ['2026-02-09', '2026-02-10', '2026-02-11']
 const eletrolink_description =
   'A new, exciting booth where students can engage in 1-on-1 conversations with companies and potentially find their next job or internship.'
 
@@ -449,34 +435,6 @@ const filteredEletrocomps = computed(() => {
 
 function updateIsMobile() {
   isMobile.value = window.innerWidth <= 800
-  scrollToTab(activeDay.value)
-}
-
-// Scroll para a tab ativa
-function scrollToTab(index) {
-  if (!isMobile.value) return
-
-  const containerWidth = window.innerWidth
-  const tabCenterPosition = index * tabWidth.value + tabWidth.value / 2 + 10
-  const containerCenter = containerWidth / 2
-  const offset = containerCenter - tabCenterPosition + index * 40
-
-  tabsStyle.value = {
-    transform: `translateX(${offset}px)`,
-    transition: 'transform 0.3s ease-in-out',
-  }
-}
-
-function scrollPrev() {
-  if (activeDay.value > 0) {
-    setActiveDay(activeDay.value - 1)
-  }
-}
-
-function scrollNext() {
-  if (activeDay.value < days.length - 1) {
-    setActiveDay(activeDay.value + 1)
-  }
 }
 
 // Mudar o dia ativo
@@ -484,8 +442,6 @@ function setActiveDay(index) {
   activeDay.value = index
   expandedEvent.value = null
   showEletrolinkInfo.value = false
-
-  scrollToTab(index)
 }
 
 // Dia atual como padrão
@@ -511,16 +467,40 @@ function toggleEletrolinkInfo() {
   showEletrolinkInfo.value = !showEletrolinkInfo.value
 }
 
-function cleanTitle(title) {
-  return title
-    .replace(/\s+/g, '-')
-    .replace(/\//g, '-')
-    .replace(/[^a-zA-Z0-9-]/g, '')
-    .toLowerCase()
+// Map of event types to their icons
+const activityTypeIcons = {
+  'inside talks': insideTalkIcon,
+  '15/15': fifteenIcon,
+  'discussion panel': panelIcon,
+  'keynote speaker': keynoteIcon,
+  'workshop': workshopIcon,
 }
 
-function className(title, suffix = '') {
-  return `activity-${cleanTitle(title)}${suffix}`
+function getActivityIcon(type) {
+  return activityTypeIcons[type?.toLowerCase()] || keynoteIcon
+}
+
+// Map of event types to their accent colors (using global CSS variables)
+const eventTypeColors = {
+  'inside talks': { color: 'var(--color-violet)', bg: 'rgba(var(--color-violet-rgb), 0.1)' },
+  '15/15': { color: 'var(--color-light-pink)', bg: 'rgba(var(--color-light-pink-rgb), 0.1)' },
+  'discussion panel': { color: 'var(--color-jeec-blue)', bg: 'rgba(var(--color-jeec-blue-rgb), 0.1)' },
+  'keynote speaker': { color: 'var(--color-jeec-blue)', bg: 'rgba(var(--color-jeec-blue-rgb), 0.1)' },
+  'workshop': { color: 'var(--color-light-green)', bg: 'rgba(var(--color-light-green-rgb), 0.1)' },
+  'opening ceremony': { color: 'var(--c-acc-lighter-dark-blue)', bg: 'rgba(var(--c-acc-lighter-dark-blue-rgb), 0.2)' }
+}
+
+// Default color used when a type is not in the map
+const defaultEventColor = { color: 'var(--color-jeec-blue)', bg: 'rgba(var(--color-jeec-blue-rgb), 0.1)' }
+
+function getEventColors(type) {
+  return eventTypeColors[type?.toLowerCase()] || defaultEventColor
+}
+
+// Returns inline CSS variables for a given activity type
+function eventStyle(type) {
+  const { color, bg } = getEventColors(type)
+  return { '--event-color': color, '--event-bg': bg }
 }
 
 function parseTime(timeString) {
@@ -549,6 +529,72 @@ function formatActivityDate(day, startTime, endTime) {
   return `${month} ${dayNum} | ${startTime.slice(-12, -7).replace(':', 'h')} - ${endTime.slice(-12, -7).replace(':', 'h')}`
 }
 
+function toggleCalendarMenu(index) {
+  calendarMenuIndex.value = calendarMenuIndex.value === index ? null : index
+}
+
+function closeCalendarMenu() {
+  calendarMenuIndex.value = null
+}
+
+function getCalendarDates(activity) {
+  const dayIndex = days.findIndex((d) => d === activity.dayOfWeek)
+  if (dayIndex === -1) return null
+  const dateStr = event_days[dayIndex]
+
+  const startParts = activity.time.replace('h', ':').split(':')
+  const endParts = activity.end_time.replace('h', ':').split(':')
+
+  const startDT = `${dateStr.replace(/-/g, '')}T${startParts[0].padStart(2, '0')}${startParts[1].padStart(2, '0')}00`
+  const endDT = `${dateStr.replace(/-/g, '')}T${endParts[0].padStart(2, '0')}${endParts[1].padStart(2, '0')}00`
+
+  return { startDT, endDT }
+}
+
+function addToICalendar(activity) {
+  const dates = getCalendarDates(activity)
+  if (!dates) return
+
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//JEEC IST//Schedule//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${dates.startDT}`,
+    `DTEND:${dates.endDT}`,
+    `SUMMARY:${activity.title}`,
+    `DESCRIPTION:${activity.description || ''}`,
+    `LOCATION:${activity.location || ''}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${activity.title.replace(/[^a-zA-Z0-9]/g, '_')}.ics`
+  a.click()
+  URL.revokeObjectURL(url)
+  closeCalendarMenu()
+}
+
+function addToGoogleCalendar(activity) {
+  const dates = getCalendarDates(activity)
+  if (!dates) return
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: activity.title,
+    dates: `${dates.startDT}/${dates.endDT}`,
+    details: activity.description || '',
+    location: activity.location || '',
+  })
+
+  window.open(`https://calendar.google.com/calendar/render?${params.toString()}`, '_blank')
+  closeCalendarMenu()
+}
+
 async function fetchData() {
   loading.value = true
 
@@ -560,6 +606,7 @@ async function fetchData() {
       new Promise((resolve) => setTimeout(resolve, 200)),
     ])
     const data = response.data
+    console.log('Dados recebidos:', data)
     base_path.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('ist/', 'ist')
     db_activities.value = data.other_activities.map((activity) => ({
       id: activity.id,
@@ -582,6 +629,7 @@ async function fetchData() {
           logo_company: speaker.logo_company || null,
         })) || [],
       logo_companies: activity.companies || [],
+      prize: activity.prize || {},
     }))
   } catch (error) {
     console.error('Erro ao buscar os dados:', error)
@@ -650,10 +698,7 @@ watch(
 onMounted(() => {
   updateIsMobile()
   window.addEventListener('resize', updateIsMobile)
-
-  setTimeout(() => {
-    scrollToTab(activeDay.value)
-  }, 100)
+  document.addEventListener('click', closeCalendarMenu)
 
   globalInterval = setInterval(rotateAllLogos, 3000)
 
@@ -663,6 +708,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateIsMobile)
+  document.removeEventListener('click', closeCalendarMenu)
 
   if (globalInterval) {
     clearInterval(globalInterval)
@@ -681,10 +727,10 @@ onUnmounted(() => {
 */
 .view {
   padding-top: var(--header-height);
-  --acc-color: var(--c-acc-strong-pink);
 }
 
 h1 {
+  font-family: var(--font-schedule);
   text-align: center;
   text-shadow: 0px 0px 15px var(--acc-color);
   margin: 2rem auto;
@@ -692,51 +738,68 @@ h1 {
   width: min-content;
 }
 
+
+.header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  overflow: hidden;
+  padding: 5px;
+  width: 100%;
+  height: min-content;
+  margin-bottom: 20px;
+  top: -10px;
+}
+
+.header h1 {
+  font-size: clamp(2.3rem, 3vw + 1rem, 4rem);
+  font-weight: 900;
+  color: var(--color-header-blue);
+  text-shadow: 0px 0px 20px var(--color-jeec-blue);
+  margin: 1rem auto;
+}
+
+.header h3 {
+  font-family: var(--font-schedule);
+  text-shadow: 0px 0px 15px var(--acc-color);
+  text-align: center;
+  margin: 10px auto;
+  position: relative;
+  width: 100%;
+  font-weight: normal;
+  font-size: 1rem;
+}
+
 .tabs {
   position: relative;
   display: flex;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
   gap: 10px;
-  padding: 20px;
+  padding: 3px;
   width: 100%;
   top: -10px;
 }
 
 .tab {
   text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  flex: 1;
+  padding-top: 10px;
+  padding-bottom: 10px;
   letter-spacing: 0.1em;
   overflow: auto;
-  font-size: 1.2rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: white;
   position: relative;
   cursor: pointer;
-  width: 200px;
+  width: fit-content;
   transition: all 0.3s ease-in-out;
   font-family: var(--font-schedule);
-}
-
-.tab:nth-child(1) {
-  --tab-color: var(--c-acc-lighter-dark-blue);
-}
-
-.tab:nth-child(2) {
-  --tab-color: var(--c-acc-violet);
-}
-
-.tab:nth-child(3) {
-  --tab-color: var(--c-acc-strong-pink);
-}
-
-.tab:nth-child(4) {
-  --tab-color: var(--c-acc-orange);
-}
-
-.tab:nth-child(5) {
-  --tab-color: var(--c-acc-yellow);
+  opacity: 0.3;
+  --tab-color: var(--color-jeec-blue);
 }
 
 .tab::before {
@@ -749,17 +812,16 @@ h1 {
   transform: translateX(-50%);
   transition: opacity 0.1s ease-in-out;
   opacity: 0.3;
-  background: radial-gradient(
-    ellipse at top center,
-    var(--tab-color) 10%,
-    rgba(255, 255, 255, 0) 75%
-  );
+  background: radial-gradient(ellipse at top center,
+      var(--tab-color) 1%,
+      rgba(255, 255, 255, 0) 75%);
   z-index: -3;
 }
 
 .tab.active {
   opacity: 1;
-  transform: scale(1.06);
+  font-size: 0.75rem;
+  transform: scale(1.05);
 }
 
 .tab:hover::before {
@@ -771,39 +833,47 @@ h1 {
 }
 
 .tab:first-child {
-  border-radius: 20px 0 0 0;
+  border-radius: 10px 0 0 0;
 }
 
 .tab:last-child {
-  border-radius: 0 20px 0 0;
+  border-radius: 0 10px 0 0;
 }
 
 .tab:not(:first-child):not(:last-child) {
   border-radius: 0;
 }
 
-/* Cores dos dias da semana */
-.tab:nth-child(1) {
-  border-top: 2px solid var(--c-acc-lighter-dark-blue);
+.tab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-jeec-blue) 0%, var(--color-magenta) 51%, var(--color-light-green) 100%);
+  border-radius: inherit;
+  background-size: calc(300% + 20px) 100%;
+  pointer-events: none;
 }
 
-.tab:nth-child(2) {
-  border-top: 2px solid var(--c-acc-violet);
+.tab:nth-child(1)::after {
+  background-position: 0% 0;
 }
 
-.tab:nth-child(3) {
-  border-top: 2px solid var(--c-acc-strong-pink);
+.tab:nth-child(2)::after {
+  background-position: 50% 0;
 }
 
-.tab:nth-child(4) {
-  border-top: 2px solid var(--c-acc-orange);
-}
-
-.tab:nth-child(5) {
-  border-top: 2px solid var(--c-acc-yellow);
+.tab:nth-child(3)::after {
+  background-position: 100% 0;
 }
 
 .timeline {
+  /* The vertical line sits at the right edge of .time (width: --time-col) */
+  --time-col: 20%;
+  --line-left: var(--time-col);
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -818,23 +888,21 @@ h1 {
 
 .fixed-line {
   position: absolute;
-  left: 23%;
+  left: var(--line-left, 20%);
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 1px;
   background: white;
-  border-radius: 2px;
-  height: auto;
+  border-radius: 1px;
+  transform: translateX(-50%);
 }
 
 .line {
-  position: relative;
-  top: 0;
-  bottom: 0;
-  width: 2px;
+  width: 1px;
   background: white;
-  border-radius: 2px;
-  height: auto;
+  border-radius: 1px;
+  flex-shrink: 0;
+  transform: translateX(-50%);
 }
 
 .activity {
@@ -843,7 +911,6 @@ h1 {
   justify-items: center;
   position: relative;
   width: 100%;
-  padding: 0 5% 0 5%;
 }
 
 .time {
@@ -852,6 +919,7 @@ h1 {
   flex-direction: column;
   align-items: center;
   width: 20%;
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
 }
 
 .start {
@@ -863,7 +931,6 @@ h1 {
 
 .start-time {
   position: relative;
-  text-align: right;
   top: -10px;
   color: white;
   font-weight: bold;
@@ -888,23 +955,22 @@ h1 {
 
 .circle-start,
 .circle-end {
-  position: relative;
-  width: 21px;
-  height: 21px;
-  right: -11.5px;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
   background: white;
   border-radius: 50%;
-  border: 2px solid white;
 }
 
 .circle-start {
-  position: relative;
-  top: -10px;
+  /* Shift right by half its width to center on .time's right edge,
+     and up by half its height to align with the top of the time column */
+  transform: translate(50%, -50%);
 }
 
 .circle-end {
-  position: relative;
-  bottom: -10px;
+  /* Same horizontal centering, shift down to align with the bottom */
+  transform: translate(50%, 50%);
 }
 
 .content {
@@ -912,85 +978,12 @@ h1 {
   display: flex;
   justify-content: space-between;
   width: 65%;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
-  border: 2px solid;
   margin-left: 30px;
-  padding: 5px;
-  background: rgba(25, 156, 255, 0.1);
-  border: 2px solid var(--c-acc-blue);
-}
-
-.activity-inside-talks {
-  /*pink*/
-  background: rgba(255, 0, 110, 0.1);
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.activity-15-15 {
-  /*violet*/
-  background: rgba(114, 9, 183, 0.1);
-  border: 2px solid var(--c-acc-violet);
-}
-
-.activity-discussion-panel {
-  /*blue*/
-  background: rgba(21, 0, 177, 0.1);
-  border: 2px solid var(--c-acc-blue);
-}
-
-.activity-keynote-speaker {
-  /*yellow*/
-  background: rgba(255, 190, 11, 0.1);
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.activity-workshop {
-  /*orange*/
-  background: rgba(251, 86, 7, 0.1);
-  border: 2px solid var(--c-acc-orange);
-}
-
-.activity-opening-ceremony {
-  /*dark-blue*/
-  background: rgba(46, 85, 255, 0.2);
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.activity-ceremony {
-  /*lighter-dark-blue*/
-  background: rgba(46, 85, 255, 0.2);
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.activity-alumni-talks {
-  /*purple-blue*/
-  background: rgba(96, 94, 208, 0.2);
-  border: 2px solid var(--c-acc-purple-blue);
-}
-
-.activity-fast-meetings {
-  /*pink*/
-  background: rgba(255, 0, 110, 0.1);
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.activity-sunset {
-  /*yellow*/
-  background: rgba(255, 190, 11, 0.1);
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.activity-leec {
-  /*violet*/
-  background: rgba(114, 9, 183, 0.1);
-  border: 2px solid var(--c-acc-violet);
-}
-
-.activity-tech-visit {
-  /*orange*/
-  background: rgba(251, 86, 7, 0.1);
-  border: 2px solid var(--c-acc-orange);
+  padding: 0.3rem 0.3rem 0.3rem 0.3rem;
+  background: var(--event-bg, rgba(25, 156, 255, 0.1));
+  border: 2px solid var(--event-color, var(--c-acc-blue));
 }
 
 .column {
@@ -999,143 +992,109 @@ h1 {
   gap: 10px;
   height: 100%;
   justify-content: space-between;
-  padding: 10px 15px 5px 15px;
+  padding: 10px 5px 0px 10px;
 }
 
 .type {
   display: flex;
+  align-items: center;
   gap: 10px;
   font-weight: bold;
-  font-size: 1.4rem;
-  color: var(--c-acc-blue);
+  font-size: clamp(1rem, 1.2vw + 0.5rem, 1.3rem);
+  color: var(--event-color, var(--c-acc-blue));
   font-family: var(--font-schedule);
 }
 
-.activity-inside-talks-type {
-  /*pink*/
-  color: var(--c-acc-strong-pink);
-}
-
-.activity-15-15-type {
-  /*violet*/
-  color: var(--c-acc-violet);
-}
-
-.activity-discussion-panel-type {
-  /*blue*/
-  color: var(--c-acc-blue);
-}
-
-.activity-keynote-speaker-type {
-  /*yellow*/
-  color: var(--c-acc-yellow);
-}
-
-.activity-workshop-type {
-  color: var(--c-acc-orange);
-  /* Amarelo */
-}
-
-.activity-opening-ceremony-type {
-  color: var(--c-acc-lighter-dark-blue);
-  /* Verde */
-}
-
-.activity-ceremony-type {
-  /*lighter-dark-blue*/
-  color: var(--c-acc-lighter-dark-blue);
-}
-
-.activity-alumni-talks-type {
-  /*purple-blue*/
-  color: var(--c-acc-purple-blue);
-}
-
-.activity-fast-meetings-type {
-  /*pink*/
-  color: var(--c-acc-strong-pink);
-}
-
-.activity-sunset-type {
-  /*yellow*/
-  color: var(--c-acc-yellow);
-}
-
-.activity-leec-type {
-  /*violet*/
-  color: var(--c-acc-violet);
-}
-
-.activity-tech-visit-type {
-  /*orange*/
-  color: var(--c-acc-orange);
+.type-icon {
+  width: clamp(0.9rem, 1.2vw + 0.4rem, 1.2rem);
+  height: clamp(0.9rem, 1.2vw + 0.4rem, 1.2rem);
+  object-fit: contain;
 }
 
 .title {
-  font-size: 1.3em;
+  font-size: clamp(0.85rem, 1vw + 0.4rem, 1.1rem);
   color: white;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
+  font-weight: 400;
   font-family: var(--font-schedule);
 }
 
 .info {
   background: none;
-  color: var(--c-acc-blue);
+  color: var(--event-color, var(--c-acc-blue));
   border: none;
   border-radius: 5px;
-  align-self: flex-start;
   cursor: pointer;
-  font-size: 12px;
+  font-size: clamp(0.8rem, 0.5vw + 0.3rem, 0.75rem);
+  letter-spacing: 0.05em;
   text-decoration: underline;
   font-weight: 300;
 }
 
-.activity-inside-talks-info {
-  color: var(--c-acc-strong-pink);
+.actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
-.activity-15-15-info {
-  color: var(--c-acc-violet);
+.calendar-dropdown {
+  position: relative;
 }
 
-.activity-panel-info {
-  color: var(--c-acc-blue);
+.calendar-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: var(--event-color, var(--c-acc-blue));
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.activity-keynote-speaker-info {
-  color: var(--c-acc-yellow);
+.calendar-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
 }
 
-.activity-workshop-info {
-  color: var(--c-acc-orange);
+.calendar-icon {
+  width: 1.2em;
+  height: 1.2em;
 }
 
-.activity-opening-ceremony-info {
-  color: var(--c-acc-lighter-dark-blue);
+.calendar-menu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 10;
+  min-width: 160px;
 }
 
-.activity-ceremony-info {
-  color: var(--c-acc-lighter-dark-blue);
+.calendar-menu button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
+  text-align: left;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
 }
 
-.activity-alumni-talks-info {
-  color: var(--c-acc-purple-blue);
-}
-
-.activity-fast-meetings-info {
-  color: var(--c-acc-strong-pink);
-}
-
-.activity-sunset-info {
-  color: var(--c-acc-yellow);
-}
-
-.activity-leec-info {
-  color: var(--c-acc-violet);
-}
-
-.activity-tech-visit-info {
-  color: var(--c-acc-orange);
+.calendar-menu button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .icon {
@@ -1145,37 +1104,38 @@ h1 {
 .logos {
   display: flex;
   flex-shrink: 0;
-  justify-content: flex-start;
   position: relative;
+  align-items: center;
+  align-self: center;
+  justify-content: flex-end;
+  min-width: clamp(8rem, 12vw, 11.5rem);
 }
 
-/* Container fixo para os logos */
+/* Base logo circle */
 .logo-container {
-  width: 130px;
-  height: 130px;
   border-radius: 50%;
-  border: 2px solid var(--c-acc-blue);
-  position: relative;
+  border: 0.125rem solid var(--event-color, var(--c-acc-blue));
   overflow: hidden;
   background-color: white;
   display: flex;
-  /* Adicionado */
   align-items: center;
-  /* Centraliza verticalmente */
   justify-content: center;
-  /* Centraliza horizontalmente */
-  /* Fundo branco para PNGs transparentes */
 }
 
-/* Ajuste para o company logo */
+/* Speaker / main logo — responsive size */
+.speaker-logo-container {
+  width: clamp(6rem, 9.6vw, 9rem);
+  height: clamp(6rem, 9.6vw, 9rem);
+}
+
+/* Company badge — positioned inside the reserved space */
 .company-logo-container {
-  width: 65px;
-  height: 65px;
-  position: relative;
-  left: 35px;
-  bottom: -70px;
+  position: absolute;
+  width: clamp(2.7rem, 4.2vw, 3.9rem);
+  height: clamp(2.7rem, 4.2vw, 3.9rem);
+  left: 0;
+  bottom: 0;
   z-index: 1;
-  object-fit: contain;
 }
 
 .company-logo-container img {
@@ -1194,7 +1154,11 @@ h1 {
 .logo-default {
   width: 100%;
   height: 100%;
-  background-color: var(--c-acc-blue);
+  background-color: var(--event-color, var(--c-acc-blue));
+}
+
+.logo-image {
+  object-fit: contain;
 }
 
 .logo-fade-enter-active,
@@ -1207,64 +1171,17 @@ h1 {
   opacity: 0;
 }
 
-.activity-inside-talks-logo {
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.activity-15-15-logo {
-  border: 2px solid var(--c-acc-violet);
-}
-
-.activity-panel-logo {
-  border: 2px solid var(--c-acc-blue);
-}
-
-.activity-keynote-speaker-logo {
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.activity-workshop-logo {
-  border: 2px solid var(--c-acc-orange);
-}
-
-.activity-opening-ceremony-logo {
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.activity-ceremony-logo {
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.activity-alumni-talks-logo {
-  border: 2px solid var(--c-acc-purple-blue);
-}
-
-.activity-fast-meetings-logo {
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.activity-sunset-logo {
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.activity-leec-logo {
-  border: 2px solid var(--c-acc-violet);
-}
-
-.activity-tech-visit-logo {
-  border: 2px solid var(--c-acc-orange);
-}
-
-.expanded-info p {
+.expanded-info {
   font-weight: 300;
   letter-spacing: 0.05rem;
-  font-size: 0.8rem;
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
 }
 
 .expanded-info h3 {
-  font-weight: 400;
-  letter-spacing: 0.1rem;
-  font-size: 1rem;
+  font-family: var(--font-schedule);
+  font-weight: 600;
+  letter-spacing: 0.05rem;
+  font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
 }
 
 .act_description {
@@ -1272,9 +1189,53 @@ h1 {
   margin-bottom: 10px;
 }
 
+.expanded-prize {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+}
+
+.prize-label {
+  color: var(--event-color, var(--c-acc-blue));
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.prize-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.prize-name {
+  font-family: var(--font-schedule);
+  font-weight: 700;
+  font-size: clamp(0.75rem, 0.55vw + 0.32rem, 0.95rem);
+  color: white;
+  max-width: 70%;
+  flex-shrink: 1;
+}
+
+.prize-image-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--event-color, var(--c-acc-blue));
+}
+
+.prize-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .no-events {
   color: white;
-  font-size: 1.5em;
+  font-size: clamp(1rem, 1.5vw + 0.5rem, 1.5rem);
   font-weight: bold;
   text-align: center;
   font-family: var(--font-schedule);
@@ -1282,47 +1243,70 @@ h1 {
 }
 
 .eletrolink {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   width: auto;
-  padding: 20px;
+  padding: 10px;
 }
 
 .box {
   display: flex;
   flex-direction: column;
-  padding: 12px 20px 10px;
   height: 100%;
-  max-width: min(95%, 600px);
+  width: 100%;
+  max-width: 700px;
   min-width: 300px;
+  padding: 15px;
   background: solid;
-  background-color: rgba(255, 190, 11, 0.1);
+  background-color: rgba(var(--color-magenta-rgb), 0.1);
   border-radius: 10px;
-  border: 2px solid rgba(255, 190, 11, 1);
+  border: 2px solid var(--color-magenta);
   gap: 5px;
 }
 
 .eletrolink h3 {
-  color: var(--c-acc-yellow);
-  /* Laranja */
-  font-size: 1.4em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-schedule);
+  color: var(--color-magenta);
+  font-size: clamp(1.2rem, 1.5vw + 0.5rem, 1.6rem);
   letter-spacing: 0.05em;
   font-weight: bold;
+}
+
+.eletrolink-icon {
+  width: clamp(1.3rem, 1.5vw + 0.4rem, 1.4rem);
+  height: clamp(1.3rem, 1.5vw + 0.4rem, 1.4rem);
+  object-fit: contain;
 }
 
 .eletrolink p {
   color: white;
   letter-spacing: 0.1em;
+  font-size: clamp(0.75rem, 0.6vw + 0.35rem, 0.95rem);
 }
 
+.points-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+
+.points-icon {
+  width: clamp(1.5rem, 1.5vw + 0.4rem, 1.4rem);
+  height: clamp(1.5rem, 1.5vw + 0.4rem, 1.4rem);
+  object-fit: contain;
+  align-content: center;
+}
+
+
 .eletrolink button {
-  color: var(--c-acc-yellow);
+  color: var(--color-magenta);
+  text-align: left;
 }
 
 .eletrolink-description {
-  font-size: 0.8em;
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
   font-weight: 300;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -1345,17 +1329,46 @@ h1 {
   gap: 10px;
 }
 
+.eletrolink-signup-btn {
+  margin-left: auto;
+  font-family: 'Lexend Exa';
+  background-color: var(--color-magenta);
+  color: var(--color-font);
+  font-size: clamp(0.6rem, 0.6vw + 0.35rem, 0.95rem);
+  font-weight: 500;
+  padding: 3px 6px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.eletrolink-signup-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+.eletrocomp-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5px;
+}
+
 .eletrocomp-title p {
-  font-size: 1.3em;
+  font-size: clamp(0.8rem, 0.8vw + 0.4rem, 1.2rem);
 }
 
 .eletrocomp-location p {
-  font-size: 1em;
+  font-size: clamp(0.65rem, 0.6vw + 0.35rem, 0.95rem);
   font-weight: 300;
 }
 
 .eletrocomp-time p {
-  font-size: 0.8em;
+  font-size: clamp(0.55rem, 0.5vw + 0.3rem, 0.8rem);
   font-weight: 300;
 }
 
@@ -1383,7 +1396,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 130px;
+  max-width: 30%;
   flex-shrink: 0;
   height: 60px;
 }
@@ -1395,7 +1408,7 @@ h1 {
 
 .no-companies {
   color: white;
-  font-size: 1em;
+  font-size: clamp(0.8rem, 0.6vw + 0.4rem, 1rem);
   font-weight: bold;
   text-align: center;
   margin-top: 10px;
@@ -1480,62 +1493,13 @@ h1 {
 .mobile .tabs-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
   padding: 10px 0;
-  /* Espaço para os botões de navegação */
-}
-
-.mobile .tabs-wrapper {
-  width: 100%;
-  overflow: hidden;
-  margin: 0 auto;
 }
 
 .mobile .tabs {
   display: flex;
-  width: max-content;
   gap: 10px;
-  will-change: transform;
-}
-
-.mobile .tab {
-  text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  letter-spacing: 0.1em;
-  overflow: auto;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  position: relative;
-  cursor: pointer;
-  width: 200px;
-  transition: all 0.3s ease-in-out;
-  opacity: 0.7;
-  transform: scale(0.9);
-}
-
-.mobile .tab.active {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.mobile .nav-button {
-  display: none;
-  /* Remove completamente do layout */
-}
-
-.mobile .nav-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.mobile .nav-button.prev {
-  left: 10px;
-}
-
-.mobile .nav-button.next {
-  right: 10px;
+  gap: 10px;
 }
 
 /* Estilos específicos para mobile */
@@ -1550,27 +1514,27 @@ h1 {
   min-height: 100%;
   margin-top: 20px;
   margin-bottom: 150px;
-  padding: 0 6vw;
+  padding: 0 1.5vw;
   /* Padding relativo à largura da tela */
 }
 
 .mobile .line-mobile {
-  position: relative;
-  width: 2px;
+  width: 1px;
   background: white;
-  border-radius: 2px;
-  height: auto;
+  border-radius: 1px;
+  flex: 1;
+  transform: translateX(-50%);
 }
 
 .mobile .fixed-line {
   position: absolute;
-  left: 6vw;
+  left: 1.5vw;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 1px;
   background: white;
-  border-radius: 2px;
-  height: auto;
+  border-radius: 1px;
+  transform: translateX(-50%);
 }
 
 .mobile .act-column {
@@ -1584,37 +1548,36 @@ h1 {
   display: flex;
   width: 100%;
   position: relative;
-  padding-right: 10px;
 }
 
 .mobile .circle-start-mobile {
   position: relative;
-  left: -19px;
-  top: -8px;
-  width: 16px;
-  height: 16px;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
   background: white;
   border-radius: 50%;
-  border: 2px solid white;
+  left: -8px;
+  transform: translate(-50%, -4px);
 }
 
 .mobile .circle-end-mobile {
-  position: relative;
-  width: 12px;
-  height: 12px;
-  left: -5px;
+  width: 8px;
+  height: 8px;
   background: white;
   border-radius: 50%;
-  border: 2px solid white;
+  /* Center on the line (left edge of .teste) */
+  transform: translateX(-50%);
 }
 
 .mobile .start-time-mobile {
   position: relative;
-  text-align: right;
   top: -10px;
-  right: 10px;
+  right: 5px;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  font-family: var(--font-schedule);
+  font-size: clamp(0.65rem, 0.5vw + 0.3rem, 0.8rem);
 }
 
 .mobile .start-mobile {
@@ -1627,103 +1590,26 @@ h1 {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  align-items: flex-start;
   position: relative;
-  border: 2px solid;
-  margin-left: 10px;
+  margin-left: 5px;
   top: -5px;
-  padding: 5px;
-  background: rgba(25, 156, 255, 0.1);
-  border: 2px solid var(--c-acc-blue);
-}
-
-.mobile .activity-inside-talks {
-  /*pink*/
-  background: rgba(255, 0, 110, 0.1);
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.mobile .activity-15-15 {
-  /*violet*/
-  background: rgba(114, 9, 183, 0.1);
-  border: 2px solid var(--c-acc-violet);
-}
-
-.mobile .activity-discussion-panel {
-  /*blue*/
-  background: rgba(21, 0, 177, 0.1);
-  border: 2px solid var(--c-acc-blue);
-}
-
-.mobile .activity-keynote-speaker {
-  /*yellow*/
-  background: rgba(255, 190, 11, 0.1);
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.mobile .activity-workshop {
-  /*orange*/
-  background: rgba(251, 86, 7, 0.1);
-  border: 2px solid var(--c-acc-orange);
-}
-
-.mobile .activity-opening-ceremony {
-  /*dark-blue*/
-  background: rgba(46, 85, 255, 0.2);
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.mobile .activity-ceremony {
-  /*lighter-dark-blue*/
-  background: rgba(46, 85, 255, 0.2);
-  border: 2px solid var(--c-acc-lighter-dark-blue);
-}
-
-.mobile .activity-alumni-talks {
-  /*purple-blue*/
-  background: rgba(96, 94, 208, 0.2);
-  border: 2px solid var(--c-acc-purple-blue);
-}
-
-.mobile .activity-fast-meetings {
-  /*pink*/
-  background: rgba(255, 0, 110, 0.1);
-  border: 2px solid var(--c-acc-strong-pink);
-}
-
-.mobile .activity-sunset {
-  /*yellow*/
-  background: rgba(255, 190, 11, 0.1);
-  border: 2px solid var(--c-acc-yellow);
-}
-
-.mobile .activity-leec {
-  /*violet*/
-  background: rgba(114, 9, 183, 0.1);
-  border: 2px solid var(--c-acc-violet);
-}
-
-.mobile .activity-tech-visit {
-  /*orange*/
-  background: rgba(251, 86, 7, 0.1);
-  border: 2px solid var(--c-acc-orange);
+  padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+  background: var(--event-bg, rgba(25, 156, 255, 0.1));
+  border: 2px solid var(--event-color, var(--c-acc-blue));
 }
 
 .mobile .logos-mobile {
   display: flex;
   flex-shrink: 0;
+  position: relative;
+  align-self: flex-start;
+  justify-content: flex-end;
+  min-width: clamp(5.5rem, 25vw, 8.5rem);
 }
 
 .mobile .speaker-logo-container {
-  width: 100px;
-  height: 100px;
-}
-
-.mobile .company-logo-container {
-  width: 50px;
-  height: 50px;
-  left: 25px;
-  bottom: -55px;
+  width: clamp(4.2rem, 21.6vw, 6.75rem);
+  height: clamp(4.2rem, 21.6vw, 6.75rem);
 }
 
 .mobile .column-mobile {
@@ -1733,26 +1619,25 @@ h1 {
   justify-content: space-between;
   gap: 5px;
   align-items: flex-start;
-  padding: 5px 5px 5px 10px;
+  padding: 10px 5px 0px 10px;
   width: calc(100% - 70px);
 }
 
 .mobile .type {
-  font-size: 1rem;
+  font-size: clamp(0.7rem, 2vw + 0.3rem, 1rem);
 }
 
 .mobile .title {
-  font-size: 0.9rem;
+  font-size: clamp(0.65rem, 1.8vw + 0.25rem, 0.9rem);
 }
 
 .mobile .info-mobile {
   background: none;
-  color: var(--c-acc-blue);
+  color: var(--event-color, var(--c-acc-blue));
   border: none;
   border-radius: 5px;
-  align-self: flex-start;
   cursor: pointer;
-  font-size: 10px;
+  font-size: clamp(0.75rem, 1.5vw + 0.2rem, 0.9rem);
   text-decoration: underline;
   font-weight: 300;
 }
@@ -1760,64 +1645,16 @@ h1 {
 .mobile .eletrocomp.more-indicator {
   color: var(--color-background);
   background-color: white;
-  font-size: 0.9rem;
+  font-size: clamp(0.7rem, 1.8vw + 0.3rem, 0.9rem);
   font-weight: bold;
 }
 
-.mobile .activity-inside-talks-info {
-  color: var(--c-acc-strong-pink);
-}
-
-.mobile .activity-15-15-info {
-  color: var(--c-acc-violet);
-}
-
-.mobile .activity-panel-info {
-  color: var(--c-acc-blue);
-}
-
-.mobile .activity-keynote-speaker-info {
-  color: var(--c-acc-yellow);
-}
-
-.mobile .activity-workshop-info {
-  color: var(--c-acc-orange);
-}
-
-.mobile .activity-opening-ceremony-info {
-  color: var(--c-acc-lighter-dark-blue);
-}
-
-.mobile .activity-ceremony-info {
-  color: var(--c-acc-lighter-dark-blue);
-}
-
-.mobile .activity-alumni-talks-info {
-  color: var(--c-acc-purple-blue);
-}
-
-.mobile .activity-fast-meetings-info {
-  color: var(--c-acc-strong-pink);
-}
-
-.mobile .activity-sunset-info {
-  color: var(--c-acc-yellow);
-}
-
-.mobile .activity-leec-info {
-  color: var(--c-acc-violet);
-}
-
-.mobile .activity-tech-visit-info {
-  color: var(--c-acc-orange);
-}
-
 .mobile .expanded-info p {
-  font-size: 0.7rem;
+  font-size: clamp(0.7rem, 1.5vw + 0.2rem, 0.7rem);
 }
 
 .mobile .expanded-info h3 {
-  font-size: 0.7rem;
+  font-size: clamp(0.75rem, 1.5vw + 0.2rem, 0.7rem);
 }
 
 .mobile .act_description {
@@ -1857,7 +1694,7 @@ h1 {
 .loading-spinner {
   border: 4px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top: 4px solid #9c27b0;
+  border-top: 4px solid rgba(var(--color-magenta-rgb), 1);
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;

@@ -3,7 +3,6 @@
   <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
   <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>
-  <Loading />
   <main :inert="stateStore.navOpen || stateStore.qrCodeOpen">
     <router-view />
   </main>
