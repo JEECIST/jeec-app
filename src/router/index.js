@@ -77,6 +77,11 @@ const routes = [
     component: () => import('@/views/ConnectionsView.vue'),
   },
   {
+    path: '/prizes',
+    name: 'Prizes',
+    component: () => import('@/views/Prizes.vue'),
+  },
+  {
     path: '/wordle',
     name: 'Wordle',
     component: () => import('@/views/Wordle.vue'),
@@ -97,24 +102,24 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from) => {
-  const userStore = useUserStore()
+  // const userStore = useUserStore()
 
-  if (userStore.loggedInState != true) {
-    userStore.isLoggedIn()
-    userStore.loggedInState = true
+  // if (userStore.loggedInState != true) {
+  //   userStore.isLoggedIn()
+  //   userStore.loggedInState = true
 
-    if (userStore.loggedIn !== true) {
-      router.push('/')
-    }
-  } else {
-    if (userStore.loggedIn == true) {
-      userStore.getPoints()
-    }
-  }
+  //   if (userStore.loggedIn !== true) {
+  //     router.push('/')
+  //   }
+  // } else {
+  //   if (userStore.loggedIn == true) {
+  //     userStore.getPoints()
+  //   }
+  // }
 
-  if (to.name == 'login' && userStore.loggedIn == true) {
-    router.push('/home')
-  }
+  // if (to.name == 'login' && userStore.loggedIn == true) {
+  //   router.push('/home')
+  // }
 })
 
 export default router
