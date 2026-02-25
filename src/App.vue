@@ -1,11 +1,11 @@
 <template>
   <!-- <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader> -->
-  <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
+  <!-- <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader> -->
   <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
   <UserInfoProfile v-if="userPopupProfile"></UserInfoProfile>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>
   <Loading />
-  <main :inert="stateStore.navOpen || stateStore.qrCodeOpen">
+  <main :class="{ 'padded-main': userPopup || userPopupProfile }" :inert="stateStore.navOpen || stateStore.qrCodeOpen">
     <router-view />
   </main>
   <TheBottomNav v-if="navBar" />
@@ -97,8 +97,15 @@ onMounted(async () => {
 
 <style scoped>
 main {
-  padding: 0 2ch;
   z-index: 1;
   position: relative;
+  /* Removed the paddings from here so full-screen pages like Login stay flush to the edges */
+}
+
+/* This class only applies when a header is visible */
+.padded-main {
+  padding-top: 13rem;
+  padding-left: 2ch;
+  padding-right: 2ch;
 }
 </style>

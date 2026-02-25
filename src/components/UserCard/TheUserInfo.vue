@@ -91,7 +91,7 @@ defineProps({
 .user-card.home {
   height: 12rem;
 
-  position: relative;
+  position: fixed;
   top: auto;
   right: auto;
   bottom: auto;
@@ -99,7 +99,7 @@ defineProps({
   width: 100%;
   max-width: none;
 
-  z-index: auto;
+  z-index: 100;
 
   border-radius: 18px;
   display: grid;
@@ -115,6 +115,7 @@ defineProps({
 
   box-sizing: border-box;
   gap: 0px 10px;
+  background: var(--color-background)
 }
 
 .user-card.home>.name-wrapper {

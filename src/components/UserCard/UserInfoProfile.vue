@@ -63,19 +63,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Find .user-card and update it */
 .user-card {
+    /* --- NEW FIXED POSITIONING --- */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999; /* Keeps it above other content */
+    background-color: #050a10; /* Matches your app background so text doesn't overlap */
+    
+    /* Existing styles */
     height: 12rem;
     width: 100%;
-    border-radius: 18px;
+    border-radius: 18px; /* You might want 0px for a true header, but 18px keeps your style */
     padding: 30px;
     box-sizing: border-box;
 
-    /* Flexbox Layout */
     display: flex;
     justify-content: space-between;
     align-items: stretch;
 }
-
 /* --- Left Column Structure --- */
 .left-col {
     display: flex;

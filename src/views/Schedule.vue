@@ -1,11 +1,11 @@
 <template>
   <div class="desktop" v-if="!isMobile">
     <div class="view">
-      <section class="header">
+      <!-- <section class="header">
         <h1>SCHEDULE</h1>
         <h3>Join activities and win prizes!</h3>
         <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
-      </section>
+      </section> -->
       <!-- <section class="tabs">
         <div v-for="(day, index) in days" :key="index" class="tab" :class="{ active: activeDay === index }"
           @click="setActiveDay(index)">
@@ -185,11 +185,11 @@
 
   <div class="mobile" v-else>
     <div class="view">
-      <section class="header">
+      <!-- <section class="header">
         <h1>SCHEDULE</h1>
         <h3>Join activities and win prizes!</h3>
         <h3>Every activity you participate in automatically enters you into a draw for a chance to get a prize!</h3>
-      </section>
+      </section> -->
       <TabsSelection :tabs="days" :activeTab="activeDay" @tab="setActiveDay"></TabsSelection>
       <div class="loading-screen" v-if="loading">
         <div class="loading-spinner"></div>

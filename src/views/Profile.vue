@@ -26,7 +26,9 @@
 
     <div class="what-can-win-divider">
       <span class="divider-line"></span>
-      <span class="divider-text">What I can Win?</span>
+      <span class="divider-text">
+        <a href="/prizes">What can I win?</a>
+      </span>
       <span class="divider-line"></span>
     </div>
 
@@ -148,6 +150,8 @@
   <div>
     <ToastNotification :message="toastMessage" :type="toastType" :visible="showToast" @close="showToast = false" />
   </div>
+
+  <div style="height: 50px;"></div>
 </template>
 
 <script setup>
@@ -475,6 +479,11 @@ onMounted(fetchProfile)
   font-size: 1rem;
   font-weight: 500;
   white-space: nowrap;
+  text-decoration: none;
+}
+
+.divider-text>a {
+  text-decoration: none;
 }
 
 .rankings-section {
@@ -518,6 +527,7 @@ onMounted(fetchProfile)
   height: 1px;
   max-width: 50px;
   background: #fff;
+  text-decoration: none;
 }
 
 .view-all-link a {

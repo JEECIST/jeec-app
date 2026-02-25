@@ -9,11 +9,11 @@
           <li>Submitting your CV: 300 points</li>
           <li>Job Fair: 50 points/company</li>
           <li>15/15: 300 points</li>
-          <li>Inside Talks: 450 points</li>
-          <li>Eletrolink: 450 points (+200 if you enroll earlier)</li>
-          <li>Workshops: 600 points</li>
-          <li>Discussion Panel: 600 points</li>
-          <li>KeyNote Speakers: 750 points</li>
+          <li>Eletrolink: 300 points</li>
+          <li>Workshops: 500 points</li>
+          <li>Inside Talks: 500 points</li>
+          <!-- <li>Discussion Panel: 600 points</li> -->
+          <li>KeyNote Speakers: 500 points</li>
         </ul>
       </li>
       <li>
@@ -25,7 +25,7 @@
       </li>
       <li>
         For the Job Fair activity, you must present the QR Code to the people in the booth. For
-        other activities, you present it to the JEEC members stationed at that activity.
+        other activities, you present it to the JEEC staff stationed at that activity.
       </li>
       <li>
         Points are divided into daily points and total points. Daily points are the points gained in
@@ -42,20 +42,20 @@
     <h2>Prizes:</h2>
     <ol>
       <li>
-        Daily Draw: Buy a ticket at the Prize Shop (500 points) and enter the daily Draw! One winner
+        Daily Draw: Earn daily points to get more chances of winning daily Draw! One winner
         every day.
       </li>
       <li>
-        Weekly Individual Draw: At the end of the week, we'll draw 3 winners from the participants
-        with the most points. The more points you have, the more chances you get to win!
+        Weekly Individual Draw: At the end of the week, we'll draw 3 winners from the participants.
+        The more points you have, the more chances you get to win!
       </li>
       <li>
         Weekly Squads Draw: Same rules, but for squads! Get your team to the top and win together.
       </li>
-      <li>EletroLink Champion: The participant with the most EletroLinks wins.</li>
+      <!-- <li>EletroLink Champion: The participant with the most EletroLinks wins.</li>
       <li>
         Job Fair Explorer: The one who visits the most booths during the fair takes the prize.
-      </li>
+      </li> -->
       <li>CV Giveaway: Upload your CV to our platform and get a shot at winning a prize. Easy!</li>
       <li>Activity Prizes: One person is randomly selected at the end of each activity to win!</li>
     </ol>
@@ -90,11 +90,11 @@ p {
   line-height: 1.4;
 }
 
-li > p {
+li>p {
   padding-bottom: 0.5rem;
 }
 
-ol > li {
+ol>li {
   padding-bottom: 0.6rem;
 }
 
@@ -102,7 +102,7 @@ ul {
   padding-left: 2ch;
 }
 
-ul > li {
+ul>li {
   padding-bottom: 0.5rem;
 }
 </style>

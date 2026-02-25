@@ -128,7 +128,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translate(-50%, -50%);
+  transform: translate(-55%, -50%) ;
   width: auto;
   height: 45px;
   z-index: 10;
