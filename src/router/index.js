@@ -11,6 +11,7 @@ const routes = [
     meta: {
       header: false,
       userPopup: false,
+      navBar: false,
     },
   },
   {
@@ -42,9 +43,10 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/Profile.vue'),
-    // meta: {
-    //   userPopup: false,
-    // },
+    meta: {
+      userPopup: false,
+      userPopupProfile: false,
+    },
   },
   {
     path: '/rankings',

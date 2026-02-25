@@ -2,12 +2,13 @@
   <!-- <TheHeader v-if="header" :title="pageName" :inert="stateStore.qrCodeOpen"></TheHeader> -->
   <TheHiddenHeader v-if="!header" :title="pageName"></TheHiddenHeader>
   <TheUserInfo v-if="userPopup" :inert="stateStore.navOpen || stateStore.qrCodeOpen" variant="home"></TheUserInfo>
+  <UserInfoProfile v-if="userPopupProfile"></UserInfoProfile>
   <TheQrCodePopup v-if="stateStore.qrCodeOpen"></TheQrCodePopup>
   <Loading />
   <main :inert="stateStore.navOpen || stateStore.qrCodeOpen">
     <router-view />
   </main>
-  <TheBottomNav />
+  <TheBottomNav v-if="navBar" />
 </template>
 
 <script setup>
@@ -17,6 +18,7 @@ import TheUserInfo from '@/components/UserCard/TheUserInfo.vue'
 import TheQrCodePopup from '@/components/QrCode/TheQrCodePopup.vue'
 import Loading from '@/components/Loading.vue'
 import TheBottomNav from '@/components/TheBottomNav.vue'
+import UserInfoProfile from '@/components/UserCard/UserInfoProfile.vue'
 
 import { useStateStore } from '@/stores/StateStore'
 import { useUserStore } from '@/stores/UserStore'
@@ -51,6 +53,8 @@ const router = useRouter()
 const pageName = ref('')
 const header = ref(false)
 const userPopup = ref(false)
+const userPopupProfile = ref(false)
+const navBar = ref(false)
 
 function onRouteChange() {
   pageName.value = route.name
@@ -68,6 +72,18 @@ function onRouteChange() {
   } else {
     userPopup.value = true
   }
+
+  if (route.meta.userPopupProfile !== undefined && route.meta.userPopupProfile === false) {
+    userPopupProfile.value = true
+  } else {
+    userPopupProfile.value = false
+  }
+
+  if (route.meta.navBar !== undefined && route.meta.navBar === false) {
+    navBar.value = false
+  } else {
+    navBar.value = true
+  }
 }
 
 onMounted(async () => {
@@ -76,6 +92,7 @@ onMounted(async () => {
   onRouteChange()
   watch(() => route.fullPath, onRouteChange)
 })
+
 </script>
 
 <style scoped>

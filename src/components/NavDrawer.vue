@@ -7,6 +7,7 @@
         <img src="@/assets/cross.svg" alt="" class="nav-close-icon" aria-hidden="true" />
       </button>
       <!-- <TheUserInfo variant="nav"></TheUserInfo> -->
+      <UserInfoNav></UserInfoNav>
       <nav>
         <ul>
           <li>
@@ -37,6 +38,7 @@
 </template>
 <script setup>
 import TheUserInfo from './UserCard/TheUserInfo.vue'
+import UserInfoNav from './UserCard/UserInfoNav.vue'
 
 import { useStateStore } from '@/stores/StateStore'
 import { useUserStore } from '@/stores/UserStore'

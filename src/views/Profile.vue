@@ -12,13 +12,14 @@
         </div>
       </button>
 
-      <button class="cv-button" @click.stop="toggleModal2">
+      <button class="cv-button" :class="{
+        'cv-uploaded': student?.uploaded_cv && !student?.approved_cv,
+        'cv-approved': student?.approved_cv
+      }" @click.stop="toggleModal2">
         <div class="button-text">
-          <div class="button-text">
-            <p v-if="!student?.uploaded_cv">UPLOAD CV</p>
-            <p v-else-if="student?.approved_cv">CV<br />Approved</p>
-            <p v-else>CV<br />Uploaded</p>
-          </div>
+          <p v-if="!student?.uploaded_cv">UPLOAD CV</p>
+          <p v-else-if="student?.approved_cv">CV<br />APPROVED</p>
+          <p v-else>CV<br />UPLOADED</p>
         </div>
       </button>
     </div>
@@ -130,7 +131,9 @@
               </select>
               <div class="modal-spacer"></div>
               <p>Your CV:</p>
-              <label class="upload-cv-button" for="cvInput">Upload your CV</label>
+              <label class="upload-cv-button" :class="{ 'file-selected': selectedFileName !== '' }" for="cvInput">
+                {{ selectedFileName ? selectedFileName : 'Upload your CV' }}
+              </label>
               <input id="cvInput" hidden type="file" accept="application/pdf" ref="cvInput" @change="add_cv_novo" />
             </div>
             <div class="modal-submit center-submit">
@@ -375,13 +378,18 @@ const cvInput = ref(null)
 //   }
 // };
 
+const selectedFileName = ref('')
+
+// Update your existing function
 const add_cv_novo = () => {
   const file = cvInput.value?.files[0]
   if (file) {
     formData.value = new FormData()
     formData.value.append('cv', file)
+    selectedFileName.value = file.name // <-- Store the file name here
   } else {
     console.log('Nenhum arquivo selecionado.')
+    selectedFileName.value = '' // Reset if they cancel
   }
 }
 
@@ -584,6 +592,20 @@ onMounted(fetchProfile)
   box-shadow: inset 0 0 0 .5px #8A2DFF, 0 0 18px rgba(138, 45, 255, .35);
 }
 
+/* Yellow state for "CV UPLOADED" */
+.profile-buttons-jeec .cv-button.cv-uploaded {
+  border: .5px solid #ebd234;
+  background: linear-gradient(180deg, rgba(235, 210, 52, .35) 0%, #120A26 100%);
+  box-shadow: inset 0 0 0 .5px #ebd234, 0 0 18px rgba(235, 210, 52, .35);
+}
+
+/* Green state for "CV APPROVED" */
+.profile-buttons-jeec .cv-button.cv-approved {
+  border: .5px solid #00C896;
+  background: linear-gradient(180deg, rgba(0, 200, 150, .35) 0%, #120A26 100%);
+  box-shadow: inset 0 0 0 .5px #00C896, 0 0 18px rgba(0, 200, 150, .35);
+}
+
 .profile-buttons-jeec button:hover {
   transform: scale(1.02);
   filter: brightness(1.05);
@@ -650,8 +672,10 @@ onMounted(fetchProfile)
   position: fixed;
   top: 0;
   left: 0;
-  width: auto;
-  height: 100%;
+  width: 100%;
+  /* Changed from auto to 100% */
+  height: 100vh;
+  /* Use vh to ensure it covers the full viewport height */
   z-index: 999;
   display: flex;
   justify-content: center;
@@ -662,10 +686,11 @@ onMounted(fetchProfile)
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
-  height: 100%;
-  width: auto;
   top: 0;
   left: 0;
+  width: 100%;
+  /* Changed from auto to 100% */
+  height: 100%;
   z-index: -1;
 }
 
@@ -747,6 +772,12 @@ onMounted(fetchProfile)
   border-color: #42b5ff;
 }
 
+.modal-input option {
+  background-color: #1e1e2f;
+  /* Matches your modal's background */
+  color: #ffffff;
+}
+
 .modal-submit {
   display: flex;
   justify-content: center;
@@ -798,5 +829,46 @@ onMounted(fetchProfile)
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.upload-cv-button {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background-color: rgba(25, 156, 255, 0.05);
+  /* Very subtle blue background */
+  border: 2px dashed #199cff;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Lexend Exa', sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.upload-cv-button.file-selected {
+  border-style: solid;
+  border-color: #33e08a;
+  /* A nice success green */
+  background-color: rgba(51, 224, 138, 0.1);
+  color: #33e08a;
+  /* Optional: truncates long file names with an ellipsis (...) */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 1rem 2rem;
+}
+
+.upload-cv-button:hover {
+  background-color: rgba(25, 156, 255, 0.15);
+  border-color: #42b5ff;
+  transform: scale(1.02);
+}
+
+.upload-cv-button:active {
+  transform: scale(0.98);
 }
 </style>
