@@ -10,8 +10,9 @@
 <script setup>
 import { computed } from 'vue'
 import { loaderVisible } from '@/services/loader.service'
+import svgSrc from '@/assets/jeec_mobile_white.svg'
 
-const svgSrc = 'src/assets/jeec_mobile_white.svg'
+// const svgSrc = 'src/assets/jeec_mobile_white.svg'
 
 // use centralized loader state
 const isVisible = computed(() => loaderVisible.value)

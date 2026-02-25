@@ -1,16 +1,10 @@
 <template>
   <nav class="bottom-nav" aria-label="Bottom navigation">
-    <button
-      v-for="item in items"
-      :key="item.key"
-      class="nav-btn"
-      :class="{ center: item.center, active: isActive(item) }"
-      type="button"
+    <button v-for="item in items" :key="item.key" class="nav-btn"
+      :class="{ center: item.center, active: isActive(item) }" type="button"
       :aria-current="item.to && isActive(item) ? 'page' : undefined"
       :aria-expanded="item.action === 'drawer' ? stateStore.navOpen : undefined"
-      :aria-controls="item.action === 'drawer' ? 'nav-drawer' : undefined"
-      @click="item.center ? undefined : go(item)"
-    >
+      :aria-controls="item.action === 'drawer' ? 'nav-drawer' : undefined" @click="item.center ? undefined : go(item)">
       <div v-if="item.center" class="qr-hang">
         <QrCodeButton class="qr-pop" />
       </div>
@@ -69,8 +63,8 @@ function go(item) {
   if (stateStore.navOpen) stateStore.navOpen = false
   if (isActive(item)) return
 
-  if (item.to?.name) router.push(item.to).catch(() => {})
-  else if (item.fallbackPath) router.push(item.fallbackPath).catch(() => {})
+  if (item.to?.name) router.push(item.to).catch(() => { })
+  else if (item.fallbackPath) router.push(item.fallbackPath).catch(() => { })
 }
 
 function onKeydown(e) {
@@ -94,12 +88,10 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   align-items: center;
   z-index: 2000;
   background: #14548c;
-  background: linear-gradient(
-    0deg,
-    rgba(20, 84, 140, 1) 0%,
-    rgba(13, 40, 71, 1) 17%,
-    rgba(5, 10, 16, 1) 100%
-  );
+  background: linear-gradient(0deg,
+      rgb(21, 60, 94) 0%,
+      rgba(13, 40, 71, 1) 25%,
+      transparent 100%);
   overflow: visible;
 }
 
@@ -135,10 +127,10 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
 .qr-hang {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) translateY(-22px);
-  width: 64px;
-  height: 64px;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: 45px;
   z-index: 10;
 }
 
@@ -157,8 +149,8 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
 
 .qr-pop :deep(img),
 .qr-pop :deep(svg) {
-  width: 34px;
-  height: 34px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
 }
@@ -181,13 +173,10 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
   width: 54px;
   height: 54px;
   border-radius: 999px;
-  background: radial-gradient(
-    circle at 50% 40%,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.06) 45%,
-    rgba(0, 0, 0, 0) 70%
-  );
+  background: radial-gradient(circle at 50% 40%,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 45%,
+      rgba(0, 0, 0, 0) 70%);
   z-index: 0;
 }
 </style>
-

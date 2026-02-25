@@ -12,13 +12,16 @@ const requestTimeouts = new Set()
 // Timeout duration (10 seconds)
 const REQUEST_TIMEOUT = 10000
 
-// Calling startLoader increments the counter and ensures the loader is visible
+// NEW: Delay before showing the loader (in milliseconds)
+// If requests finish faster than this, the loader never appears.
+const SHOW_DELAY = 400
+let showLoaderTimeout = null
+
 export function startLoader() {
   inFlightRequests.value = Math.max(0, inFlightRequests.value + 1)
   loaderVisible.value = true
 }
 
-// Calling stopLoader decrements the counter and hides the loader when it reaches zero
 export function stopLoader() {
   inFlightRequests.value = Math.max(0, inFlightRequests.value - 1)
   if (inFlightRequests.value === 0) {
@@ -28,7 +31,13 @@ export function stopLoader() {
 
 export function incrementRequests() {
   inFlightRequests.value = Math.max(0, inFlightRequests.value + 1)
-  loaderVisible.value = true
+
+  // Only start the timer if this is the first request in the queue
+  if (inFlightRequests.value === 1) {
+    showLoaderTimeout = setTimeout(() => {
+      loaderVisible.value = true
+    }, SHOW_DELAY)
+  }
 
   // Create a timeout for this request
   const timeoutId = setTimeout(() => {
@@ -54,6 +63,12 @@ export function decrementRequests() {
   }
 
   if (inFlightRequests.value === 0) {
+    // If requests finished BEFORE the delay ended, clear the timeout so it never shows
+    if (showLoaderTimeout) {
+      clearTimeout(showLoaderTimeout)
+      showLoaderTimeout = null
+    }
+
     // Small delay before hiding to prevent flickering
     setTimeout(() => {
       if (inFlightRequests.value === 0) {
@@ -68,10 +83,11 @@ export function decrementRequests() {
               loaderVisible.value = false
             },
             { once: true },
-          ) // removes itself after first execution
+          )
         }
       }
     }, 300)
+
     // Clear any remaining timeouts
     requestTimeouts.forEach((id) => clearTimeout(id))
     requestTimeouts.clear()
