@@ -1,21 +1,22 @@
 <template>
   <div class="wrapper">
-    <!-- <div class="welcome">
-      <h2>Welcome to</h2>
-      <img alt="JEEC" src="@/assets/jeec_logo_darkmode.svg" />
-    </div>
-
-    <div class="login">
-      <p>Login to our Webapp</p>
-      <p>Stay tunned JEEC coming soon!</p>
-      <div class="button_wrapper">
-        <GoogleLogin :callback="callback" />
-        <button @click="loginDev">Login DEV</button>
-        <button @click="loginDev_2">Login DEV 2</button>
-        <p>v3.0</p>
+    <div class="hero-section">
+      <h1 class="hero-text">EMPOWER</h1>
+      <h1 class="hero-text">YOUR FUTURE</h1>
+      <div class="brand-row">
+        <h1 class="hero-text">WITH</h1>
+        <img :src="jeeclogo" class="jeec-logo-hero" alt="JEEC" />
       </div>
-    </div> -->
+    </div>
+    <div class="button_wrapper">
+      <GoogleLogin :callback="callback" :buttonConfig="{ width: 250 }" />
+      <!-- <button @click="loginDev">Login DEV</button>
+      <button @click="loginDev_2">Login DEV 2</button>
+      <p>v3.0</p> -->
+    </div>
   </div>
+
+
 </template>
 
 <script setup>
@@ -23,6 +24,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/UserStore'
 import { decodeCredential } from 'vue3-google-login'
 // import loginBackground from '@/assets/login-background.png'
+import jeeclogo from '@/assets/jeec_horizontal_mobile_white.svg'
 
 import CryptoJS from 'crypto-js'
 
@@ -101,6 +103,7 @@ function decrypt(code) {
   height: 100svh;
   display: flex;
   flex-direction: column;
+  align-items: center;
   background-image: url('@/assets/login-background.png');
 
   /* Garante que a imagem cobre o ecrã todo sem se deformar */
@@ -113,48 +116,59 @@ function decrypt(code) {
   background-repeat: no-repeat;
 }
 
-.welcome {
-  width: 100%;
-  padding: 2rem;
+.hero-section {
   display: flex;
-  align-items: center;
   flex-direction: column;
-  gap: 1rem;
-  text-align: center;
+  align-items: flex-start;
+  /* Aligns text to the left inside the box */
+  width: 100%;
+  max-width: 360px;
+  /* Keeps the block compact so it centers nicely */
+  margin: auto 0;
+  /* Pushes it to the vertical center of the wrapper */
 }
 
-.welcome h2 {
+.hero-text {
   font-family: 'Lexend Exa', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 2.2rem;
+  /* Big impact font */
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-.welcome img {
-  display: block;
-  width: 100%;
-  object-fit: contain;
-  max-width: 300px;
+.brand-row {
+  display: flex;
+  align-items: top;
+  gap: 7px;
 }
 
-.login {
-  margin: 0 auto;
-  margin-top: 100px;
-  width: 90%;
-  background-color: var(--color-background-sec);
-  border-radius: 20px;
-  height: 200px;
-  max-width: 300px;
-  padding: 2rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
+.brand-row>.hero-text {
+  /* 0 offsets, increasing blur radii, and a deep blue color */
+  text-shadow:
+    0 0 5px rgba(0, 50, 255, 0.8),
+    0 0 12px rgba(0, 50, 255, 0.6),
+    0 0 20px rgba(0, 50, 255, 0.4);
+}
+
+.brand-row>img {
+  height: auto;
+  width: 13rem;
+}
+
+.jeec-logo-hero {
+  height: 2.2rem;
+  /* Matches the text size perfectly */
+  width: auto;
+  display: block;
 }
 
 .button_wrapper {
   position: absolute;
-  top: 50%;
+  top: 80%;
   left: 50%;
   translate: -50% -30%;
 }
