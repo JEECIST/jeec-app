@@ -8,7 +8,7 @@ export const useStateStore = defineStore('StateStore', {
     qrCodeOpen: false,
 
     notificationsOpen: false,
-    notificationsSubscribed: null, // ✅ null = unknown/loading, true/false = known
+    notificationsSubscribed: null, // null = unknown/loading, true/false = known
   }),
 
   actions: {

@@ -64,49 +64,49 @@ const fetchPrizes = async () => {
   }
 }
 
-const fetchDailyPrize = async () => {
-  dailyPrizeLoading.value = true
-  dailyPrizeError.value = null
+// const fetchDailyPrize = async () => {
+//   dailyPrizeLoading.value = true
+//   dailyPrizeError.value = null
 
-  try {
-    const response = await axios.get(
-      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/get-daily-prize',
-      {
-        headers: authHeader(),
-      },
-    )
+//   try {
+//     const response = await axios.get(
+//       import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/get-daily-prize',
+//       {
+//         headers: authHeader(),
+//       },
+//     )
 
-    if (response.data && response.data.length > 0) {
-      const prize = response.data[0]
-      dailyPrize.value = {
-        id: prize.id,
-        name: prize.name || 'No prize',
-        imageData: prize.imageData ? `data:image/*;base64,${prize.imageData}` : null,
-      }
-    } else {
-      dailyPrize.value = null
-    }
-  } catch (err) {
-    console.error('Failed to fetch daily prize:', err)
-    dailyPrizeError.value = 'Failed to load daily prize. Please try again later.'
-    dailyPrize.value = null
-  } finally {
-    dailyPrizeLoading.value = false
-  }
+//     if (response.data && response.data.length > 0) {
+//       const prize = response.data[0]
+//       dailyPrize.value = {
+//         id: prize.id,
+//         name: prize.name || 'No prize',
+//         imageData: prize.imageData ? `data:image/*;base64,${prize.imageData}` : null,
+//       }
+//     } else {
+//       dailyPrize.value = null
+//     }
+//   } catch (err) {
+//     console.error('Failed to fetch daily prize:', err)
+//     dailyPrizeError.value = 'Failed to load daily prize. Please try again later.'
+//     dailyPrize.value = null
+//   } finally {
+//     dailyPrizeLoading.value = false
+//   }
 
-  UserService.getDailyTicket().then(
-    (response) => {
-      hasTicket.value = response.data
-    },
-    (error) => {
-      console.log(error)
-    },
-  )
-}
+//   UserService.getDailyTicket().then(
+//     (response) => {
+//       hasTicket.value = response.data
+//     },
+//     (error) => {
+//       console.log(error)
+//     },
+//   )
+// }
 
-const retryFetchDailyPrize = () => {
-  fetchDailyPrize()
-}
+// const retryFetchDailyPrize = () => {
+//   fetchDailyPrize()
+// }
 
 const openPrizePopup = (prize) => {
   selectedPrize.value = prize
@@ -168,43 +168,43 @@ const buyPrize = async (prize) => {
 }
 
 // New function to buy a ticket
-const buyDailyTicket = async () => {
-  // Check if user has enough points
-  if (userStore.userPoints.current_points < prizeTicket.price / 2) {
-    showInsufficientPointsPopup.value = true
-    showTicketPopup.value = false
-    return
-  }
+// const buyDailyTicket = async () => {
+//   // Check if user has enough points
+//   if (userStore.userPoints.current_points < prizeTicket.price / 2) {
+//     showInsufficientPointsPopup.value = true
+//     showTicketPopup.value = false
+//     return
+//   }
 
-  try {
-    const username = userStore.user.username
-    const response = await axios.post(
-      import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/buy-prize',
-      {
-        username: username,
-        prize_id: null,
-        prizeName: prizeTicket.name,
-      },
-      {
-        headers: authHeader(),
-      },
-    )
+//   try {
+//     const username = userStore.user.username
+//     const response = await axios.post(
+//       import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/buy-prize',
+//       {
+//         username: username,
+//         prize_id: null,
+//         prizeName: prizeTicket.name,
+//       },
+//       {
+//         headers: authHeader(),
+//       },
+//     )
 
-    // Update user points
-    userStore.userPoints.current_points = response.data[0].current_points
-    hasTicket.value = true
-    closeTicketPopup()
-    // You might want to show a success message or take other actions
-    alert('You have successfully purchased a ticket for the daily draw!')
-  } catch (err) {
-    console.error('Ticket purchase failed:', err)
-    alert('Failed to purchase the ticket. Please try again.')
-  }
-}
+//     // Update user points
+//     userStore.userPoints.current_points = response.data[0].current_points
+//     hasTicket.value = true
+//     closeTicketPopup()
+//     // You might want to show a success message or take other actions
+//     alert('You have successfully purchased a ticket for the daily draw!')
+//   } catch (err) {
+//     console.error('Ticket purchase failed:', err)
+//     alert('Failed to purchase the ticket. Please try again.')
+//   }
+// }
 
 onMounted(() => {
   fetchPrizes()
-  fetchDailyPrize()
+  // fetchDailyPrize()
 })
 </script>
 
