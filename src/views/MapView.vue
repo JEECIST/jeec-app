@@ -1,6 +1,7 @@
 <template>
   <div class="view">
-    <TabsSelection 
+    <h2 style="text-align: center; margin-top: 60px;">Don't worry, the event map is coming soon!</h2>
+    <!-- <TabsSelection 
       :tabs="tabs" 
       :activeTab="activeDay" 
       @tab="setActiveDay">
@@ -8,7 +9,7 @@
     
     <transition name="fade" mode="out-in">
       <img :src="dayy.image" :alt="dayy.label" :key="activeDay" />
-    </transition>
+    </transition> -->
   </div>
 </template>
 
@@ -16,7 +17,7 @@
 import { computed, ref, onMounted } from 'vue'
 import TabsSelection from '@/components/TabsSelection.vue'
 
-const activeDay = ref(0) 
+const activeDay = ref(0)
 
 const tabs = ref(["Monday", "Tuesday", "Wednesday"])
 

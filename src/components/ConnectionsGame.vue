@@ -1,5 +1,10 @@
 <template>
-  <div class="connections-game">
+
+  <div class="no-words-today" v-if="!hasWordsForDay">
+    <h2>No connections for today</h2>
+  </div>
+
+  <div class="connections-game" v-if="hasWordsForDay">
 
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
@@ -110,11 +115,18 @@ async function fetchConnectionsForDay(dayStamp) {
     { day: dayStamp },
     { headers: authHeader() },
   )
+
+  console.log("Res data", res.data)
   const rows = res.data || []
   const byCategory = {}
   console.log(rows);
   console.log(byCategory);
   for (const r of rows) {
+
+    if (!r || !r.category || !r.word) {
+      continue;
+    }
+
     if (!byCategory[r.category]) byCategory[r.category] = []
     byCategory[r.category].push(r.word)
   }
@@ -262,10 +274,23 @@ const submitGameResult = async (won) => {
   }
 }
 
+const hasWordsForDay = computed(() => {
+  return puzzleGroups.value && Object.keys(puzzleGroups.value).length > 0
+})
+
 </script>
 
 
 <style>
+.no-words-today {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
 .word-grid.shake {
   animation: shake 0.3s ease-in-out;
 }

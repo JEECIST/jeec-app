@@ -1,5 +1,10 @@
 <template>
-  <div class="wordle-page">
+
+  <div class="no-words-today" v-if="!hasWordsForDay">
+    <h2>No connections for today</h2>
+  </div>
+
+  <div class="wordle-page" v-if="hasWordsForDay">
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
     <!-- Loading State -->
@@ -384,9 +389,26 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', handlePhysicalKeyPress)
 })
+
+const hasWordsForDay = computed(() => {
+  if (TARGET_WORD.value === '') {
+    return false
+  } else {
+    return true
+  }
+})
 </script>
 
 <style scoped>
+.no-words-today {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
 .wordle-page {
   display: flex;
   flex-direction: column;
