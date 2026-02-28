@@ -20,7 +20,7 @@
       <transition name="fade" mode="out-in">
         <section class="eletrolink" :key="activeDay" v-if="!loading">
           <div class="box">
-            <h3>Eletrolink <img :src="pointsIcon" alt="Points Icon" class="points-icon" /></h3>
+            <h3>Eletrolink <img :src="eletrolinkIcon" alt="Eletrolink Icon" class="eletrolink-icon" /></h3>
             <div class="eletrolink-description" v-if="showEletrolinkInfo">
               {{ eletrolink_description }}
             </div>
@@ -61,7 +61,6 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
-                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -214,8 +213,6 @@
                   </div>
                 </div>
               </transition>
-              <p class="points-info">Sign up in advance and get <b>50</b><img :src="pointsIcon" alt="Points Icon"
-                  class="points-icon" /></p>
             </template>
 
             <!-- Sem transição para o "NO COMPANIES" -->
@@ -244,7 +241,6 @@
                         <p>{{ eletrocomp.date }}</p>
                       </div>
                     </div>
-                    <router-link to="/eletrolink" class="eletrolink-signup-btn">SIGN UP</router-link>
                   </div>
                 </div>
               </transition>
@@ -1241,6 +1237,8 @@ h1 {
 .eletrolink {
   width: auto;
   padding: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .box {
@@ -1352,6 +1350,7 @@ h1 {
   justify-content: center;
   align-items: flex-start;
   gap: 5px;
+  width: 50%;
 }
 
 .eletrocomp-title p {
@@ -1392,7 +1391,6 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 30%;
   flex-shrink: 0;
   height: 60px;
 }
