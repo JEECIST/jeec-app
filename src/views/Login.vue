@@ -9,7 +9,8 @@
       </div>
     </div>
     <div class="button_wrapper">
-      <GoogleLogin :callback="callback" :buttonConfig="{ width: 250 }" />
+      <h2>Login coming soon</h2>
+      <!-- <GoogleLogin :callback="callback" :buttonConfig="{ width: 250 }" /> -->
       <!-- <button @click="loginDev">Login DEV</button>
       <button @click="loginDev_2">Login DEV 2</button>
       <p>v3.0</p> -->
