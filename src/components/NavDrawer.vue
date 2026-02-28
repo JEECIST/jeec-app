@@ -176,26 +176,26 @@ li a.active-link::before {
 }
 
 .help-info {
-  width: 100%;
-  height: 10rem;
   position: absolute;
-  background-color: var(--color-background-sec);
-  bottom: 0;
-  right: 200;
+  top: 80%;
+  /* Aligns it vertically with your Logout button */
+  right: 5%;
+  /* Pushes it to the right side */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .help-info img {
-  height: 3rem;
+  height: 2.5rem;
+  /* Scaled slightly so it aligns cleanly with the logout button height */
 }
 
 .help-info a {
-  font-size: 1.6rem;
   text-decoration: none;
-  font-family: 'Lexend Exa';
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
-  gap: 1ch;
 }
 
 .nav-close {
