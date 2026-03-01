@@ -61,7 +61,7 @@ onMounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 999;
+    z-index: 200;
     /* Keeps it above other content */
     background-color: var(--color-background);
     /* Matches your app background so text doesn't overlap */

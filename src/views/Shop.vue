@@ -35,7 +35,7 @@ const fetchPrizes = async () => {
   error.value = null
 
   try {
-    const username = userStore.user.username
+    const username = userStore.user?.username
     const response = await axios.get(
       import.meta.env.VITE_APP_JEEC_BRAIN_URL + '/student/get-prizes-shop',
       {

@@ -29,6 +29,7 @@
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^26.1.0",
     "prettier": "3.6.2",
+    "rollup-plugin-visualizer": "^7.0.0",
     "vite": "npm:rolldown-vite@latest",
     "vite-plugin-vue-devtools": "^8.0.0",
     "vitest": "^3.2.4"

@@ -1,10 +1,5 @@
 <template>
-
-  <div class="no-words-today" v-if="!hasWordsForDay">
-    <h2>No connections for today</h2>
-  </div>
-
-  <div class="connections-game" v-if="hasWordsForDay">
+  <div class="connections-game">
 
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
@@ -29,7 +24,9 @@
     <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
       <button v-for="word in activeWords" :key="word.text" class="word-item" :class="{ 'selected': word.selected }"
         @click="toggleWordSelect(word)">
-        {{ word.text }}
+        <div class="word" v-fit-text>
+          {{ word.text }}
+        </div>
       </button>
     </div>
 
@@ -151,7 +148,7 @@ onMounted(async () => {
 
   // 1) Hydrate progress+puzzle from localStorage
   store.hydrate()
-  
+
   // 2) Auto-persist on any store change (no plugin needed)
   store.$subscribe(
     (_mutation, state) => {
@@ -270,23 +267,35 @@ const submitGameResult = async (won) => {
   }
 }
 
-const hasWordsForDay = computed(() => {
-  return puzzleGroups.value && Object.keys(puzzleGroups.value).length > 0
-})
+const vFitText = {
+  mounted(el) {
+    const resizeText = () => {
+      el.style.fontSize = '1.1rem';
+
+      while (
+        (el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight) &&
+        parseFloat(el.style.fontSize) > 0.6
+      ) {
+        let currentSize = parseFloat(el.style.fontSize);
+        el.style.fontSize = (currentSize - 0.05) + 'rem';
+      }
+    };
+
+    resizeText();
+
+    const observer = new ResizeObserver(resizeText);
+    observer.observe(el.parentElement);
+    el._fitObserver = observer;
+  },
+  unmounted(el) {
+    if (el._fitObserver) el._fitObserver.disconnect();
+  }
+}
 
 </script>
 
 
 <style>
-.no-words-today {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  text-align: center;
-}
-
 .word-grid.shake {
   animation: shake 0.3s ease-in-out;
 }
@@ -376,22 +385,34 @@ const hasWordsForDay = computed(() => {
   margin-bottom: 20px;
 }
 
+
 .word-item {
   background-color: #535353;
   border: 3px solid #4CC9F0;
   border-radius: 8px;
-  padding: 20px 10px;
-  font-size: 1em;
+  height: 80px;
+  width: 100%;
+  padding: 5px;
+  /* Keeps text off the border */
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
   user-select: none;
-  height: 70px;
-  /* Ensures consistent height */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.1s ease-in-out;
+  text-align: center;
+}
+
+.word {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: normal;
+  /* Prevents words from snapping in half */
+  overflow-wrap: normal;
 }
 
 .word-item.selected {

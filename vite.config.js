@@ -11,6 +11,12 @@ export default defineConfig({
     vue(),
     vueJsx(),
     // vueDevTools(),
+    // visualizer({
+    //   open: true,         // Abre o relatório automaticamente no teu browser
+    //   filename: 'stats.html', // O nome do ficheiro que será gerado
+    //   gzipSize: true,     // Mostra o tamanho real dos ficheiros após a compressão GZIP (muito importante para teres a noção real)
+    //   brotliSize: true,   // Outro formato de compressão comum
+    // }),
   ],
   resolve: {
     alias: {
