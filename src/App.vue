@@ -39,7 +39,7 @@ watch(
   () => {
     if (userStore.loggedIn) {
       gettersStatic()
-      userStore.logOut() //remover para prod
+      // userStore.logOut() //remover para prod
     }
   },
 )

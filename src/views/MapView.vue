@@ -1,16 +1,14 @@
 <template>
   <div class="view">
-    <h2 style="text-align: center; margin-top: 60px;">Don't worry, the event map is coming soon!</h2>
-    <!-- <TabsSelection 
-      :tabs="tabs" 
-      :activeTab="activeDay" 
-      @tab="setActiveDay">
+    <!-- <h2 style="text-align: center; margin-top: 60px;">Don't worry, the event map is coming soon!</h2> -->
+    <TabsSelection :tabs="tabs" :activeTab="activeDay" @tab="setActiveDay">
     </TabsSelection>
-    
+
     <transition name="fade" mode="out-in">
       <img :src="dayy.image" :alt="dayy.label" :key="activeDay" />
-    </transition> -->
+    </transition>
   </div>
+  <div style="width: 100%; height: 60px;"></div>
 </template>
 
 <script setup>
@@ -22,9 +20,9 @@ const activeDay = ref(0)
 const tabs = ref(["Monday", "Tuesday", "Wednesday"])
 
 const days = ref([
-  { label: 'MONDAY', image: new URL('@/assets/Planta05.png', import.meta.url).href },
-  { label: 'TUESDAY', image: new URL('@/assets/Planta06.png', import.meta.url).href },
-  { label: 'WEDNESDAY', image: new URL('@/assets/Planta07.png', import.meta.url).href },
+  { label: 'MONDAY', image: new URL('@/assets/MondaySchedule.jpeg', import.meta.url).href },
+  { label: 'TUESDAY', image: new URL('@/assets/TuesdaySchedule.jpeg', import.meta.url).href },
+  { label: 'WEDNESDAY', image: new URL('@/assets/WednesdaySchedule.jpeg', import.meta.url).href },
 ])
 
 const dayy = computed(() => days.value[activeDay.value])
@@ -54,8 +52,8 @@ onMounted(() => {
 
 img {
   max-width: 1200px;
-  width: 90%;
-  height: 100%;
+  width: 80%;
+  height: 90%;
   margin: 0 auto;
   display: block;
 }
