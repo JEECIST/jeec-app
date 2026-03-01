@@ -23,7 +23,7 @@
             </template>
 
             <template v-else>
-              <p v-if="errorMsg">{{ errorMsg }}</p>
+              <p v-if="errorMsg">{{ errorMsg }}. Notifications don't work for IPhone (IOS) Devices</p>
               <p v-else-if="notifications.length === 0">There are no Notifications</p>
 
               <ul v-else class="notif-list">
