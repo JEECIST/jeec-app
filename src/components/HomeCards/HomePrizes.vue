@@ -88,7 +88,7 @@ function getDailyPrizes() {
     })
     .then((response) => {
       const data = response.data
-      console.log(data)
+      
       const allPrizes = []
 
       // Add daily prize if available

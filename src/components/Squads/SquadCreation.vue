@@ -35,7 +35,7 @@ import jeec_mobile_white from '../../assets/jeec_mobile_white.svg'
 export default {
   name: 'SquadCreation',
 
-  emits: ['back', 'notification'],
+  emits: ['back'],
 
   data() {
     return {
@@ -79,10 +79,6 @@ export default {
   },
 
   methods: {
-
-    showNotification(message, type) {
-      this.$emit('notification', message, type)
-    },
 
     input_click() {
       if (this.$refs.image_input) this.$refs.image_input.click()
@@ -138,7 +134,6 @@ export default {
     },
 
     finalise_squad() {
-      // this.showNotification('Squad finalised', 'success')
       this.$emit('back')
     },
   },
@@ -212,10 +207,17 @@ export default {
 
 /* Styles specifically for user-uploaded photos */
 .uploaded-img {
+  position: absolute;
+  /* Detaches it from the grid so it can't stretch the container */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  /* Ensures the image fills the circle without squishing */
 }
 
 .avatar-default {

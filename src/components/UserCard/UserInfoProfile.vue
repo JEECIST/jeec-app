@@ -7,6 +7,13 @@
 
             <div class="tickets-wrapper">
                 <CurrentPoints :variant="'nav'"></CurrentPoints>
+
+                <div class="username-container" @click="showFullUsername = !showFullUsername">
+                    <p>{{ userStore.user.username }}</p>
+                    <div v-if="showFullUsername" class="username-popup">
+                        {{ userStore.user.username }}
+                    </div>
+                </div>
             </div>
 
             <div class="points-wrapper">
@@ -24,38 +31,23 @@
             </div>
         </div>
     </div>
-    <NotificationsDrawer />
 </template>
 
 <script setup>
-import NotificationsDrawer from '../NotificationsDrawer.vue'
 import CurrentPoints from './CurrentPoints.vue'
 import JEECPOT from './JEECPOT.vue'
 import UserImage from './UserImage.vue'
 
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import { useUserStore } from '@/stores/UserStore'
 import { useStateStore } from '@/stores/StateStore'
 
-import UserService from '@/services/user.service'
 const stateStore = useStateStore()
 
 const userStore = useUserStore()
 
-async function openNotifications() {
-    stateStore.notificationsOpen = true
-
-    let isSubscribed = false
-    try {
-        const { data } = await UserService.getIsSubscribed()
-        isSubscribed = !!data?.subscribed
-    } catch (e) {
-        isSubscribed = false
-    }
-
-    stateStore.notificationsSubscribed = isSubscribed
-}
+const showFullUsername = ref(false)
 
 onMounted(() => {
     stateStore.refreshNotificationSubscription()
@@ -79,7 +71,7 @@ onMounted(() => {
     width: 100%;
     border-radius: 18px;
     /* You might want 0px for a true header, but 18px keeps your style */
-    padding: 30px;
+    padding: 30px 30px 0px 30px;
     box-sizing: border-box;
 
     display: flex;
@@ -118,6 +110,10 @@ onMounted(() => {
     width: 100%;
 }
 
+.name-wrapper-username {
+    width: 90%;
+}
+
 .name-wrapper p {
     font-family: "Lexend Exa";
     font-weight: 400;
@@ -136,6 +132,58 @@ onMounted(() => {
     display: flex;
     align-items: center;
     width: 100%;
+    gap: 12px;
+    /* Adds breathing room between the points and the text */
+}
+
+/* Container that holds the username and the popup - NO CHANGE */
+.username-container {
+    position: relative;
+    cursor: pointer;
+    min-width: 0;
+    /* Critical: Allows the flex child to shrink so the ellipsis works */
+    flex: 1;
+}
+
+/* Updated selector from .tickets-wrapper p - NO CHANGE */
+.username-container p {
+    font-family: "Lexend Exa";
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* The actual popup styling - UPDATED FOR SCREEN ALIGNMENT AND Z-INDEX */
+.username-popup {
+    position: fixed;
+    /* Positions relative to the viewport */
+    top: 5rem;
+    /* Position it vertically in the left column */
+    left: 30px;
+    /* Aligns with the card's padding */
+    width: calc(100% - 60px);
+    /* Matches card padding, makes it fill space */
+    max-width: 400px;
+    /* Keep it from being too wide on large screens */
+
+    background: linear-gradient(110deg, #0b2943 -100%, #0b2943 110%);
+    border: 2px solid #178ee9;
+    border-radius: 8px;
+    padding: 8px 12px;
+    z-index: 2000;
+    /* Much bigger to overlap everything */
+
+    font-family: "Lexend Exa";
+    font-size: 0.9rem;
+    color: #fff;
+
+    /* These rules ensure the full name breaks onto a new line */
+    white-space: normal;
+    word-break: break-all;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 /* Forces inner components to strip margins that might ruin your flex gap */

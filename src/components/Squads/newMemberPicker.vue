@@ -65,7 +65,6 @@ const filteredMembers = computed(() => {
 async function inviteMember(m) {
     const response = await UserService.inviteSquad(m)
 
-    console.log(response.data)
 }
 
 function backToSlots() {

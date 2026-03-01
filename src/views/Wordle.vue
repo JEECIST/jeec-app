@@ -121,8 +121,6 @@ const fetchWordOfDay = async () => {
 
     // Verifica se temos um jogo guardado, se é do dia de hoje e se tem uma palavra alvo
     if (restored && store.targetWord) {
-      console.log('JOGO RESTAURADO DO STORAGE:', store.targetWord)
-
       TARGET_WORD.value = store.targetWord
 
       // Se o jogo já não estiver em "playing", marca como jogado
@@ -137,7 +135,6 @@ const fetchWordOfDay = async () => {
     }
 
     // 2. Se não houver jogo guardado, ENTÃO chama a API
-    console.log('Fetching word of day from API...')
     const response = await axios.get(
       `${import.meta.env.VITE_APP_JEEC_BRAIN_URL}/student/wordle-word-of-day`,
       { headers: authHeader() }
@@ -151,7 +148,6 @@ const fetchWordOfDay = async () => {
     }
 
     // 3. Iniciar novo jogo com a palavra da API
-    console.log('New Word received:', response.data.word)
     TARGET_WORD.value = response.data.word
 
     store.targetWord = TARGET_WORD.value
@@ -187,12 +183,7 @@ const submitGameResult = async (won) => {
 
 
   } catch (error) {
-    console.error('Error submitting game result:', error)
-    if (error.response?.status === 409) {
-      console.log('Game already submitted')
-    } else {
 
-    }
   }
 }
 
@@ -237,7 +228,7 @@ const removeLetter = () => {
 const checkWord = async () => {
   if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
 
-  console.log("1")
+  
 
   const currentWord = getCurrentWord()
 
@@ -245,7 +236,7 @@ const checkWord = async () => {
     return
   }
 
-  console.log("2")
+  
 
   const row = gameGrid.value[currentRow.value]
   const targetLetters = TARGET_WORD.value.split('')

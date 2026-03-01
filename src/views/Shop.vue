@@ -99,7 +99,7 @@ const fetchPrizes = async () => {
 //       hasTicket.value = response.data
 //     },
 //     (error) => {
-//       console.log(error)
+//
 //     },
 //   )
 // }
@@ -311,12 +311,8 @@ onMounted(() => {
       </div>
 
       <div v-else class="shop-container">
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="circle-container"
-          @click="!item.bought && openPrizePopup(item)"
-        >
+        <div v-for="item in items" :key="item.id" class="circle-container"
+          @click="!item.bought && openPrizePopup(item)">
           <div :class="['circle', { bought: item.bought }]">
             <img v-if="item.imageData" :src="item.imageData" :alt="item.name" class="prize-image" />
             <div v-else class="no-image-placeholder">?</div>
@@ -356,23 +352,15 @@ onMounted(() => {
 
         <div class="scan invisible-scan">
           <div class="prize-circle full-square">
-            <img
-              v-if="selectedPrize.imageData"
-              :src="selectedPrize.imageData"
-              :alt="selectedPrize.name"
-              class="popup-prize-image"
-            />
+            <img v-if="selectedPrize.imageData" :src="selectedPrize.imageData" :alt="selectedPrize.name"
+              class="popup-prize-image" />
             <div v-else class="no-image-placeholder">?</div>
           </div>
         </div>
 
         <p class="prize-description">{{ selectedPrize.description }}</p>
 
-        <button
-          class="prize-buy-button"
-          @click="buyPrize(selectedPrize)"
-          :disabled="selectedPrize.bought"
-        >
+        <button class="prize-buy-button" @click="buyPrize(selectedPrize)" :disabled="selectedPrize.bought">
           <span class="buy-text">BUY PRIZE</span>
           <!-- <span class="price-text">{{ selectedPrize.price / 2 }}</span> -->
           <span class="price-text">{{ selectedPrize.price }}</span>
@@ -391,11 +379,7 @@ onMounted(() => {
         </div>
         <div class="popup-body">
           <div class="prize-circle ticket-circle">
-            <img
-              src="@/assets/Ticket-Vector.svg"
-              alt="Ticket"
-              class="popup-prize-image ticket-image-popup"
-            />
+            <img src="@/assets/Ticket-Vector.svg" alt="Ticket" class="popup-prize-image ticket-image-popup" />
           </div>
           <p class="prize-description">
             Purchase a ticket for the daily prize draw. You could win the prize displayed next to
@@ -417,11 +401,7 @@ onMounted(() => {
       <div class="qrcode-backdrop" @click="closeInsufficientPointsPopup"></div>
 
       <div class="qrcode-card">
-        <button
-          class="close-popup-btn"
-          @click="closeInsufficientPointsPopup"
-          aria-label="Close popup"
-        >
+        <button class="close-popup-btn" @click="closeInsufficientPointsPopup" aria-label="Close popup">
           <div></div>
           <div></div>
         </button>
@@ -430,11 +410,7 @@ onMounted(() => {
 
         <div class="scan invisible-scan">
           <div class="prize-circle full-square">
-            <img
-              src="@/assets/sad-shuba-shuba.gif"
-              alt="Sad Duck"
-              class="popup-prize-image"
-            />
+            <img src="@/assets/sad-shuba-shuba.gif" alt="Sad Duck" class="popup-prize-image" />
           </div>
         </div>
 
@@ -520,7 +496,7 @@ onMounted(() => {
   background-color: #f0f0f0;
 }
 
-#btn-ticket > p {
+#btn-ticket>p {
   font-size: 0.8rem;
 }
 
@@ -703,11 +679,9 @@ onMounted(() => {
   padding: 22px 22px 26px;
   border-radius: 34px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(8, 14, 22, 0.96) 0%,
-    rgba(5, 10, 16, 0.96) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(8, 14, 22, 0.96) 0%,
+      rgba(5, 10, 16, 0.96) 100%);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 2px solid #b8a1ff;
@@ -722,7 +696,7 @@ onMounted(() => {
   color: white;
 }
 
-.qrcode-card > .close-popup-btn {
+.qrcode-card>.close-popup-btn {
   position: absolute;
   top: 18px;
   right: 18px;
@@ -737,12 +711,12 @@ onMounted(() => {
   opacity: 0.9;
 }
 
-.qrcode-card > .close-popup-btn:hover {
+.qrcode-card>.close-popup-btn:hover {
   opacity: 1;
   transform: scale(1.05);
 }
 
-.qrcode-card > .close-popup-btn > div {
+.qrcode-card>.close-popup-btn>div {
   height: 3px;
   width: 70%;
   background-color: rgba(255, 255, 255, 0.9);
@@ -753,15 +727,15 @@ onMounted(() => {
   translate: -50% -50%;
 }
 
-.qrcode-card > .close-popup-btn > div:first-child {
+.qrcode-card>.close-popup-btn>div:first-child {
   rotate: 45deg;
 }
 
-.qrcode-card > .close-popup-btn > div:last-child {
+.qrcode-card>.close-popup-btn>div:last-child {
   rotate: -45deg;
 }
 
-.qrcode-card > h2 {
+.qrcode-card>h2 {
   width: 100%;
   margin: 0;
   padding: 18px 52px 0 32px;
@@ -832,7 +806,8 @@ onMounted(() => {
 
 .prize-buy-button .price-text {
   font-weight: 800;
-  color: #ffca28; /* Yellow/Gold color for price */
+  color: #ffca28;
+  /* Yellow/Gold color for price */
 }
 
 .prize-buy-button .button-icon {
@@ -920,7 +895,8 @@ onMounted(() => {
   background-color: #b8a1ff;
   color: white;
   border: none;
-  border-radius: 999px; /* Rounded pill shape */
+  border-radius: 999px;
+  /* Rounded pill shape */
   padding: 12px 24px;
   font-weight: 800;
   font-size: 0.95rem;
@@ -966,6 +942,7 @@ onMounted(() => {
     height: 90px;
   }
 }
+
 @media (min-width: 1024px) {
   .qrcode-card {
     width: 420px;
@@ -982,7 +959,7 @@ onMounted(() => {
     margin: 0 auto;
   }
 
-  .qrcode-card > h2 {
+  .qrcode-card>h2 {
     font-size: 2rem;
     margin-bottom: 5px;
     text-align: center;

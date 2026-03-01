@@ -68,7 +68,6 @@ export const useConnectionsStore = defineStore('connections', {
 
       try {
         const saved = JSON.parse(raw)
-        console.log('Hydrating store from saved state', saved)
         // If day changed, wipe everything (new puzzle+progress)
         if (saved?.dateStamp !== today || !isValidSavedState(saved)) {
           this.resetForNewDay(today)

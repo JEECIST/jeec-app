@@ -52,7 +52,8 @@ const userStore = useUserStore()
   right: 0;
   top: 0;
   width: 100%;
-  height: 100svh;
+  height: 100dvh;
+  /* Changed from 100svh to 100dvh */
   visibility: hidden;
   z-index: 2001;
   overflow: hidden;
@@ -102,7 +103,8 @@ const userStore = useUserStore()
 
 .nav-logout {
   position: absolute;
-  top: 92%;
+  bottom: 2rem;
+  /* Anchors it consistently 2rem from the bottom */
   left: 12.5%;
   width: 75%;
   border: 3px solid #178ee9;
@@ -177,10 +179,9 @@ li a.active-link::before {
 
 .help-info {
   position: absolute;
-  top: 80%;
-  /* Aligns it vertically with your Logout button */
+  bottom: 6rem;
+  /* Positions it nicely above the logout button */
   right: 5%;
-  /* Pushes it to the right side */
   display: flex;
   justify-content: center;
   align-items: center;

@@ -115,12 +115,8 @@ async function fetchConnectionsForDay(dayStamp) {
     { day: dayStamp },
     { headers: authHeader() },
   )
-
-  console.log("Res data", res.data)
   const rows = res.data || []
   const byCategory = {}
-  console.log(rows);
-  console.log(byCategory);
   for (const r of rows) {
 
     if (!r || !r.category || !r.word) {
@@ -155,7 +151,7 @@ onMounted(async () => {
 
   // 1) Hydrate progress+puzzle from localStorage
   store.hydrate()
-  console.log(store.wordsInPlay);
+  
   // 2) Auto-persist on any store change (no plugin needed)
   store.$subscribe(
     (_mutation, state) => {

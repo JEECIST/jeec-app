@@ -63,7 +63,6 @@ async function leaveSquad() {
     }
 
     const response = await UserService.leaveSquad()
-    console.log("Response leave squad:", response.data)
 
     emit("delete")
 }

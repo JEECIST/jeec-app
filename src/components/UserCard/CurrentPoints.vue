@@ -4,7 +4,6 @@
 
       <div class="tickets">
         <p class="tickets-value">{{ userDailyPoints }}</p>
-
         <span class="tickets-icon">
           <img src="@/assets/icons/flash_home.svg" aria-hidden="true" />
         </span>
@@ -41,16 +40,21 @@ watch(
 
 <style scoped>
 .wrapper {
-  width: 200px;
-  height: 60%;
+  width: max-content;
+  /* Shrinks the wrapper to just fit the pill */
+  /* Remove height: 30%; completely */
   display: flex;
   justify-content: flex-start;
+  align-items: center;
+  /* Keeps it perfectly centered vertically */
 }
+
 .img {
   width: 50px;
   height: 380%;
   object-fit: contain;
 }
+
 .bar {
   text-align: right;
   flex-grow: 1;
@@ -58,25 +62,26 @@ watch(
   justify-content: flex-end;
   height: 100%;
 }
-.wrapper.profile > .bar {
+
+.wrapper.profile>.bar {
   text-align: left;
 }
 
 /* pill container */
 .tickets-progress {
-  max-width: 80%;
+  width: max-content;
+  /* Ensures the pill shrinks to fit the text + icon perfectly */
   height: 34px;
   position: relative;
-
+  /* ... keep your other existing border-radius and box-shadow styles here ... */
   border-radius: 999px;
   overflow: hidden;
-  border:transparent;
+  border: transparent;
   box-shadow:
-    inset 2px 2px 4px rgba(255,255,255,0.40),   /* top-left mais forte */
-    inset -2px -2px 4px rgba(255, 255, 255, 0.25),       /* bottom-right */
-    inset 1px 1px 2px rgba(0, 0, 0, 0.15),   /* cantos restantes mais suave */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.40),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15),
     inset -1px -1px 2px rgba(0, 0, 0, 0.1);
-
 }
 
 /* top shine strip */
@@ -113,7 +118,7 @@ watch(
 /* number */
 .tickets-value {
   font-family: 'Lexend Exa';
-  font-size: 1.15rem;
+  font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 0.5px;
   margin: 0;
@@ -123,8 +128,8 @@ watch(
 
 /* icon circle */
 .tickets-icon {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   display: grid;
   place-items: center;

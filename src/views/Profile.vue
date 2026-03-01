@@ -47,11 +47,11 @@
           </div>
         </div>
         <div v-else>
-          <SquadCreation @back="creationReturn" @notification="showNotification" />
+          <SquadCreation @back="creationReturn" />
         </div>
       </div>
       <div v-else>
-        <newSquad :squad="squad" @delete="fetchProfile" @notification="showNotification" />
+        <newSquad :squad="squad" @delete="fetchProfile" />
       </div>
     </div>
 
@@ -85,7 +85,7 @@
             <div class="modal-body">
               <input type="url" v-model="linkedin_url" class="modal-input"
                 placeholder="https://www.linkedin.com/in/XXXXX/"
-                pattern="^https?://((www|\\w\\w)\\.)?linkedin.com/((in/[^/]+/?)|(pub/[^/]+/((\\w|\\d)+/?){3}))$"
+                pattern="^https?://((www|\w\w)\.)?linkedin\.com/((in/[^/?\s]+/?)|(pub/[^/?\s]+/((\w|\d)+/?){3}))(\?.*)?$"
                 autofocus />
             </div>
             <div class="modal-submit center-submit">
@@ -196,19 +196,13 @@ const invites = ref([])
 const students_weekly = ref([])
 const userdata_individual = ref([])
 
+
 // Computed properties
 const isInSquad = () => {
   return squad.value !== null && squad.value !== undefined
 }
 
 const isCreatingSquad = computed(() => create_squad.value)
-
-// Métodos
-const showNotification = (message, type) => {
-  toastMessage.value = message
-  toastType.value = type
-  showToast.value = true
-}
 
 const validateAndUploadCV = () => {
   if (
@@ -234,31 +228,21 @@ const validateAndUploadCV = () => {
           () => {
             student.value.approved_cv = false
             if (!student.value.uploaded_cv) {
-              showNotification('CV Submitted', 'points')
               student.value.uploaded_cv = true
-            } else {
-              showNotification('CV and other fields updated', 'success')
             }
           },
           (error) => {
-            console.log(error)
-            showNotification(
-              'Failed to upload, file size may be too large. Try uploading less than 600kb',
-              'error',
-            )
+
           },
         )
       })
       .catch((error) => {
         console.error('Error updating ', error)
-        showNotification('Something bad occurred', 'error')
       })
 
     // formData.value = null;
     isFromTecnico.value = false
     educationLevel.value = 'Other'
-  } else {
-    showNotification('Please fill all the fields and upload your CV.', 'error')
   }
 }
 
@@ -285,12 +269,10 @@ const handleAcceptInvite = (inviteId) => {
 
   UserService.acceptInvitation(inviteId).then(
     (response) => {
-      showNotification('Squad invite accepted', 'success')
       fetchProfile()
     },
     (error) => {
-      console.log(error)
-      showNotification('Failed to accept invite', 'error')
+
     },
   )
 }
@@ -300,12 +282,10 @@ const handleRejectInvite = (inviteId) => {
 
   UserService.rejectInvitation(inviteId).then(
     (response) => {
-      showNotification('Squad invite rejected', 'success')
       fetchProfile()
     },
     (error) => {
-      console.log(error)
-      showNotification('Failed to reject invite', 'error')
+
     },
   )
 }
@@ -314,73 +294,44 @@ const add_linkedin = (e) => {
   e.preventDefault()
 
   loading_linkedin.value = true
-  dialog.value = false
 
-  const linke_url = linkedin_url.value
+  // 1. Trim whitespace from the beginning and end
+  const linke_url = linkedin_url.value.trim()
 
-  // if (linke_url === "") {
-  //   showNotification("Please enter a valid LinkedIn URL", "error");
-  //   loading_linkedin.value = false;
-  //   return;
-  // }
-  if (
-    !linke_url.match(
-      /^https?:\/\/((www|\w\w)\.)?linkedin\.com\/((in\/[^\s/]+\/?)|(pub\/[^\s/]+\/((\w|\d)+\/?){3}))$/u,
-    )
-  ) {
-    showNotification('Please enter a valid LinkedIn URL', 'error')
+  // 2. More forgiving Regex:
+  // - Added 'i' at the end to make it case-insensitive
+  // - Added (\?.*)? before the end to allow LinkedIn's URL tracking parameters
+  const linkedinRegex = /^https?:\/\/((www|\w\w)\.)?linkedin\.com\/((in\/[^/?\s]+\/?)|(pub\/[^/?\s]+\/((\w|\d)+\/?){3}))(\?.*)?$/i
+
+  if (!linke_url.match(linkedinRegex)) {
     loading_linkedin.value = false
+    // Highly recommend adding a small alert or error state so the user knows WHY it failed!
+    alert("Please enter a valid LinkedIn URL.")
     return
   }
 
+  // Only close the modals if validation actually passes
+  dialog.value = false
   modalVisible.value = false
 
   linkedin_url.value = ''
 
   UserService.addLinkedin(linke_url).then(
     (response) => {
-      if (!student.value.linkedin_url) {
-        showNotification('Added LinkedIn points', 'points')
-
+      // 3. Added optional chaining (?.) so the app doesn't crash if student is null
+      if (!student.value?.linkedin_url) {
         setTimeout(fetchProfile, 100)
-      } else {
-        showNotification('LinkedIn updated successfully', 'success')
       }
-
       loading_linkedin.value = false
     },
     (error) => {
-      showNotification('Failed to add LinkedIn', 'error')
       loading_linkedin.value = false
+      alert("Failed to save LinkedIn profile. Please try again.")
     },
   )
 }
 
-/* const cv_click = () => {
-  $refs.cv.click();
-}; */
-
-// const add_cv_novo = () => {
-//   // Verificar se o arquivo foi selecionado corretamente
-//   if (cv.value && cv.value.files && cv.value.files.length > 0) {
-//     formData.value = new FormData();
-//     formData.value.append("cv", cv.value.files[0]);
-//   } else {
-//     console.log("Nenhum arquivo selecionado.");
-//   }
-// };
-
 const cvInput = ref(null)
-
-// const add_cv_novo = () => {
-//   const fileInput = document.getElementById("cvInput");
-//   if (fileInput && fileInput.files.length > 0) {
-//     formData.value = new FormData();
-//     formData.value.append("cv", fileInput.files[0]);  // <- append directly from file input
-//   } else {
-//     console.log("Nenhum arquivo selecionado.");
-//   }
-// };
 
 const selectedFileName = ref('')
 
@@ -392,7 +343,6 @@ const add_cv_novo = () => {
     formData.value.append('cv', file)
     selectedFileName.value = file.name // <-- Store the file name here
   } else {
-    console.log('Nenhum arquivo selecionado.')
     selectedFileName.value = '' // Reset if they cancel
   }
 }
@@ -406,7 +356,7 @@ const fetchProfile = () => {
       student.value = response.data.data
     },
     (error) => {
-      console.log(error)
+
     },
   )
 
@@ -415,7 +365,7 @@ const fetchProfile = () => {
       hasTicket.value = response.data
     },
     (error) => {
-      console.log(error)
+
     },
   )
 
@@ -426,7 +376,7 @@ const fetchProfile = () => {
       squad.value = response.data.data
     },
     (error) => {
-      console.log(error)
+
     },
   )
 
@@ -436,11 +386,9 @@ const fetchProfile = () => {
         invites.value = response.data.data
       },
       (error) => {
-        console.log(error)
+
       },
     )
-  } else {
-    console.log('Already in a squad')
   }
 
   getRankingPodium()

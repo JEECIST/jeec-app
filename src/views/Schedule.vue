@@ -598,7 +598,6 @@ async function fetchData() {
       new Promise((resolve) => setTimeout(resolve, 200)),
     ])
     const data = response.data
-    console.log('Dados recebidos:', data)
     base_path.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('ist/', 'ist')
     db_activities.value = data.other_activities.map((activity) => ({
       id: activity.id,

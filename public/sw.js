@@ -5,7 +5,7 @@ self.addEventListener('push', (event) => {
   
       if (event.data) {
         raw = event.data.text();
-        console.log('[SW] push raw payload:', raw);
+        
         try { data = raw ? JSON.parse(raw) : {}; }
         catch { console.warn('[SW] payload não é JSON. A usar como body.'); data = { body: raw }; }
       } else {
@@ -23,9 +23,7 @@ self.addEventListener('push', (event) => {
         icon: 'push-icon/test.png'
       };
   
-      console.log('[SW] push parsed payload:', p);
-      console.log('[SW] a mostrar notificação:', { title, options });
-  
+
       await self.registration.showNotification(title, options);
     })());
   });
