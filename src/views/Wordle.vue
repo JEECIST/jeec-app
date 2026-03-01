@@ -1,6 +1,10 @@
 <template>
 
-  <div class="wordle-page">
+  <div class="no-words-today" v-if="!hasWordsForDay">
+    <h2>No connections for today</h2>
+  </div>
+
+  <div class="wordle-page" v-if="hasWordsForDay">
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
     <!-- Loading State -->
@@ -224,7 +228,7 @@ const removeLetter = () => {
 const checkWord = async () => {
   if (isRevealing.value || gameStatus.value !== 'playing' || isLoading.value || hasPlayedToday.value) return
 
-  
+
 
   const currentWord = getCurrentWord()
 
@@ -232,7 +236,7 @@ const checkWord = async () => {
     return
   }
 
-  
+
 
   const row = gameGrid.value[currentRow.value]
   const targetLetters = TARGET_WORD.value.split('')
@@ -377,9 +381,19 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handlePhysicalKeyPress)
 })
 
+const hasWordsForDay = ref(false)
 </script>
 
 <style scoped>
+.no-words-today {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
 .wordle-page {
   display: flex;
   flex-direction: column;

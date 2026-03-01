@@ -1,5 +1,9 @@
 <template>
-  <div class="connections-game">
+  <div class="no-words-today" v-if="!hasWordsForDay">
+    <h2>No connections for today</h2>
+  </div>
+
+  <div class="connections-game" v-if="hasWordsForDay">
 
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
@@ -292,10 +296,20 @@ const vFitText = {
   }
 }
 
+const hasWordsForDay = ref(false)
 </script>
 
 
 <style>
+.no-words-today {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
 .word-grid.shake {
   animation: shake 0.3s ease-in-out;
 }

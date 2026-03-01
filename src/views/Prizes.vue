@@ -161,6 +161,7 @@ const goTo = (type, index) => {
     const selected = prizeList[type].value[index];
     if (selected) {
       prize_name.value = selected.name;
+      prize_description.value = selected.description;
       showPopup.value = true;
     }
   } else {
