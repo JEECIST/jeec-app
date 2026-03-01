@@ -43,6 +43,7 @@ const fetchPrizes = async () => {
         headers: authHeader(),
       },
     )
+    console.log(response.data)
     // Transform the data and filter out any prize named "Ticket"
     items.value = response.data
       .filter((prize) => prize.name !== prizeTicket.name)

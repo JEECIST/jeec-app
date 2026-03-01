@@ -1,13 +1,12 @@
 <template>
-  <div class="no-words-today" v-if="!hasWordsForDay">
-    <h2>No connections for today</h2>
-  </div>
-
-  <div class="connections-game" v-if="hasWordsForDay">
+  <div class="connections-game">
+    <div v-if="!hasWordsForDay">
+      <h2>No connections for today</h2>
+    </div>
 
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
-    <div class="found-groups">
+    <div class="found-groups" v-if="!hasWordsForDay">
       <div v-for="group in foundGroups" :key="group.theme" class="found-group"
         :style="{ backgroundColor: group.color }">
         <strong>{{ group.theme }}</strong>
@@ -15,7 +14,7 @@
       </div>
     </div>
 
-    <div v-if="gameStatus !== 'playing'" class="game-over-message">
+    <div v-if="gameStatus !== 'playing' && hasWordsForDay" class="game-over-message">
       <div v-if="gameStatus === 'lost'" class="found-groups">
         <div v-for="group in missingSolutionGroups" :key="group.theme" class="found-group"
           :style="{ backgroundColor: group.color }">
@@ -25,7 +24,7 @@
       </div>
     </div>
 
-    <div v-if="gameStatus === 'playing'" class="word-grid" :class="{ shake: isShaking }">
+    <div v-if="gameStatus === 'playing' && hasWordsForDay" class="word-grid" :class="{ shake: isShaking }">
       <button v-for="word in activeWords" :key="word.text" class="word-item" :class="{ 'selected': word.selected }"
         @click="toggleWordSelect(word)">
         <div class="word" v-fit-text>
@@ -35,12 +34,12 @@
     </div>
 
 
-    <div v-if="gameStatus === 'playing'" class="mistakes">
+    <div v-if="gameStatus === 'playing' && hasWordsForDay" class="mistakes">
       Mistakes remaining:
       <span v-for="n in mistakesRemaining" :key="n" class="mistake-dot">●</span>
     </div>
 
-    <div v-if="gameStatus === 'playing'" class="controls">
+    <div v-if="gameStatus === 'playing' && hasWordsForDay" class="controls">
       <button @click="shuffleActiveWords">Shuffle</button>
       <button @click="deselectAll">Deselect All</button>
       <button @click="submitSelection" :disabled="selectedWords.length !== 4">

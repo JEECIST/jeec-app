@@ -1,10 +1,10 @@
 <template>
 
-  <div class="no-words-today" v-if="!hasWordsForDay">
-    <h2>No connections for today</h2>
-  </div>
 
-  <div class="wordle-page" v-if="hasWordsForDay">
+  <div class="wordle-page">
+    <div v-if="!hasWordsForDay">
+      <h2>No wordle for today</h2>
+    </div>
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
     <!-- Loading State -->
@@ -19,7 +19,7 @@
     </div> -->
 
     <!-- Game Content -->
-    <div>
+    <div v-if="hasWordsForDay">
       <!-- Game Grid -->
       <div class="game-grid">
         <div v-for="(row, rowIndex) in gameGrid" :key="rowIndex" class="grid-row">
