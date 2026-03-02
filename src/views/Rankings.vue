@@ -29,7 +29,7 @@
         <div class="spacing"></div>
 
         <RankingsPodium :other_rankingdata="students_daily" :user_ranking="userdata_individual.ranking_daily"
-          :user_points="userdata_individual.daily_points" :identity="'You'" :flag="true" :extend="false"
+          :user_points="userdata_individual.daily_points" :identity="'You'" :flag="true" :extend="true"
           :type="'Student'">
         </RankingsPodium>
 
