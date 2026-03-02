@@ -63,9 +63,15 @@ const filteredMembers = computed(() => {
 })
 
 async function inviteMember(m) {
-    const response = await UserService.inviteSquad(m)
+    try {
+        const response = await UserService.inviteSquad(m)
 
-    console.log(response.data)
+        if (response.status === 200) {
+            alert(`${m} invited to your squad!`)
+        }
+    } catch (error) {
+        alert("Could not invite member. Please try again.")
+    }
 }
 
 function backToSlots() {

@@ -166,7 +166,7 @@ onMounted(async () => {
       startAutoSlide()
     }
   } catch (e) {
-    console.log(e)
+    
   }
 })
 

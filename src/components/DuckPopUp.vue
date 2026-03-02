@@ -76,7 +76,7 @@ function exitPopUp() {
 
 .qrcode-wrapper {
     position: fixed;
-    z-index: 200;
+    z-index: 999;
     inset: 0;
     width: 100%;
     height: 100svh;

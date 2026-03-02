@@ -97,7 +97,7 @@ onMounted(async () => {
 
 <style scoped>
 main {
-  z-index: 1;
+  /* z-index: 1; */
   position: relative;
   /* Removed the paddings from here so full-screen pages like Login stay flush to the edges */
 }

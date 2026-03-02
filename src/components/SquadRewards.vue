@@ -179,7 +179,7 @@ export default {
         this.weekly_max_points = daily_squads[0].total_points
       },
       (error) => {
-        console.log(error)
+        
         this.loading_daily = false
       },
     )

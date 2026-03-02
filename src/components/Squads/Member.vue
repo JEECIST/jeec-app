@@ -65,7 +65,7 @@ export default {
           this.$emit('kick', squad)
         },
         (error) => {
-          console.log(error)
+          
           this.loading_kick = false
         },
       )

@@ -148,8 +148,6 @@ const goTo = (type, index) => {
   // O valor atual está agora na nossa variável reativa!
   const currentActiveIndex = currentSlides.value[type];
 
-  console.log("Slide Atual:", currentActiveIndex, "Index Clicado:", index);
-
   if (currentActiveIndex === index) {
     // Abrir popup
     const prizeList = {
@@ -163,6 +161,7 @@ const goTo = (type, index) => {
     const selected = prizeList[type].value[index];
     if (selected) {
       prize_name.value = selected.name;
+      prize_description.value = selected.description;
       showPopup.value = true;
     }
   } else {
@@ -211,8 +210,6 @@ async function fetchPrizes() {
       headers: authHeader()
     },
   )
-
-  console.log(response.data)
 
   daily_solo_prizes.value = response.data.Daily;
   daily_solo_prizes.value[0].day = 'Monday'

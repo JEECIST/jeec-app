@@ -26,7 +26,6 @@ export const useWordleStore = defineStore('wordle', {
       this.currentCol = 0
       this.keyStates = {}
       this.gameStatus = 'playing'
-      console.log('Grid initialized:', this.gameGrid)
     },
 
     saveState() {

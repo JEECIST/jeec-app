@@ -162,7 +162,6 @@ export default {
           this.change_add_member_dialog()
         },
         (error) => {
-          console.log(error)
           this.loading_add = false
           this.showNotification('Error sending invitation', 'error')
         },
@@ -183,7 +182,7 @@ export default {
           this.$router.go()
         },
         (error) => {
-          console.log(error)
+          
           this.loading_squad = false
         },
       )
@@ -218,10 +217,9 @@ export default {
     UserService.getEventInfo().then(
       (response) => {
         this.event = response.data
-        console.log('event total poits', this.squad.total_points, this.event.squad_points)
       },
       (error) => {
-        console.log(error)
+        
       },
     )
   },

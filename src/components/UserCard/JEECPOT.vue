@@ -4,19 +4,19 @@
     <div class="points radient-border-passthrough">
       <div
         class="progress radient-border-passthrough_child"
-        :style="'--progress:' + test + '%;'"
+        :style="'--progress:' + progress + '%;'"
       ></div>
       <div
         class="progress-fill"
         :style="{
-          '--progress': test + '%',
+          '--progress': progress + '%',
         }"
       ></div>
-      <p v-if="test >= 100" class="points-total">Eligible!</p>
-      <p v-else class="points-total">{{ progress }}%</p>
+      <p class="points-total">{{ progress }}%</p>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, watch, defineProps, onMounted } from 'vue'
 import { useUserStore } from '@/stores/UserStore'

@@ -52,7 +52,8 @@ const userStore = useUserStore()
   right: 0;
   top: 0;
   width: 100%;
-  height: 100svh;
+  height: 100dvh;
+  /* Changed from 100svh to 100dvh */
   visibility: hidden;
   z-index: 2001;
   overflow: hidden;
@@ -102,7 +103,8 @@ const userStore = useUserStore()
 
 .nav-logout {
   position: absolute;
-  top: 92%;
+  bottom: 2rem;
+  /* Anchors it consistently 2rem from the bottom */
   left: 12.5%;
   width: 75%;
   border: 3px solid #178ee9;
@@ -176,26 +178,25 @@ li a.active-link::before {
 }
 
 .help-info {
-  width: 100%;
-  height: 10rem;
   position: absolute;
-  background-color: var(--color-background-sec);
-  bottom: 0;
-  right: 200;
+  bottom: 6rem;
+  /* Positions it nicely above the logout button */
+  right: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .help-info img {
-  height: 3rem;
+  height: 2.5rem;
+  /* Scaled slightly so it aligns cleanly with the logout button height */
 }
 
 .help-info a {
-  font-size: 1.6rem;
   text-decoration: none;
-  font-family: 'Lexend Exa';
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
-  gap: 1ch;
 }
 
 .nav-close {

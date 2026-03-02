@@ -168,7 +168,7 @@
                             " class="logo-image" />
                       </template>
                       <template v-else>
-                        <div class="logo-default"></div>
+                        <img :src="jeecLogo" class="logo-image" alt="JEEC Logo Default" />
                       </template>
                     </transition>
                   </div>
@@ -345,7 +345,7 @@
                             " class="logo-image" />
                       </template>
                       <template v-else>
-                        <div class="logo-default"></div>
+                        <img :src="jeecLogo" class="logo-image" alt="JEEC Logo Default" />
                       </template>
                     </transition>
                   </div>
@@ -371,7 +371,7 @@ import keynoteIcon from '@/assets/icons/keynote_icon.svg'
 import fifteenIcon from '@/assets/icons/15_15_icon.svg'
 import insideTalkIcon from '@/assets/icons/inside_talk_icon.svg'
 import eletrolinkIcon from '@/assets/icons/eletrolink-icon.svg'
-import pointsIcon from '@/assets/icons/flash_home22.svg'
+import jeecLogo from '@/assets/jeec_horizontal_mobile_black.svg'
 
 import TabsSelection from '@/components/TabsSelection.vue'
 
@@ -598,7 +598,6 @@ async function fetchData() {
       new Promise((resolve) => setTimeout(resolve, 200)),
     ])
     const data = response.data
-    console.log('Dados recebidos:', data)
     base_path.value = import.meta.env.VITE_APP_JEEC_BRAIN_URL.replace('ist/', 'ist')
     db_activities.value = data.other_activities.map((activity) => ({
       id: activity.id,

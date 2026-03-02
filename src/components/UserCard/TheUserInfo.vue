@@ -136,6 +136,7 @@ defineProps({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 50vw;
 }
 
 .logo-wrapper {
