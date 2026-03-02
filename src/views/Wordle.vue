@@ -381,7 +381,7 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handlePhysicalKeyPress)
 })
 
-const hasWordsForDay = ref(false)
+const hasWordsForDay = ref(true)
 </script>
 
 <style scoped>

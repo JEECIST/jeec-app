@@ -295,7 +295,7 @@ const vFitText = {
   }
 }
 
-const hasWordsForDay = ref(false)
+const hasWordsForDay = ref(true)
 </script>
 
 
