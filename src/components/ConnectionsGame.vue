@@ -6,7 +6,7 @@
 
     <DuckPopUp v-if="showDuck" :duckState="duckMood" :points="received_points" @close="showDuck = false" />
 
-    <div class="found-groups" v-if="!hasWordsForDay">
+    <div class="found-groups" v-if="hasWordsForDay">
       <div v-for="group in foundGroups" :key="group.theme" class="found-group"
         :style="{ backgroundColor: group.color }">
         <strong>{{ group.theme }}</strong>
