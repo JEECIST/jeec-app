@@ -1,18 +1,18 @@
 <template>
   <div>
     <QRCodeVue3 width="200" height="200" :value="userStore.user.student_external_id" :image="jeec_logo_mobile"
-      :imageOptions="{ imageSize: 0.6, margin: 2 }" imgclass="qrcode-image" :dotsOptions="{
+      :imageOptions="{ imageSize: 0.4, margin: 2 }" imgclass="qrcode-image" :dotsOptions="{
         type: 'extra-rounded',
         gradient: {
           type: 'linear',
           rotation: 2,
           colorStops: [
-            { offset: 0, color: '#FFFFFF' },
+            { offset: 0, color: '#1a9cd8' },
+            { offset: 1, color: 'black' },
           ],
         },
-      }" :backgroundOptions="{ color: 'transparent' }"
-      :cornersSquareOptions="{ type: 'extra-rounded', color: '#FFFFFF' }"
-      :cornersDotOptions="{ type: 'square', color: '#FFFFFF' }" alt="Show this QR Code"></QRCodeVue3>
+      }" :backgroundOptions="{ color: 'white' }" :cornersSquareOptions="{ type: 'extra-rounded', color: '#072a3a' }"
+      :cornersDotOptions="{ type: 'square', color: '#1476a3' }" alt="Show this QR Code"></QRCodeVue3>
     <!-- <QRCodeVue3 
       width="200" 
       height="200" 
@@ -33,7 +33,7 @@
 import QRCodeVue3 from 'qrcode-vue3'
 
 import { useUserStore } from '@/stores/UserStore'
-import jeec_logo_mobile from '@/assets/jeec_mobile_white.svg'
+import jeec_logo_mobile from '@/assets/jeec_mobile_black.svg'
 const userStore = useUserStore()
 </script>
 
