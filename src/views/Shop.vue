@@ -17,6 +17,8 @@ const dailyPrize = ref(null)
 const dailyPrizeLoading = ref(true)
 const dailyPrizeError = ref(null)
 
+const sold_out = ref(["JEEC Meias", "Garrafa de Vidro"])
+
 // Add new ref for insufficient points popup
 const showInsufficientPointsPopup = ref(false)
 
@@ -361,11 +363,16 @@ onMounted(() => {
 
         <p class="prize-description">{{ selectedPrize.description }}</p>
 
-        <button class="prize-buy-button" @click="buyPrize(selectedPrize)" :disabled="selectedPrize.bought">
-          <span class="buy-text">BUY PRIZE</span>
-          <!-- <span class="price-text">{{ selectedPrize.price / 2 }}</span> -->
-          <span class="price-text">{{ selectedPrize.price }}</span>
-          <img src="@/assets/icons/flash_home_white.svg" alt="credits" class="button-icon" />
+        <button class="prize-buy-button" @click="buyPrize(selectedPrize)"
+          :disabled="selectedPrize.bought || sold_out.includes(selectedPrize.name)">
+          <span class="buy-text">
+            {{ sold_out.includes(selectedPrize.name) ? 'SOLD OUT' : 'BUY PRIZE' }}
+          </span>
+          <span class="price-text" v-if="!sold_out.includes(selectedPrize.name)">
+            {{ selectedPrize.price }}
+          </span>
+          <img v-if="!sold_out.includes(selectedPrize.name)" src="@/assets/icons/flash_home_white.svg" alt="credits"
+            class="button-icon" />
         </button>
       </div>
     </div>
@@ -798,6 +805,12 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.prize-buy-button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .prize-buy-button .buy-text {
